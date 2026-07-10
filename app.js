@@ -10534,3 +10534,163 @@ window.addEventListener("load", () => {
 document.addEventListener("click", () => {
   setTimeout(bbHardMobileLoginBarFinal, 200);
 });
+
+// GAMES CATALOG + MOBILE/DESKTOP SHARED FIX
+function bbCatalogFallbackGames(){
+  return [
+    {id:"fallback_sweet",gameId:"",title:"Sweet Bonanza",provider:"Pragmatic Play",category:"Slot",image:""},
+    {id:"fallback_gates",gameId:"",title:"Gates of Olympus",provider:"Pragmatic Play",category:"Slot",image:""},
+    {id:"fallback_bigbass",gameId:"",title:"Big Bass Bonanza",provider:"Pragmatic Play",category:"Slot",image:""},
+    {id:"fallback_sugar",gameId:"",title:"Sugar Rush",provider:"Pragmatic Play",category:"Slot",image:""},
+    {id:"fallback_aviator",gameId:"",title:"Aviator",provider:"Spribe",category:"Crash",image:""},
+    {id:"fallback_mines",gameId:"",title:"Mines",provider:"Spribe",category:"Crash",image:""},
+    {id:"fallback_plinko",gameId:"",title:"Plinko",provider:"Spribe",category:"Arcade",image:""},
+    {id:"fallback_crazy",gameId:"",title:"Crazy Time",provider:"Evolution",category:"Live Casino",image:""},
+    {id:"fallback_roulette",gameId:"",title:"Lightning Roulette",provider:"Evolution",category:"Live Casino",image:""},
+    {id:"fallback_blackjack",gameId:"",title:"Blackjack",provider:"Evolution",category:"Live Casino",image:""}
+  ];
+}
+
+function bbGetPublishedGames(){
+  const catalog = Array.isArray(window.BOZOBET_GAME_CATALOG) ? window.BOZOBET_GAME_CATALOG : [];
+  const local = typeof getBetApiGames === "function" ? getBetApiGames() : [];
+
+  if(catalog.length) return catalog;
+  if(Array.isArray(local) && local.length) return local;
+
+  return bbCatalogFallbackGames();
+}
+
+getBetApiGames = function(){
+  return bbGetPublishedGames();
+};
+
+function bbActiveCouponCount(){
+  if(!user) return 0;
+
+  const all =
+    JSON.parse(localStorage.getItem("bozobet_bets") || "[]")
+    .concat(JSON.parse(localStorage.getItem("bozobet_coupons") || "[]"));
+
+  return all.filter(b => {
+    const sameUser =
+      String(b.userId || b.username || "") === String(user.id || user.username || "") ||
+      String(b.user || "") === String(user.username || "");
+
+    const active =
+      ["active","pending","open","waiting","bekliyor"].includes(String(b.status || "").toLowerCase());
+
+    return sameUser && active;
+  }).length;
+}
+
+function bbCouponBadgeHtml(){
+  const n = bbActiveCouponCount();
+  return `<span class="bb-mobile-coupon-badge">${n}</span>`;
+}
+
+function bbMobileMenuFinal(){
+  document.querySelectorAll(".bb-bottom-nav-final").forEach(x => x.remove());
+
+  const nav = document.createElement("nav");
+  nav.className = "bb-bottom-nav-final";
+  nav.innerHTML = `
+    <button class="active" onclick="renderHome && renderHome()">
+      <span class="bb-nav-ico home">⌂</span>
+      <b>Ana Sayfa</b>
+    </button>
+    <button onclick="renderSports && renderSports()">
+      <span class="bb-nav-ico sport">⚽</span>
+      <b>Spor</b>
+    </button>
+    <button onclick="renderCasino && renderCasino()">
+      <span class="bb-nav-ico casino">▣</span>
+      <b>Casino</b>
+    </button>
+    <button class="coupon" onclick="renderCoupon && renderCoupon()">
+      <span class="bb-nav-ico coupon">▤</span>
+      ${bbCouponBadgeHtml()}
+      <b>Kupon</b>
+    </button>
+    <button onclick="user ? (renderProfile && renderProfile()) : (loginModal && loginModal())">
+      <span class="bb-nav-ico account">●</span>
+      <b>Hesabım</b>
+    </button>
+  `;
+  document.body.appendChild(nav);
+}
+
+function bbRenderGamesShared(title){
+  const games = bbGetPublishedGames();
+
+  document.getElementById("app").innerHTML = shell(`
+    <section class="bet-games-hero">
+      <div>
+        <span>OYUNLAR</span>
+        <h1>${title}</h1>
+        <p>Popüler sağlayıcıların oyunları.</p>
+      </div>
+      <div class="bet-games-hero-card">
+        <small>Aktif Oyun</small>
+        <b>${games.length}</b>
+        <span>Casino & Slot</span>
+      </div>
+    </section>
+
+    <section class="premium-games-grid">
+      ${games.slice(0,240).map((g,i) => {
+        const safeTitle = String(g.title || "Oyun").replaceAll("'","&#039;");
+        const img = g.image || "";
+        return `
+          <div class="premium-game-card">
+            <div class="premium-game-image">
+              ${img ? `<img src="${img}" loading="lazy" onerror="this.remove()">` : `<div class="premium-game-fallback">🎰</div>`}
+              <div class="premium-game-provider">${g.provider || "Provider"}</div>
+              <button class="premium-game-play-overlay" onclick="bbPlayPublishedGame('${safeTitle}')">Oyna</button>
+            </div>
+            <div class="premium-game-content">
+              <b>${g.title || "Oyun"}</b>
+              <div class="premium-game-meta">
+                <span>${g.category || "Casino"}</span>
+                <em>Aktif</em>
+              </div>
+              <button onclick="bbPlayPublishedGame('${safeTitle}')">Hemen Oyna</button>
+            </div>
+          </div>
+        `;
+      }).join("")}
+    </section>
+  `);
+
+  bbMobileMenuFinal();
+}
+
+function bbPlayPublishedGame(title){
+  if(!user){
+    alert("Lütfen hesabınıza giriş yapın.");
+    if(typeof loginModal === "function") setTimeout(loginModal, 150);
+    return;
+  }
+
+  const g = bbGetPublishedGames().find(x => String(x.title || "").toLowerCase() === String(title || "").toLowerCase());
+
+  if(g && g.gameId && typeof launchBetApiGame === "function"){
+    launchBetApiGame(g.gameId);
+    return;
+  }
+
+  alert("Oyun açılıyor: " + title);
+}
+
+renderCasino = function(){ bbRenderGamesShared("Casino Oyunları"); };
+renderSlot = function(){ bbRenderGamesShared("Slot Oyunları"); };
+renderVirtualGames = function(){ bbRenderGamesShared("Sanal Oyunlar"); };
+
+window.addEventListener("load", () => {
+  setTimeout(bbMobileMenuFinal, 300);
+  setTimeout(bbMobileMenuFinal, 1200);
+});
+
+document.addEventListener("click", () => {
+  setTimeout(bbMobileMenuFinal, 250);
+});

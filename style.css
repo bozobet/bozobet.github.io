@@ -7452,3 +7452,112 @@ body.site-ready .loader-screen{
     font-size:28px;
   }
 }
+
+/* MOBILE BOTTOM NAV FINAL */
+.bb-bottom-nav-final{
+  position:fixed;
+  left:8px;
+  right:8px;
+  bottom:8px;
+  z-index:999999;
+  height:76px;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  align-items:center;
+  gap:2px;
+  padding:8px 8px 7px;
+  border-radius:24px;
+  background:linear-gradient(180deg,rgba(18,28,38,.96),rgba(4,10,16,.98));
+  border:1px solid rgba(160,180,200,.18);
+  box-shadow:0 -12px 38px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.08);
+  backdrop-filter:blur(18px);
+}
+
+.bb-bottom-nav-final button{
+  position:relative;
+  height:60px;
+  border:0;
+  background:transparent;
+  color:#bfc4c8;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  font-weight:900;
+}
+
+.bb-bottom-nav-final button b{
+  font-size:12px;
+  font-weight:950;
+}
+
+.bb-bottom-nav-final button.active,
+.bb-bottom-nav-final button.active b{
+  color:#65ff35;
+}
+
+.bb-nav-ico{
+  height:28px;
+  min-width:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  line-height:1;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.45));
+}
+
+.bb-nav-ico.home{
+  color:#65ff35;
+  font-size:34px;
+}
+
+.bb-nav-ico.sport{
+  font-size:28px;
+}
+
+.bb-nav-ico.casino{
+  font-size:29px;
+  color:#e8ecef;
+}
+
+.bb-nav-ico.coupon{
+  color:#e8ecef;
+  font-size:29px;
+}
+
+.bb-nav-ico.account{
+  color:#e8ecef;
+  font-size:32px;
+}
+
+.bb-mobile-coupon-badge{
+  position:absolute;
+  top:2px;
+  right:22%;
+  min-width:21px;
+  height:21px;
+  padding:0 5px;
+  border-radius:999px;
+  background:#65ff35;
+  color:#07110c;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  font-weight:1000;
+  box-shadow:0 0 14px rgba(101,255,53,.42);
+}
+
+@media(min-width:801px){
+  .bb-bottom-nav-final{
+    display:none;
+  }
+}
+
+@media(max-width:800px){
+  body{
+    padding-bottom:94px !important;
+  }
+}

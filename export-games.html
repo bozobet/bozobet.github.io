@@ -1,0 +1,39 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>BozoBet Games Export</title>
+<body style="background:#07110c;color:#fff;font-family:Arial;padding:24px">
+  <h1>BozoBet Games Export</h1>
+  <p>Butona basınca localStorage’daki API oyunlarını games-catalog.js olarak indirecek.</p>
+  <button onclick="exportGames()" style="height:44px;border:0;border-radius:12px;padding:0 18px;background:#21d46b;font-weight:900">Oyunları Dışa Aktar</button>
+  <pre id="out" style="white-space:pre-wrap;background:#111;padding:16px;border-radius:14px;margin-top:18px"></pre>
+
+<script>
+function exportGames(){
+  const games = JSON.parse(localStorage.getItem("bozobet_bet_api_games") || "[]");
+
+  if(!games.length){
+    alert("Bu tarayıcıda çekilmiş oyun yok. Önce admin panelde provider oyunlarını çektiğin tarayıcıda aç.");
+    return;
+  }
+
+  const clean = games.map((g,i) => ({
+    id:g.id || ("game_" + i),
+    gameId:g.gameId || "",
+    title:g.title || "",
+    provider:g.provider || "",
+    category:g.category || "",
+    image:g.image || ""
+  })).filter(g => g.title);
+
+  const code = "window.BOZOBET_GAME_CATALOG = " + JSON.stringify(clean, null, 2) + ";\\n";
+
+  const blob = new Blob([code], {type:"application/javascript"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "games-catalog.js";
+  a.click();
+
+  document.getElementById("out").textContent = "Aktarılan oyun sayısı: " + clean.length + "\\n\\n" + code.slice(0, 2000);
+}
+</script>
+</body>
