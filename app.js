@@ -10926,3 +10926,23 @@ document.addEventListener("click", () => {
     setTimeout(renderBottomNav, 1200);
   });
 })();
+
+// BOZOBET GENERATED MOBILE VISUAL ASSETS V1
+(function(){
+  const AS='/assets/mobile/';
+  const bbAssets={
+    banners:[AS+'banners/live-casino-hero-1.png',AS+'banners/live-casino-hero-2.png',AS+'banners/live-casino-hero-3.png',AS+'banners/vip-casino-banner.png',AS+'banners/big-prize-banner.png'],
+    promos:[['Hoş Geldin Bonusu',AS+'promos/welcome-bonus.png'],['Çevrimsiz Bonus',AS+'promos/no-wager-bonus.png'],['Kayıp Bonusu',AS+'promos/loss-bonus.png'],['Free Spin',AS+'promos/freespin.png'],['Bonus Kampanyası',AS+'promos/bonus-campaign.png'],['Cebinde BozoBet',AS+'promos/mobile-pocket.png']],
+    dealers:[AS+'dealers/dealer-live-casino-1.png',AS+'dealers/dealer-live-casino-2.png',AS+'dealers/dealer-live-casino-3.png',AS+'dealers/dealer-live-casino-4.png',AS+'dealers/dealer-live-casino-5.png',AS+'dealers/dealer-cards.png'],
+    nav:{home:AS+'icons/nav-home.png',sports:AS+'icons/nav-sports.png',casino:AS+'icons/nav-casino.png',coupon:AS+'icons/nav-coupon.png',account:AS+'icons/nav-account.png'},
+    icons:[['Casino',AS+'icons/casino-icon.png'],['Futbol',AS+'icons/football-icon.png'],['Basketbol',AS+'icons/basketball-icon.png'],['Cüzdan',AS+'icons/wallet-icon.png'],['Hediye',AS+'icons/gift-icon.png'],['VIP',AS+'icons/crown-icon.png'],['Slot',AS+'icons/slot-icon.png']]
+  };
+  window.BB_GENERATED_MOBILE_ASSETS=bbAssets;
+  function img(src,alt){return `<img src="${src}" alt="${alt||''}" loading="lazy" decoding="async">`;}
+  function activeCouponCount(){try{if(!user)return 0;const all=[...JSON.parse(localStorage.getItem('bozobet_bets')||'[]'),...JSON.parse(localStorage.getItem('bozobet_coupons')||'[]')];return all.filter(b=>['active','pending','open','waiting','bekliyor'].includes(String(b.status||'').toLowerCase())&&[String(user.id||''),String(user.username||'')].includes(String(b.userId||b.username||b.user||''))).length;}catch(e){return 0;}}
+  function injectMobileHomeVisuals(){const app=document.getElementById('app');if(!app)return;if(document.querySelector('.bb-gen-mobile-visuals'))return;const first=app.firstElementChild;const html=`<section class="bb-gen-mobile-visuals"><div class="bb-gen-hero-slider">${bbAssets.banners.map((s,i)=>`<article class="bb-gen-hero-card ${i===0?'active':''}">${img(s,'BozoBet banner')}</article>`).join('')}</div><div class="bb-gen-quick-icons">${bbAssets.icons.map(([t,s])=>`<button>${img(s,t)}<span>${t}</span></button>`).join('')}</div><div class="bb-gen-section-head"><b>Promosyonlar</b><button onclick="typeof renderPromotions==='function'?renderPromotions():null">Tümünü Gör</button></div><div class="bb-gen-promo-row">${bbAssets.promos.map(([t,s])=>`<button>${img(s,t)}<span>${t}</span></button>`).join('')}</div><div class="bb-gen-section-head"><b>Canlı Casino</b><button onclick="typeof renderCasino==='function'?renderCasino():null">Oyna</button></div><div class="bb-gen-dealer-row">${bbAssets.dealers.map((s,i)=>`<button onclick="typeof renderCasino==='function'?renderCasino():null">${img(s,'Canlı casino '+(i+1))}</button>`).join('')}</div></section>`;if(first)first.insertAdjacentHTML('afterend',html);else app.insertAdjacentHTML('afterbegin',html);}
+  function renderGeneratedBottomNav(){document.querySelectorAll('.bb-gen-bottom-nav').forEach(x=>x.remove());const n=activeCouponCount();const nav=document.createElement('nav');nav.className='bb-gen-bottom-nav';nav.innerHTML=`<button onclick="renderHome&&renderHome()"><img src="${bbAssets.nav.home}" alt=""><b>Ana Sayfa</b></button><button onclick="renderSports&&renderSports()"><img src="${bbAssets.nav.sports}" alt=""><b>Spor</b></button><button onclick="renderCasino&&renderCasino()"><img src="${bbAssets.nav.casino}" alt=""><b>Casino</b></button><button class="coupon" onclick="typeof renderCoupon==='function'?renderCoupon():alert('Kuponunuz boş.')"><img src="${bbAssets.nav.coupon}" alt=""><i>${n}</i><b>Kupon</b></button><button onclick="user?(renderProfile&&renderProfile()):(loginModal&&loginModal())"><img src="${bbAssets.nav.account}" alt=""><b>Hesabım</b></button>`;document.body.appendChild(nav);}
+  if(typeof renderHome==='function'){const old=renderHome;renderHome=function(){old();setTimeout(injectMobileHomeVisuals,120);setTimeout(renderGeneratedBottomNav,160);};}
+  window.addEventListener('load',()=>{setTimeout(injectMobileHomeVisuals,300);setTimeout(renderGeneratedBottomNav,350);});
+  document.addEventListener('click',()=>setTimeout(renderGeneratedBottomNav,200));
+})();
