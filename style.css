@@ -7855,3 +7855,172 @@ body.site-ready .loader-screen{
 /* BOZOBET GENERATED MOBILE VISUAL ASSETS V1 */
 .bb-gen-mobile-visuals{display:none}.bb-gen-bottom-nav{display:none}
 @media(max-width:800px){body{padding-bottom:96px!important}.bb-gen-mobile-visuals{display:block;margin:14px 0 18px}.bb-gen-hero-slider{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 2px 8px}.bb-gen-hero-card{min-width:92%;height:156px;border-radius:24px;overflow:hidden;scroll-snap-align:start;border:1px solid rgba(255,255,255,.12);box-shadow:0 18px 44px rgba(0,0,0,.34);background:#07110c}.bb-gen-hero-card img{width:100%;height:100%;object-fit:cover;display:block}.bb-gen-quick-icons{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 14px}.bb-gen-quick-icons button{min-width:76px;border:0;border-radius:18px;padding:10px 8px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));color:#dfffe0;font-weight:900}.bb-gen-quick-icons img{width:44px;height:44px;object-fit:contain;display:block;margin:0 auto 6px;filter:drop-shadow(0 6px 10px rgba(101,255,53,.22))}.bb-gen-quick-icons span{font-size:11px;white-space:nowrap}.bb-gen-section-head{display:flex;align-items:center;justify-content:space-between;margin:8px 2px 10px}.bb-gen-section-head b{color:#fff;font-size:18px}.bb-gen-section-head button{height:30px;border:0;border-radius:999px;padding:0 11px;background:rgba(101,255,53,.14);color:#65ff35;font-weight:1000}.bb-gen-promo-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:14px}.bb-gen-promo-row button{min-width:220px;height:118px;border:0;border-radius:20px;padding:0;overflow:hidden;position:relative;background:#111;box-shadow:0 16px 40px rgba(0,0,0,.28)}.bb-gen-promo-row img{width:100%;height:100%;object-fit:cover;display:block}.bb-gen-promo-row span{position:absolute;left:10px;bottom:9px;color:#fff;font-size:13px;font-weight:1000;text-shadow:0 2px 8px #000}.bb-gen-dealer-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px}.bb-gen-dealer-row button{min-width:190px;height:220px;border:0;border-radius:22px;padding:0;overflow:hidden;background:#111;box-shadow:0 18px 44px rgba(0,0,0,.34)}.bb-gen-dealer-row img{width:100%;height:100%;object-fit:cover;display:block}.bb-gen-bottom-nav{position:fixed;left:8px;right:8px;bottom:8px;z-index:1000000;height:78px;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:8px;border-radius:24px;background:linear-gradient(180deg,rgba(18,28,38,.97),rgba(4,10,16,.99));border:1px solid rgba(160,180,200,.18);box-shadow:0 -12px 38px rgba(0,0,0,.45);backdrop-filter:blur(18px)}.bb-gen-bottom-nav button{position:relative;border:0;background:transparent;color:#cfd4d7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-weight:950}.bb-gen-bottom-nav img{width:29px;height:29px;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(0,0,0,.45))}.bb-gen-bottom-nav button:first-child img{width:34px;height:34px}.bb-gen-bottom-nav b{font-size:10.5px;white-space:nowrap}.bb-gen-bottom-nav .coupon i{position:absolute;top:1px;right:22%;min-width:21px;height:21px;border-radius:999px;background:#65ff35;color:#07110c;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:12px;font-weight:1000;box-shadow:0 0 14px rgba(101,255,53,.42)}}
+
+/* REAL RAPIDAPI GAME LOAD + NO EMOJI CARD FIX V1 */
+.bb-real-games-hero{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:16px;
+  padding:26px;
+  border-radius:26px;
+  margin-bottom:14px;
+  background:
+    radial-gradient(circle at 10% 0%,rgba(101,255,53,.22),transparent 36%),
+    radial-gradient(circle at 90% 0%,rgba(245,196,81,.16),transparent 34%),
+    linear-gradient(135deg,#101d16,#050c08);
+  border:1px solid rgba(255,255,255,.1);
+}
+
+.bb-real-games-hero span{
+  color:#65ff35;
+  font-size:12px;
+  letter-spacing:1.5px;
+  font-weight:1000;
+}
+
+.bb-real-games-hero h1{
+  color:#fff;
+  margin:8px 0;
+  font-size:38px;
+  line-height:1;
+}
+
+.bb-real-games-hero p{
+  color:#aebbb4;
+  margin:0;
+}
+
+.bb-real-games-hero strong{
+  min-width:72px;
+  height:72px;
+  border-radius:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,255,255,.075);
+  color:#65ff35;
+  font-size:28px;
+}
+
+.bb-real-games-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:14px;
+}
+
+.bb-real-game-card{
+  overflow:hidden;
+  border-radius:22px;
+  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.025));
+  border:1px solid rgba(255,255,255,.09);
+  box-shadow:0 18px 44px rgba(0,0,0,.22);
+}
+
+.bb-real-game-media{
+  position:relative;
+  height:145px;
+  overflow:hidden;
+  background:#111;
+}
+
+.bb-real-game-media img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.bb-real-game-media small{
+  position:absolute;
+  top:10px;
+  left:10px;
+  max-width:calc(100% - 20px);
+  padding:6px 9px;
+  border-radius:999px;
+  background:rgba(0,0,0,.56);
+  color:#65ff35;
+  font-size:11px;
+  font-weight:1000;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.bb-real-game-info{
+  padding:13px;
+}
+
+.bb-real-game-info b{
+  display:block;
+  height:38px;
+  color:#fff;
+  font-size:14px;
+  line-height:1.2;
+  overflow:hidden;
+}
+
+.bb-real-game-info em{
+  display:inline-block;
+  margin:8px 0 12px;
+  color:#65ff35;
+  font-size:11px;
+  font-style:normal;
+  font-weight:950;
+  background:rgba(101,255,53,.13);
+  padding:4px 7px;
+  border-radius:999px;
+}
+
+.bb-real-game-info button{
+  width:100%;
+  height:38px;
+  border:0;
+  border-radius:13px;
+  background:linear-gradient(135deg,#65ff35,#a8ff7a);
+  color:#07110c;
+  font-weight:1000;
+}
+
+@media(max-width:800px){
+  .bb-real-games-grid{
+    grid-template-columns:repeat(2,1fr) !important;
+    gap:12px;
+  }
+
+  .bb-real-game-media{
+    height:118px;
+  }
+
+  .bb-real-game-card{
+    border-radius:18px;
+  }
+
+  .bb-real-game-info{
+    padding:10px;
+  }
+
+  .bb-real-game-info b{
+    height:34px;
+    font-size:13px;
+  }
+
+  .bb-real-game-info button{
+    height:36px;
+  }
+
+  .bb-real-games-hero{
+    padding:20px;
+    border-radius:20px;
+  }
+
+  .bb-real-games-hero h1{
+    font-size:28px;
+  }
+}
+
+@media(max-width:1100px) and (min-width:801px){
+  .bb-real-games-grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+}

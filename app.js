@@ -10946,3 +10946,366 @@ document.addEventListener("click", () => {
   window.addEventListener('load',()=>{setTimeout(injectMobileHomeVisuals,300);setTimeout(renderGeneratedBottomNav,350);});
   document.addEventListener('click',()=>setTimeout(renderGeneratedBottomNav,200));
 })();
+
+// REAL RAPIDAPI GAME LOAD + NO EMOJI CARD FIX V1
+(function(){
+  const BB_RAPID_HOST = "live-casino-slots-evolution-jili-and-50-plus-provider.p.rapidapi.com";
+  const BB_RAPID_BASE = "https://live-casino-slots-evolution-jili-and-50-plus-provider.p.rapidapi.com";
+  const BB_RAPID_KEY = "d2feaff000msh0860d1e17b42ef2p19096ajsn5ddc9f39720e";
+
+  const BB_MOBILE_IMG = {
+    slot:"assets/mobile/icons/slot-icon.png",
+    casino:"assets/mobile/icons/casino-icon.png",
+    sport:"assets/mobile/icons/football-icon.png",
+    live1:"assets/mobile/banners/live-casino-hero-1.png",
+    live2:"assets/mobile/banners/live-casino-hero-2.png",
+    dealer:"assets/mobile/dealers/dealer-live-casino-1.png",
+    promo:"assets/mobile/promos/welcome-bonus.png"
+  };
+
+  function bbEsc(v){
+    return String(v || "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  function bbFindArrayDeep(obj){
+    if(Array.isArray(obj)) return obj;
+    if(!obj || typeof obj !== "object") return [];
+
+    const keys = ["data","games","result","results","items","list","providers"];
+
+    for(const k of keys){
+      if(Array.isArray(obj[k])) return obj[k];
+      if(obj[k] && typeof obj[k] === "object"){
+        const r = bbFindArrayDeep(obj[k]);
+        if(r.length) return r;
+      }
+    }
+
+    for(const v of Object.values(obj)){
+      if(Array.isArray(v)) return v;
+      if(v && typeof v === "object"){
+        const r = bbFindArrayDeep(v);
+        if(r.length) return r;
+      }
+    }
+
+    return [];
+  }
+
+  function bbNormalizeGame(g, provider, index){
+    const gameId =
+      g.gameId ||
+      g.game_id ||
+      g.id ||
+      g.uuid ||
+      g.gameCode ||
+      g.code ||
+      g.slug ||
+      "";
+
+    const title =
+      g.gameName ||
+      g.name ||
+      g.title ||
+      g.game ||
+      g.game_title ||
+      `Oyun ${index + 1}`;
+
+    const image =
+      g.image ||
+      g.img ||
+      g.icon ||
+      g.thumbnail ||
+      g.logo ||
+      g.cover ||
+      "";
+
+    return {
+      id:"rapid_" + provider + "_" + index,
+      gameId:String(gameId || ""),
+      title:String(title || ""),
+      provider:String(provider || g.provider || g.providerName || ""),
+      category:String(g.category || g.type || g.gameType || "Casino"),
+      image:String(image || "")
+    };
+  }
+
+  function bbGetStoredRapidGames(){
+    try{
+      return JSON.parse(localStorage.getItem("bozobet_live_rapid_games") || "[]");
+    }catch(e){
+      return [];
+    }
+  }
+
+  function bbSetStoredRapidGames(games){
+    localStorage.setItem("bozobet_live_rapid_games", JSON.stringify(games || []));
+  }
+
+  async function bbFetchProviders(){
+    const res = await fetch(`${BB_RAPID_BASE}/getallproviders`, {
+      method:"GET",
+      headers:{
+        "Content-Type":"application/json",
+        "x-rapidapi-host":BB_RAPID_HOST,
+        "x-rapidapi-key":BB_RAPID_KEY
+      }
+    });
+
+    const json = await res.json();
+    const list = bbFindArrayDeep(json);
+
+    const providers = list.map(x => {
+      if(typeof x === "string") return x;
+      return x.provider || x.name || x.title || x.code || x.providerName || x.id || "";
+    }).filter(Boolean);
+
+    return [...new Set(providers)];
+  }
+
+  async function bbFetchGamesForProvider(provider){
+    const res = await fetch(`${BB_RAPID_BASE}/getallgamesandprovider?provider=${encodeURIComponent(provider)}`, {
+      method:"GET",
+      headers:{
+        "Content-Type":"application/json",
+        "x-rapidapi-host":BB_RAPID_HOST,
+        "x-rapidapi-key":BB_RAPID_KEY
+      }
+    });
+
+    const json = await res.json();
+    const list = bbFindArrayDeep(json);
+
+    return list
+      .map((g,i) => bbNormalizeGame(g, provider, i))
+      .filter(g => g.title && g.gameId);
+  }
+
+  async function bbEnsureRapidGames(){
+    const old = bbGetStoredRapidGames();
+
+    if(old.length && old.some(g => g.gameId)){
+      return old;
+    }
+
+    let providers = [];
+
+    try{
+      providers = await bbFetchProviders();
+    }catch(e){
+      providers = [];
+    }
+
+    if(!providers.length){
+      providers = ["SPRIBE","PRAGMATIC PLAY","PRAGMATICPLAY","EVOLUTION","JILI"];
+    }
+
+    const all = [];
+
+    for(const provider of providers.slice(0,35)){
+      try{
+        const games = await bbFetchGamesForProvider(provider);
+        all.push(...games);
+        await new Promise(r => setTimeout(r, 250));
+      }catch(e){
+        console.log("Provider alınamadı:", provider, e);
+      }
+    }
+
+    const map = new Map();
+
+    all.forEach(g => {
+      const key = `${g.provider}_${g.gameId}`;
+      map.set(key, g);
+    });
+
+    const finalGames = [...map.values()];
+
+    if(finalGames.length){
+      bbSetStoredRapidGames(finalGames);
+    }
+
+    return finalGames;
+  }
+
+  function bbFallbackVisual(g, index){
+    const text = `${g.title || ""} ${g.provider || ""} ${g.category || ""}`.toLowerCase();
+
+    if(g.image) return g.image;
+    if(text.includes("slot") || text.includes("pragmatic")) return BB_MOBILE_IMG.slot;
+    if(text.includes("live") || text.includes("evolution")) return BB_MOBILE_IMG.dealer;
+    if(text.includes("spribe") || text.includes("aviator")) return BB_MOBILE_IMG.live2;
+    if(index % 4 === 0) return BB_MOBILE_IMG.live1;
+    if(index % 4 === 1) return BB_MOBILE_IMG.casino;
+    if(index % 4 === 2) return BB_MOBILE_IMG.promo;
+    return BB_MOBILE_IMG.slot;
+  }
+
+  function bbGetAllGamesNow(){
+    const rapid = bbGetStoredRapidGames();
+
+    if(rapid.length){
+      return rapid;
+    }
+
+    const catalog = Array.isArray(window.BOZOBET_GAME_CATALOG) ? window.BOZOBET_GAME_CATALOG : [];
+
+    return catalog.map((g,i) => ({
+      ...g,
+      image:g.image || bbFallbackVisual(g, i)
+    }));
+  }
+
+  window.getBetApiGames = function(){
+    return bbGetAllGamesNow();
+  };
+
+  window.launchBetApiGame = async function(gameId){
+    if(!user){
+      alert("Lütfen hesabınıza giriş yapın.");
+      if(typeof loginModal === "function") setTimeout(loginModal, 150);
+      return;
+    }
+
+    if(!gameId){
+      alert("Oyun bağlantısı hazırlanıyor. Birkaç saniye sonra tekrar dene.");
+      await bbEnsureRapidGames();
+      return;
+    }
+
+    try{
+      const username = "bozobet_user_" + (user.username || user.id || Date.now());
+
+      const res = await fetch(`${BB_RAPID_BASE}/getgameurl`, {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "x-rapidapi-host":BB_RAPID_HOST,
+          "x-rapidapi-key":BB_RAPID_KEY
+        },
+        body:JSON.stringify({
+          username,
+          gameId,
+          lang:"tr",
+          money:0,
+          home_url:location.origin,
+          platform:1,
+          currency:"INR"
+        })
+      });
+
+      const json = await res.json();
+
+      const url =
+        json.url ||
+        json.gameUrl ||
+        json.game_url ||
+        json.launch_url ||
+        json.launchUrl ||
+        json.data?.url ||
+        json.data?.gameUrl ||
+        json.data?.game_url ||
+        "";
+
+      if(!url){
+        console.log("Game URL response:", json);
+        alert("Oyun linki alınamadı. API cevabını kontrol etmek lazım.");
+        return;
+      }
+
+      window.open(url, "_blank");
+    }catch(e){
+      alert("Oyun açılamadı: " + e.message);
+    }
+  };
+
+  function bbGameCard(g, index){
+    const title = bbEsc(g.title || "Oyun");
+    const provider = bbEsc(g.provider || "Provider");
+    const category = bbEsc(g.category || "Casino");
+    const image = bbFallbackVisual(g, index);
+
+    return `
+      <div class="bb-real-game-card">
+        <div class="bb-real-game-media">
+          <img src="${bbEsc(image)}" loading="lazy" decoding="async" onerror="this.src='${BB_MOBILE_IMG.slot}'">
+          <small>${provider}</small>
+        </div>
+
+        <div class="bb-real-game-info">
+          <b>${title}</b>
+          <em>${category}</em>
+          <button onclick="launchBetApiGame('${bbEsc(g.gameId || "")}')">Hemen Oyna</button>
+        </div>
+      </div>
+    `;
+  }
+
+  async function bbRenderRealGames(title){
+    const app = document.getElementById("app");
+
+    let games = bbGetAllGamesNow();
+
+    app.innerHTML = shell(`
+      <section class="bb-real-games-hero">
+        <div>
+          <span>OYUNLAR</span>
+          <h1>${bbEsc(title)}</h1>
+          <p>Oyunlar yükleniyor, birkaç saniye sürebilir.</p>
+        </div>
+        <strong>${games.length}</strong>
+      </section>
+
+      <section class="bb-real-games-grid">
+        ${games.slice(0,160).map(bbGameCard).join("")}
+      </section>
+    `);
+
+    const live = await bbEnsureRapidGames();
+
+    if(live.length){
+      games = bbGetAllGamesNow();
+
+      app.innerHTML = shell(`
+        <section class="bb-real-games-hero">
+          <div>
+            <span>OYUNLAR</span>
+            <h1>${bbEsc(title)}</h1>
+            <p>RapidAPI sağlayıcılarından çekilen aktif oyunlar.</p>
+          </div>
+          <strong>${games.length}</strong>
+        </section>
+
+        <section class="bb-real-games-grid">
+          ${games.slice(0,240).map(bbGameCard).join("")}
+        </section>
+      `);
+    }
+
+    if(typeof bbRenderGeneratedBottomNav === "function"){
+      bbRenderGeneratedBottomNav();
+    }
+  }
+
+  window.renderCasino = function(){
+    bbRenderRealGames("Casino Oyunları");
+  };
+
+  window.renderSlot = function(){
+    bbRenderRealGames("Slot Oyunları");
+  };
+
+  window.renderVirtualGames = function(){
+    bbRenderRealGames("Sanal Oyunlar");
+  };
+
+  window.bbClearRapidGameCache = function(){
+    localStorage.removeItem("bozobet_live_rapid_games");
+    alert("Oyun cache temizlendi. Sayfayı yenile.");
+  };
+})();
