@@ -10110,3 +10110,82 @@ window.addEventListener("load", () => {
 document.addEventListener("click", () => {
   setTimeout(bbForceMobileAuthButtons, 150);
 });
+
+// CACHEFIX MOBILE HARD PATCH
+function bbHardMobileLoginBar(){
+  if(document.querySelector(".bb-hard-mobile-login-bar")) return;
+
+  const bar = document.createElement("div");
+  bar.className = "bb-hard-mobile-login-bar";
+
+  if(user){
+    bar.innerHTML = `
+      <button onclick="renderProfile && renderProfile()">Hesabım</button>
+    `;
+  }else{
+    bar.innerHTML = `
+      <button onclick="bbOpenLoginSafe ? bbOpenLoginSafe(event) : loginModal()">Giriş Yap</button>
+      <button class="join" onclick="bbOpenRegisterSafe ? bbOpenRegisterSafe(event) : registerModal()">Üye Ol</button>
+    `;
+  }
+
+  document.body.appendChild(bar);
+}
+
+function bbForceGuestGameWarning(){
+  document.addEventListener("click", function(e){
+    const target = e.target.closest("button,a,.bb-home-popular-game-card,.premium-game-card");
+    if(!target) return;
+
+    const text = String(target.textContent || "").toLowerCase();
+    const click = String(target.getAttribute("onclick") || "").toLowerCase();
+
+    const isGame =
+      text.includes("oyna") ||
+      click.includes("launchbetapigame") ||
+      click.includes("bblaunchhomepopulargame") ||
+      target.classList.contains("bb-home-popular-game-card") ||
+      target.classList.contains("premium-game-card");
+
+    if(isGame && !user){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      alert("Lütfen hesabınıza giriş yapın.");
+
+      setTimeout(() => {
+        if(typeof loginModal === "function") loginModal();
+      }, 150);
+
+      return false;
+    }
+  }, true);
+}
+
+function bbHardFixHomePopular(){
+  setTimeout(() => {
+    if(typeof bbReplaceHomePopularGamesPublished === "function"){
+      bbReplaceHomePopularGamesPublished();
+    }
+  }, 200);
+
+  setTimeout(() => {
+    if(typeof bbReplaceHomePopularGamesPublished === "function"){
+      bbReplaceHomePopularGamesPublished();
+    }
+  }, 800);
+}
+
+window.addEventListener("load", () => {
+  bbHardMobileLoginBar();
+  bbHardFixHomePopular();
+
+  if(!window.__bbGuestGameWarningInstalled){
+    window.__bbGuestGameWarningInstalled = true;
+    bbForceGuestGameWarning();
+  }
+});
+
+setInterval(() => {
+  bbHardMobileLoginBar();
+}, 1500);

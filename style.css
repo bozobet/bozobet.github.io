@@ -7167,3 +7167,45 @@ body.site-ready .loader-screen{
     margin-top:-8px;
   }
 }
+
+/* CACHEFIX MOBILE HARD PATCH */
+.bb-hard-mobile-login-bar{
+  display:none;
+}
+
+@media(max-width:800px){
+  .bb-hard-mobile-login-bar{
+    position:fixed;
+    left:12px;
+    right:12px;
+    bottom:14px;
+    z-index:999999;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    padding:10px;
+    border-radius:20px;
+    background:rgba(4,10,7,.92);
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:0 20px 60px rgba(0,0,0,.45);
+    backdrop-filter:blur(16px);
+  }
+
+  .bb-hard-mobile-login-bar button{
+    height:44px;
+    border:0;
+    border-radius:14px;
+    background:rgba(255,255,255,.10);
+    color:#fff;
+    font-weight:1000;
+  }
+
+  .bb-hard-mobile-login-bar button.join{
+    background:linear-gradient(135deg,#21d46b,#93ffb6);
+    color:#07110c;
+  }
+
+  body{
+    padding-bottom:78px;
+  }
+}
