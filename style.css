@@ -8077,3 +8077,114 @@ body.site-ready .loader-screen{
   .bbf-hero h1{font-size:28px}
 }
 @media(max-width:1100px) and (min-width:801px){.bbf-grid,.bbf-home-popular{grid-template-columns:repeat(3,1fr)}}
+
+/* MOBILE CLEANUP FINAL */
+html,
+body {
+  max-width:100%;
+  overflow-x:hidden !important;
+}
+
+@media(max-width:800px) {
+  body {
+    padding-bottom:94px !important;
+  }
+
+  #app,
+  main,
+  section {
+    max-width:100%;
+    box-sizing:border-box;
+  }
+
+  .bb-clean-nav {
+    position:fixed;
+    left:10px;
+    right:10px;
+    bottom:10px;
+    z-index:999999;
+    height:76px;
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    align-items:center;
+    padding:7px;
+    border-radius:25px;
+    background:linear-gradient(180deg,#111c26,#050b11);
+    border:1px solid rgba(155,175,195,.22);
+    box-shadow:0 -10px 40px rgba(0,0,0,.5);
+  }
+
+  .bb-clean-nav button {
+    position:relative;
+    height:61px;
+    border:0;
+    padding:0;
+    background:transparent;
+    color:#c8ced2;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+  }
+
+  .bb-clean-nav img {
+    width:28px;
+    height:28px;
+    display:block;
+    object-fit:contain;
+  }
+
+  .bb-clean-nav button:first-child img {
+    width:32px;
+    height:32px;
+  }
+
+  .bb-clean-nav b {
+    font-size:11px;
+    line-height:1;
+  }
+
+  .bb-clean-nav button:first-child b {
+    color:#62ff32;
+  }
+
+  .bb-clean-nav i {
+    position:absolute;
+    top:0;
+    right:19%;
+    min-width:21px;
+    height:21px;
+    padding:0 4px;
+    border-radius:99px;
+    background:#62ff32;
+    color:#07110c;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    font-style:normal;
+    font-weight:1000;
+  }
+
+  .bbf-grid,
+  .bb-real-games-grid,
+  .bb-catalog-games-grid,
+  .premium-games-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    width:100%;
+    gap:10px !important;
+  }
+
+  .bbf-card,
+  .bb-real-game-card,
+  .bb-catalog-game-card,
+  .premium-game-card {
+    min-width:0 !important;
+    width:100% !important;
+  }
+
+  img {
+    max-width:100%;
+  }
+}
