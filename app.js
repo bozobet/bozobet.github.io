@@ -10189,3 +10189,348 @@ window.addEventListener("load", () => {
 setInterval(() => {
   bbHardMobileLoginBar();
 }, 1500);
+
+// PUBLIC MOBILE CATALOG FINAL FIX
+const BB_PUBLIC_GAMES = [
+  {
+    title:"Sweet Bonanza",
+    provider:"Pragmatic Play",
+    category:"Slot",
+    emoji:"🍬",
+    image:"linear-gradient(135deg,#ff4ea3,#ffd36e)",
+    keywords:["sweet","bonanza"]
+  },
+  {
+    title:"Gates of Olympus",
+    provider:"Pragmatic Play",
+    category:"Slot",
+    emoji:"⚡",
+    image:"linear-gradient(135deg,#7864ff,#ffd36e)",
+    keywords:["gates","olympus"]
+  },
+  {
+    title:"Big Bass Bonanza",
+    provider:"Pragmatic Play",
+    category:"Slot",
+    emoji:"🎣",
+    image:"linear-gradient(135deg,#1aa7ff,#31e981)",
+    keywords:["big","bass","bonanza"]
+  },
+  {
+    title:"Sugar Rush",
+    provider:"Pragmatic Play",
+    category:"Slot",
+    emoji:"🍭",
+    image:"linear-gradient(135deg,#ff7bd5,#8afff3)",
+    keywords:["sugar","rush"]
+  },
+  {
+    title:"Aviator",
+    provider:"Spribe",
+    category:"Crash",
+    emoji:"✈️",
+    image:"linear-gradient(135deg,#e43b3b,#161c24)",
+    keywords:["aviator"]
+  },
+  {
+    title:"Mines",
+    provider:"Spribe",
+    category:"Crash",
+    emoji:"💣",
+    image:"linear-gradient(135deg,#263238,#21d46b)",
+    keywords:["mines"]
+  },
+  {
+    title:"Plinko",
+    provider:"Spribe",
+    category:"Arcade",
+    emoji:"🔴",
+    image:"linear-gradient(135deg,#ff3d7f,#f5c451)",
+    keywords:["plinko"]
+  },
+  {
+    title:"Crazy Time",
+    provider:"Evolution",
+    category:"Live Casino",
+    emoji:"🎡",
+    image:"linear-gradient(135deg,#ff8a00,#8b5cf6)",
+    keywords:["crazy","time"]
+  },
+  {
+    title:"Lightning Roulette",
+    provider:"Evolution",
+    category:"Live Casino",
+    emoji:"⚡",
+    image:"linear-gradient(135deg,#1f2937,#f5c451)",
+    keywords:["lightning","roulette"]
+  },
+  {
+    title:"Mega Wheel",
+    provider:"Pragmatic Play",
+    category:"Live Casino",
+    emoji:"🎯",
+    image:"linear-gradient(135deg,#00c2ff,#f5c451)",
+    keywords:["mega","wheel"]
+  },
+  {
+    title:"Book of Dead",
+    provider:"Play'n GO",
+    category:"Slot",
+    emoji:"📕",
+    image:"linear-gradient(135deg,#7c3f12,#f5c451)",
+    keywords:["book","dead"]
+  },
+  {
+    title:"The Dog House",
+    provider:"Pragmatic Play",
+    category:"Slot",
+    emoji:"🐶",
+    image:"linear-gradient(135deg,#ffb703,#8ecae6)",
+    keywords:["dog","house"]
+  }
+];
+
+function bbGetAllPublicGames(){
+  const apiGames = typeof getBetApiGames === "function" ? getBetApiGames() : [];
+  const cleanApi = Array.isArray(apiGames) ? apiGames.filter(g => g && g.title) : [];
+
+  const mappedPublic = BB_PUBLIC_GAMES.map((g,i) => ({
+    id:"public_game_" + i,
+    gameId:"",
+    title:g.title,
+    provider:g.provider,
+    category:g.category,
+    emoji:g.emoji,
+    image:g.image,
+    publicOnly:true
+  }));
+
+  if(cleanApi.length){
+    const merged = [...cleanApi];
+
+    mappedPublic.forEach(pg => {
+      const exists = merged.some(g => String(g.title || "").toLowerCase().includes(pg.title.toLowerCase().split(" ")[0]));
+      if(!exists) merged.push(pg);
+    });
+
+    return merged;
+  }
+
+  return mappedPublic;
+}
+
+function bbLoginWarningFinal(){
+  alert("Lütfen hesabınıza giriş yapın.");
+
+  setTimeout(() => {
+    if(typeof loginModal === "function") loginModal();
+  }, 120);
+}
+
+function bbPlayPublicGameFinal(gameTitle){
+  if(!user){
+    bbLoginWarningFinal();
+    return;
+  }
+
+  const all = bbGetAllPublicGames();
+
+  const found = all.find(g => String(g.title || "").toLowerCase() === String(gameTitle || "").toLowerCase());
+
+  if(found && found.gameId && typeof launchBetApiGame === "function"){
+    launchBetApiGame(found.gameId);
+    return;
+  }
+
+  alert(gameTitle + " açılıyor.");
+}
+
+function bbPublicGameImageHtml(g){
+  const img = String(g.image || "");
+
+  if(img.startsWith("linear-gradient")){
+    return `
+      <div class="bb-public-game-art-gradient" style="background:${img}">
+        <span>${g.emoji || "🎰"}</span>
+      </div>
+    `;
+  }
+
+  if(img){
+    return `
+      <div class="bb-public-game-art-gradient">
+        <img src="${img}" alt="">
+        <span>${g.emoji || "🎰"}</span>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="bb-public-game-art-gradient">
+      <span>${g.emoji || "🎰"}</span>
+    </div>
+  `;
+}
+
+function bbPublicGameCardHtml(g){
+  const title = String(g.title || "Oyun").replaceAll("'","&#039;");
+  const provider = String(g.provider || "Provider");
+  const category = String(g.category || "Casino");
+
+  return `
+    <button class="bb-public-game-card-final" onclick="bbPlayPublicGameFinal('${title}')">
+      ${bbPublicGameImageHtml(g)}
+
+      <div class="bb-public-game-card-info">
+        <b>${title}</b>
+        <span>${provider}</span>
+        <em>${category}</em>
+      </div>
+
+      <strong>Oyna</strong>
+    </button>
+  `;
+}
+
+function bbRenderPublicCasinoFinal(title){
+  const games = bbGetAllPublicGames();
+
+  document.getElementById("app").innerHTML = shell(`
+    <section class="bb-mobile-casino-hero-final">
+      <div>
+        <span>OYUNLAR</span>
+        <h1>${title}</h1>
+        <p>Popüler slot, casino ve crash oyunları.</p>
+      </div>
+    </section>
+
+    <section class="bb-public-provider-row">
+      <button>Pragmatic Play</button>
+      <button>Spribe</button>
+      <button>Evolution</button>
+      <button>Play'n GO</button>
+    </section>
+
+    <section class="bb-public-games-grid-final">
+      ${games.map(bbPublicGameCardHtml).join("")}
+    </section>
+  `);
+
+  bbHardMobileLoginBarFinal();
+}
+
+function bbRenderHomePopularFinal(){
+  const app = document.getElementById("app");
+  if(!app) return;
+
+  const headings = [...app.querySelectorAll("h1,h2,h3,b,strong,span,div")];
+
+  const title = headings.find(el => {
+    const t = String(el.textContent || "").trim().toLowerCase();
+    return t === "popüler oyunlar" || t.includes("popüler oyunlar");
+  });
+
+  if(!title) return;
+
+  const card =
+    title.closest(".card") ||
+    title.closest("section") ||
+    title.parentElement?.parentElement;
+
+  if(!card) return;
+
+  const header = title.closest(".card-head") || title.parentElement;
+
+  [...card.children].forEach(child => {
+    if(child !== header) child.remove();
+  });
+
+  const top5 = BB_PUBLIC_GAMES.slice(0,5);
+
+  card.insertAdjacentHTML("beforeend", `
+    <div class="bb-home-popular-final-grid">
+      ${top5.map(bbPublicGameCardHtml).join("")}
+    </div>
+  `);
+}
+
+function bbHardMobileLoginBarFinal(){
+  document.querySelectorAll(".bb-hard-mobile-login-bar-final").forEach(x => x.remove());
+
+  const bar = document.createElement("div");
+  bar.className = "bb-hard-mobile-login-bar-final";
+
+  if(user){
+    bar.innerHTML = `
+      <button onclick="renderProfile && renderProfile()">Hesabım</button>
+    `;
+  }else{
+    bar.innerHTML = `
+      <button onclick="loginModal && loginModal()">Giriş Yap</button>
+      <button class="join" onclick="registerModal && registerModal()">Üye Ol</button>
+    `;
+  }
+
+  document.body.appendChild(bar);
+}
+
+function bbGlobalGuestGuardFinal(){
+  if(window.__bbGlobalGuestGuardFinal) return;
+  window.__bbGlobalGuestGuardFinal = true;
+
+  document.addEventListener("click", function(e){
+    const el = e.target.closest("button,a,.bb-public-game-card-final,.bb-home-popular-game-card,.premium-game-card");
+    if(!el) return;
+
+    const text = String(el.textContent || "").toLowerCase();
+    const onclick = String(el.getAttribute("onclick") || "").toLowerCase();
+
+    const gameClick =
+      text.includes("oyna") ||
+      onclick.includes("launchbetapigame") ||
+      onclick.includes("bbplaypublicgamefinal") ||
+      el.classList.contains("bb-public-game-card-final") ||
+      el.classList.contains("premium-game-card");
+
+    if(gameClick && !user){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      bbLoginWarningFinal();
+      return false;
+    }
+  }, true);
+}
+
+if(typeof renderHome === "function"){
+  const oldRenderHomePublicMobileFinal = renderHome;
+
+  renderHome = function(){
+    oldRenderHomePublicMobileFinal();
+
+    setTimeout(bbRenderHomePopularFinal, 80);
+    setTimeout(bbRenderHomePopularFinal, 350);
+    setTimeout(bbHardMobileLoginBarFinal, 150);
+  };
+}
+
+renderCasino = function(){
+  bbRenderPublicCasinoFinal("Casino Oyunları");
+};
+
+renderSlot = function(){
+  bbRenderPublicCasinoFinal("Slot Oyunları");
+};
+
+renderVirtualGames = function(){
+  bbRenderPublicCasinoFinal("Sanal Oyunlar");
+};
+
+window.addEventListener("load", () => {
+  setTimeout(bbRenderHomePopularFinal, 300);
+  setTimeout(bbHardMobileLoginBarFinal, 300);
+  bbGlobalGuestGuardFinal();
+});
+
+document.addEventListener("click", () => {
+  setTimeout(bbHardMobileLoginBarFinal, 200);
+});

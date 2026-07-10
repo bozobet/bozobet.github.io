@@ -7209,3 +7209,246 @@ body.site-ready .loader-screen{
     padding-bottom:78px;
   }
 }
+
+/* PUBLIC MOBILE CATALOG FINAL FIX */
+.bb-mobile-casino-hero-final{
+  padding:24px;
+  border-radius:24px;
+  margin-bottom:14px;
+  background:
+    radial-gradient(circle at 10% 0%,rgba(245,196,81,.24),transparent 34%),
+    linear-gradient(135deg,#101d16,#050c08);
+  border:1px solid rgba(255,255,255,.1);
+}
+
+.bb-mobile-casino-hero-final span{
+  color:#ffd66d;
+  font-size:12px;
+  font-weight:1000;
+  letter-spacing:1.4px;
+}
+
+.bb-mobile-casino-hero-final h1{
+  color:#fff;
+  margin:8px 0;
+  font-size:34px;
+}
+
+.bb-mobile-casino-hero-final p{
+  color:#aebbb4;
+  margin:0;
+}
+
+.bb-public-provider-row{
+  display:flex;
+  gap:8px;
+  overflow:auto;
+  padding:4px 0 14px;
+}
+
+.bb-public-provider-row button{
+  height:36px;
+  border:0;
+  border-radius:999px;
+  padding:0 13px;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-weight:950;
+  white-space:nowrap;
+}
+
+.bb-public-games-grid-final,
+.bb-home-popular-final-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:14px;
+}
+
+.bb-home-popular-final-grid{
+  padding:28px;
+}
+
+.bb-public-game-card-final{
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:22px;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(245,196,81,.13),transparent 42%),
+    linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.025));
+  box-shadow:0 18px 44px rgba(0,0,0,.22);
+  padding:0;
+  cursor:pointer;
+  text-align:left;
+}
+
+.bb-public-game-art-gradient{
+  height:145px;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+.bb-public-game-art-gradient::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at 50% 20%,rgba(255,255,255,.24),transparent 32%);
+}
+
+.bb-public-game-art-gradient span{
+  position:relative;
+  z-index:2;
+  font-size:58px;
+  filter:drop-shadow(0 12px 18px rgba(0,0,0,.38));
+}
+
+.bb-public-game-art-gradient img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.bb-public-game-card-info{
+  padding:13px;
+}
+
+.bb-public-game-card-info b{
+  color:#fff;
+  display:block;
+  height:38px;
+  line-height:1.2;
+  font-size:14px;
+  overflow:hidden;
+}
+
+.bb-public-game-card-info span{
+  display:block;
+  color:#ffd66d;
+  font-size:12px;
+  font-weight:950;
+  margin-top:8px;
+}
+
+.bb-public-game-card-info em{
+  display:inline-block;
+  margin-top:7px;
+  color:#58ff98;
+  font-size:11px;
+  font-style:normal;
+  font-weight:950;
+  background:rgba(33,212,107,.13);
+  padding:4px 7px;
+  border-radius:999px;
+}
+
+.bb-public-game-card-final strong{
+  display:flex;
+  height:40px;
+  align-items:center;
+  justify-content:center;
+  margin:0 13px 13px;
+  border-radius:13px;
+  background:linear-gradient(135deg,#21d46b,#93ffb6);
+  color:#07110c;
+  font-size:13px;
+  font-weight:1000;
+}
+
+.bb-hard-mobile-login-bar-final{
+  display:none;
+}
+
+@media(max-width:900px){
+  .bb-public-games-grid-final,
+  .bb-home-popular-final-grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+}
+
+@media(max-width:760px){
+  body{
+    padding-bottom:82px;
+  }
+
+  .bb-hard-mobile-login-bar-final{
+    position:fixed;
+    left:12px;
+    right:12px;
+    bottom:12px;
+    z-index:999999;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    padding:10px;
+    border-radius:20px;
+    background:rgba(4,10,7,.94);
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:0 20px 60px rgba(0,0,0,.48);
+    backdrop-filter:blur(16px);
+  }
+
+  .bb-hard-mobile-login-bar-final button{
+    height:44px;
+    border:0;
+    border-radius:14px;
+    background:rgba(255,255,255,.10);
+    color:#fff;
+    font-weight:1000;
+  }
+
+  .bb-hard-mobile-login-bar-final button.join{
+    background:linear-gradient(135deg,#21d46b,#93ffb6);
+    color:#07110c;
+  }
+
+  .bb-public-games-grid-final,
+  .bb-home-popular-final-grid{
+    grid-template-columns:repeat(2,1fr) !important;
+    gap:12px;
+  }
+
+  .bb-home-popular-final-grid{
+    padding:14px;
+  }
+
+  .bb-public-game-art-gradient{
+    height:118px;
+  }
+
+  .bb-public-game-art-gradient span{
+    font-size:44px;
+  }
+
+  .bb-public-game-card-final{
+    border-radius:18px;
+  }
+
+  .bb-public-game-card-info{
+    padding:10px;
+  }
+
+  .bb-public-game-card-info b{
+    height:34px;
+    font-size:13px;
+  }
+
+  .bb-public-game-card-info span{
+    font-size:11px;
+  }
+
+  .bb-public-game-card-final strong{
+    height:36px;
+    margin:0 10px 10px;
+  }
+
+  .bb-mobile-casino-hero-final{
+    padding:20px;
+    border-radius:20px;
+  }
+
+  .bb-mobile-casino-hero-final h1{
+    font-size:28px;
+  }
+}
