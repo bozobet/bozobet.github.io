@@ -10694,3 +10694,235 @@ window.addEventListener("load", () => {
 document.addEventListener("click", () => {
   setTimeout(bbMobileMenuFinal, 250);
 });
+
+
+// FORCE PUBLISHED GAMES + MOBILE FIX V1
+(function(){
+  function esc(v){
+    return String(v || "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  function getCatalogGames(){
+    var catalog = Array.isArray(window.BOZOBET_GAME_CATALOG) ? window.BOZOBET_GAME_CATALOG : [];
+    var local = [];
+
+    try{
+      local = JSON.parse(localStorage.getItem("bozobet_bet_api_games") || "[]");
+    }catch(e){
+      local = [];
+    }
+
+    if(local && local.length){
+      var merged = local.slice();
+
+      catalog.forEach(function(c){
+        var exists = merged.some(function(g){
+          return String(g.title || "").toLowerCase() === String(c.title || "").toLowerCase();
+        });
+
+        if(!exists) merged.push(c);
+      });
+
+      return merged;
+    }
+
+    return catalog;
+  }
+
+  window.bbGetCatalogGames = getCatalogGames;
+
+  try{
+    getBetApiGames = function(){
+      return getCatalogGames();
+    };
+  }catch(e){}
+
+  function requireLogin(){
+    try{
+      if(!user){
+        alert("Lütfen hesabınıza giriş yapın.");
+        if(typeof loginModal === "function"){
+          setTimeout(loginModal, 150);
+        }
+        return false;
+      }
+    }catch(e){
+      alert("Lütfen hesabınıza giriş yapın.");
+      return false;
+    }
+
+    return true;
+  }
+
+  window.bbRequireLogin = requireLogin;
+
+  window.bbPlayCatalogGame = function(title){
+    if(!requireLogin()) return;
+
+    var games = getCatalogGames();
+    var game = games.find(function(g){
+      return String(g.title || "").toLowerCase() === String(title || "").toLowerCase();
+    });
+
+    if(game && game.gameId && typeof launchBetApiGame === "function"){
+      launchBetApiGame(game.gameId);
+      return;
+    }
+
+    alert(title + " açılıyor.");
+  };
+
+  function gameCard(g){
+    var title = esc(g.title || "Oyun");
+    var provider = esc(g.provider || "Provider");
+    var category = esc(g.category || "Casino");
+    var emoji = esc(g.emoji || "🎰");
+    var bg = g.bg || "linear-gradient(135deg,#10251b,#0b0f12)";
+
+    var imagePart = g.image
+      ? '<img src="' + esc(g.image) + '" loading="lazy" onerror="this.remove()">'
+      : '<div class="bb-catalog-game-gradient" style="background:' + esc(bg) + '"><span>' + emoji + '</span></div>';
+
+    return ''
+      + '<div class="bb-catalog-game-card">'
+      +   '<div class="bb-catalog-game-media">'
+      +     imagePart
+      +     '<small>' + provider + '</small>'
+      +   '</div>'
+      +   '<div class="bb-catalog-game-info">'
+      +     '<b>' + title + '</b>'
+      +     '<em>' + category + '</em>'
+      +     '<button onclick="bbPlayCatalogGame(\'' + title + '\')">Hemen Oyna</button>'
+      +   '</div>'
+      + '</div>';
+  }
+
+  function renderGamesPage(title){
+    var games = getCatalogGames();
+
+    document.getElementById("app").innerHTML = shell(''
+      + '<section class="bb-games-mobile-hero">'
+      +   '<div>'
+      +     '<span>OYUNLAR</span>'
+      +     '<h1>' + esc(title) + '</h1>'
+      +     '<p>Popüler slot, casino ve canlı oyunlar.</p>'
+      +   '</div>'
+      +   '<strong>' + games.length + '</strong>'
+      + '</section>'
+      + '<section class="bb-games-provider-tabs">'
+      +   '<button>Pragmatic Play</button><button>Spribe</button><button>Evolution</button><button>Casino</button>'
+      + '</section>'
+      + '<section class="bb-catalog-games-grid">'
+      +   games.map(gameCard).join("")
+      + '</section>'
+    );
+
+    renderBottomNav();
+  }
+
+  window.bbRenderGamesPage = renderGamesPage;
+
+  try{ renderCasino = function(){ renderGamesPage("Casino Oyunları"); }; }catch(e){}
+  try{ renderSlot = function(){ renderGamesPage("Slot Oyunları"); }; }catch(e){}
+  try{ renderVirtualGames = function(){ renderGamesPage("Sanal Oyunlar"); }; }catch(e){}
+
+  function activeCouponCount(){
+    try{
+      if(!user) return 0;
+
+      var bets = JSON.parse(localStorage.getItem("bozobet_bets") || "[]");
+      var coupons = JSON.parse(localStorage.getItem("bozobet_coupons") || "[]");
+      var all = bets.concat(coupons);
+
+      return all.filter(function(b){
+        var st = String(b.status || "").toLowerCase();
+        var active = ["active","pending","open","waiting","bekliyor"].includes(st);
+        if(!active) return false;
+
+        var uid = String(b.userId || b.username || b.user || "");
+        return uid === String(user.id || "") || uid === String(user.username || "");
+      }).length;
+    }catch(e){
+      return 0;
+    }
+  }
+
+  function renderBottomNav(){
+    document.querySelectorAll(".bb-bottom-nav-real").forEach(function(x){ x.remove(); });
+
+    var nav = document.createElement("nav");
+    nav.className = "bb-bottom-nav-real";
+
+    nav.innerHTML = ''
+      + '<button onclick="renderHome && renderHome()"><span>⌂</span><b>Ana Sayfa</b></button>'
+      + '<button onclick="renderSports && renderSports()"><span>⚽</span><b>Spor</b></button>'
+      + '<button onclick="renderCasino && renderCasino()"><span>▣</span><b>Casino</b></button>'
+      + '<button class="coupon" onclick="renderCoupon ? renderCoupon() : alert(\'Kuponunuz boş.\')"><span>▤</span><i>' + activeCouponCount() + '</i><b>Kupon</b></button>'
+      + '<button onclick="user ? (renderProfile && renderProfile()) : (loginModal && loginModal())"><span>●</span><b>Hesabım</b></button>';
+
+    document.body.appendChild(nav);
+  }
+
+  window.bbRenderBottomNav = renderBottomNav;
+
+  function fixHomePopular(){
+    var app = document.getElementById("app");
+    if(!app) return;
+
+    var found = Array.from(app.querySelectorAll("h1,h2,h3,b,strong,span,div")).find(function(el){
+      var t = String(el.textContent || "").trim().toLowerCase();
+      return t === "popüler oyunlar" || t.includes("popüler oyunlar");
+    });
+
+    if(!found) return;
+
+    var card = found.closest(".card") || found.closest("section") || found.parentElement?.parentElement;
+    if(!card) return;
+
+    var header = found.closest(".card-head") || found.parentElement;
+
+    Array.from(card.children).forEach(function(child){
+      if(child !== header) child.remove();
+    });
+
+    var top = getCatalogGames().slice(0,5);
+
+    card.insertAdjacentHTML("beforeend", '<div class="bb-home-popular-real">' + top.map(gameCard).join("") + '</div>');
+  }
+
+  if(typeof renderHome === "function"){
+    var oldHome = renderHome;
+    renderHome = function(){
+      oldHome();
+      setTimeout(fixHomePopular, 100);
+      setTimeout(fixHomePopular, 400);
+      setTimeout(renderBottomNav, 150);
+    };
+  }
+
+  document.addEventListener("click", function(e){
+    var el = e.target.closest("button,a,.bb-catalog-game-card,.premium-game-card");
+    if(!el) return;
+
+    var text = String(el.textContent || "").toLowerCase();
+    var click = String(el.getAttribute("onclick") || "").toLowerCase();
+
+    if((text.includes("oyna") || click.includes("launchbetapigame")) && !user){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      requireLogin();
+      return false;
+    }
+  }, true);
+
+  window.addEventListener("load", function(){
+    setTimeout(fixHomePopular, 300);
+    setTimeout(renderBottomNav, 350);
+    setTimeout(renderBottomNav, 1200);
+  });
+})();
