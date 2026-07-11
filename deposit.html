@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>BozoBet - Para Yatır</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="standalone-deposit-page">
+    <header class="deposit-topbar">
+      <div class="deposit-brand">BOZOBET</div>
+      <a href="/">Ana Sayfa</a>
+    </header>
+
+    <section class="page-hero mini deposit-standalone-hero">
+      <div>
+        <span>FİNANS İŞLEMLERİ</span>
+        <h1>Para Yatır</h1>
+        <p>Yatırım yöntemini seç, tutarı gir ve yatırım talebini oluştur.</p>
+      </div>
+    </section>
+
+    <section class="deposit-page-grid">
+      <div class="card deposit-methods-card">
+        <div class="card-head">
+          <h3>Yatırım Yöntemi Seç</h3>
+          <span>Limit dışı talepler oluşturulamaz</span>
+        </div>
+
+        <div class="deposit-method-grid">
+          <button class="deposit-method-card active" data-method="Havale / EFT">
+            <div class="method-icon">🏦</div>
+            <b>Havale / EFT</b>
+            <span>Banka transferi</span>
+          </button>
+
+          <button class="deposit-method-card" data-method="Papara">
+            <div class="method-icon">🟣</div>
+            <b>Papara</b>
+            <span>Hızlı yatırım</span>
+          </button>
+
+          <button class="deposit-method-card" data-method="USDT TRC20">
+            <div class="method-icon">₮</div>
+            <b>USDT TRC20</b>
+            <span>Kripto demo</span>
+          </button>
+
+          <button class="deposit-method-card" data-method="QR Ödeme">
+            <div class="method-icon">▦</div>
+            <b>QR Ödeme</b>
+            <span>Kolay ödeme</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card deposit-form-card">
+        <h3>Yatırım Talebi</h3>
+
+        <div class="deposit-selected-method">
+          <small>Seçili Yöntem</small>
+          <b id="selectedMethod">Havale / EFT</b>
+        </div>
+
+        <label class="field">
+          <span>Yatırım Tutarı</span>
+          <input id="depositAmountStandalone" type="number" placeholder="Tutar gir">
+        </label>
+
+        <div class="deposit-limit-box">
+          <div>
+            <small>Minimum Yatırım</small>
+            <b id="minDepositText">-</b>
+          </div>
+          <div>
+            <small>Maksimum Yatırım</small>
+            <b id="maxDepositText">-</b>
+          </div>
+        </div>
+
+        <div class="deposit-demo-warning">
+          <b>Limit dışı talep oluşturulamaz</b>
+          <span id="limitInfo">Yatırım tutarı limitler arasında olmalı.</span>
+        </div>
+
+        <button class="btn primary full-btn" id="submitDepositStandalone">Yatırım Talebi Oluştur</button>
+      </div>
+    </section>
+  </main>
+
+<script>
+let selectedMethod = "Havale / EFT";
+
+function money(n){
+  return new Intl.NumberFormat("tr-TR", {
+    style:"currency",
+    currency:"TRY",
+    maximumFractionDigits:0
+  }).format(Number(n || 0));
+}
+
+function getUser(){
+  return JSON.parse(localStorage.getItem("bozobet_user") || "null");
+}
+
+function getPaymentLimits(){
+  return JSON.parse(localStorage.getItem("bozobet_payment_limits") || "null") || {
+    minDeposit:100,
+    maxDeposit:50000,
+    minWithdraw:100,
+    maxWithdraw:25000
+  };
+}
+
+function getPaymentRequests(){
+  return JSON.parse(localStorage.getItem("bozobet_payment_requests") || "[]");
+}
+
+function setPaymentRequests(items){
+  localStorage.setItem("bozobet_payment_requests", JSON.stringify(items));
+}
+
+function notify(msg, error=false){
+  let box = document.getElementById("siteNotifyBox");
+  if(!box){
+    box = document.createElement("div");
+    box.id = "siteNotifyBox";
+    document.body.appendChild(box);
+  }
+
+  const item = document.createElement("div");
+  item.className = "site-toast " + (error ? "error" : "success");
+  item.innerHTML = `
+    <div class="toast-icon">${error ? "!" : "✓"}</div>
+    <div class="toast-text">${msg}</div>
+    <button onclick="this.closest('.site-toast').remove()">×</button>
+  `;
+  box.appendChild(item);
+  setTimeout(()=>item.remove(), 3500);
+}
+
+function init(){
+  const user = getUser();
+
+  if(!user){
+    notify("Para yatırmak için önce giriş yapmalısın.", true);
+  }
+
+  const limits = getPaymentLimits();
+
+  document.getElementById("minDepositText").textContent = money(limits.minDeposit);
+  document.getElementById("maxDepositText").textContent = money(limits.maxDeposit);
+  document.getElementById("limitInfo").textContent =
+    `Yatırım tutarı ${money(limits.minDeposit)} ile ${money(limits.maxDeposit)} arasında olmalı.`;
+
+  document.querySelectorAll(".deposit-method-card").forEach(card => {
+    card.addEventListener("click", () => {
+      selectedMethod = card.dataset.method;
+      document.querySelectorAll(".deposit-method-card").forEach(x => x.classList.remove("active"));
+      card.classList.add("active");
+      document.getElementById("selectedMethod").textContent = selectedMethod;
+    });
+  });
+
+  document.getElementById("submitDepositStandalone").addEventListener("click", () => {
+    const currentUser = getUser();
+
+    if(!currentUser){
+      notify("Önce ana sayfadan giriş yapmalısın.", true);
+      return;
+    }
+
+    const amount = Number(document.getElementById("depositAmountStandalone").value || 0);
+    const l = getPaymentLimits();
+
+    if(!amount || amount <= 0){
+      notify("Geçerli yatırım tutarı gir.", true);
+      return;
+    }
+
+    if(amount < l.minDeposit || amount > l.maxDeposit){
+      notify(`Yatırım tutarı ${money(l.minDeposit)} ile ${money(l.maxDeposit)} arasında olmalı.`, true);
+      return;
+    }
+
+    const requests = getPaymentRequests();
+
+    requests.unshift({
+      id:Date.now(),
+      date:new Date().toLocaleString("tr-TR"),
+      status:"Bekliyor",
+      username:currentUser.username,
+      userId:currentUser.id || currentUser.username,
+      type:"Yatırım",
+      direction:"plus",
+      amount,
+      method:selectedMethod,
+      note:`Kullanıcı ${selectedMethod} yöntemiyle yatırım talebi oluşturdu`
+    });
+
+    setPaymentRequests(requests);
+
+    notify("Yatırım talebin oluşturuldu. Admin onayından sonra bakiyene eklenecek.");
+    setTimeout(()=>location.href="/", 1200);
+  });
+}
+
+init();
+</script>
+</body>
+</html>

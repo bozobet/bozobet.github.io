@@ -6,3 +6,4 @@ reset-popular.html
 seed-popular.html
 __pycache__/
 .venv/
+.vercel
