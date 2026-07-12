@@ -8189,6 +8189,311 @@ body {
   }
 }
 
+/* MOBILE HOMEPAGE REDESIGN — presentation only */
+.mobile-menu-toggle,
+.mobile-menu-button,
+.mobile-menu-backdrop,
+.mobile-menu { display:none; }
+
+@media (max-width:800px) {
+  :root {
+    --bg:#0f1116;
+    --panel:#181b22;
+    --panel2:#1e222b;
+    --green:#2dff4f;
+    --green2:#20d53c;
+    --line:rgba(255,255,255,.075);
+    --radius:18px;
+  }
+
+  html { background:#0f1116; }
+  body {
+    min-width:320px;
+    padding-bottom:96px !important;
+    background:#0f1116 !important;
+    color:#f7f8fa;
+  }
+
+  .wrap {
+    width:100%;
+    padding:0 14px;
+  }
+
+  .topbar {
+    position:sticky;
+    top:0;
+    z-index:1000;
+    height:68px;
+    padding:0 12px 0 58px;
+    background:rgba(15,17,22,.94);
+    border-bottom:1px solid rgba(255,255,255,.07);
+    box-shadow:0 8px 28px rgba(0,0,0,.3);
+    backdrop-filter:blur(20px);
+  }
+
+  .topbar .brand-logo {
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    width:112px !important;
+    min-width:112px !important;
+    height:48px !important;
+    margin:0 !important;
+  }
+
+  .topbar .clean-logo {
+    width:112px !important;
+    height:48px !important;
+    max-width:112px !important;
+    object-fit:contain !important;
+  }
+
+  .topbar .nav { display:none !important; }
+  .topbar .actions {
+    margin-left:auto;
+    gap:6px;
+    position:relative;
+    z-index:2;
+  }
+
+  .topbar .actions .btn {
+    display:inline-flex !important;
+    min-width:0;
+    height:36px;
+    align-items:center;
+    justify-content:center;
+    padding:0 10px;
+    border-radius:10px;
+    font-size:11px;
+    white-space:nowrap;
+    border:1px solid rgba(255,255,255,.12);
+    background:#181b22;
+    box-shadow:none;
+  }
+
+  .topbar .actions .btn.primary {
+    border-color:#2dff4f;
+    background:#2dff4f;
+    color:#071109;
+  }
+
+  .topbar .actions .btn.primary::first-letter { font-size:0; }
+  .topbar .balance { display:none !important; }
+
+  .mobile-menu-button {
+    position:fixed;
+    top:17px;
+    left:14px;
+    z-index:1100;
+    width:36px;
+    height:36px;
+    border-radius:11px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+    background:#181b22;
+    border:1px solid rgba(255,255,255,.1);
+  }
+
+  .mobile-menu-button span {
+    width:16px;
+    height:2px;
+    border-radius:2px;
+    background:#f6f7f8;
+  }
+
+  .mobile-menu-backdrop {
+    position:fixed;
+    inset:0;
+    z-index:1190;
+    background:rgba(0,0,0,.64);
+    backdrop-filter:blur(4px);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .22s ease;
+  }
+
+  .mobile-menu {
+    position:fixed;
+    display:block;
+    top:0;
+    bottom:0;
+    left:0;
+    z-index:1200;
+    width:min(82vw,320px);
+    padding:18px;
+    background:#181b22;
+    border-right:1px solid rgba(255,255,255,.08);
+    box-shadow:24px 0 60px rgba(0,0,0,.45);
+    transform:translateX(-105%);
+    transition:transform .24s ease;
+  }
+
+  .mobile-menu-toggle:checked ~ .mobile-menu-backdrop {
+    display:block;
+    opacity:1;
+    pointer-events:auto;
+  }
+  .mobile-menu-toggle:checked ~ .mobile-menu { transform:translateX(0); }
+
+  .mobile-menu-head {
+    height:52px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:20px;
+  }
+  .mobile-menu-head img { width:128px; height:48px; object-fit:contain; }
+  .mobile-menu-head label {
+    width:36px;
+    height:36px;
+    display:grid;
+    place-items:center;
+    border-radius:11px;
+    background:#22262f;
+    color:#fff;
+    font-size:25px;
+  }
+  .mobile-menu nav { display:grid; gap:7px; }
+  .mobile-menu nav button {
+    width:100%;
+    height:50px;
+    padding:0 15px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border:0;
+    border-radius:14px;
+    background:#1e222b;
+    color:#f4f5f6;
+    font-weight:800;
+    text-align:left;
+  }
+  .mobile-menu nav button:first-child { color:#2dff4f; }
+  .mobile-menu nav span { color:#2dff4f; font-size:22px; }
+
+  .hero-slider {
+    width:100% !important;
+    height:auto !important;
+    aspect-ratio:16 / 8.8 !important;
+    min-height:190px;
+    margin:14px 0 0 !important;
+    padding:0 !important;
+    border:0 !important;
+    border-radius:18px !important;
+    background:#181b22 !important;
+    box-shadow:0 18px 42px rgba(0,0,0,.34) !important;
+  }
+  .hero-slider::after { display:none !important; }
+  .hero-slide-img {
+    position:absolute !important;
+    inset:0 !important;
+    width:100% !important;
+    height:100% !important;
+    object-fit:cover !important;
+    object-position:center !important;
+    border-radius:18px !important;
+  }
+  .hero-dots { bottom:11px !important; gap:6px !important; }
+  .hero-dots span {
+    width:7px !important;
+    height:7px !important;
+    border:0 !important;
+    background:rgba(255,255,255,.45) !important;
+  }
+  .hero-dots span.active {
+    width:22px !important;
+    border-radius:8px !important;
+    background:#2dff4f !important;
+  }
+
+  .category-row {
+    display:grid !important;
+    grid-template-columns:repeat(5,minmax(72px,1fr)) !important;
+    gap:9px !important;
+    margin:12px -14px 16px !important;
+    padding:0 14px 5px !important;
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .category-row::-webkit-scrollbar { display:none; }
+  .cat {
+    min-width:78px;
+    min-height:96px !important;
+    padding:10px 5px 8px !important;
+    flex-direction:column;
+    justify-content:center !important;
+    gap:6px;
+    border:1px solid rgba(255,255,255,.065) !important;
+    border-radius:18px !important;
+    background:#181b22 !important;
+    box-shadow:0 10px 24px rgba(0,0,0,.18);
+  }
+  .cat-left { flex-direction:column; gap:5px !important; text-align:center; }
+  .cat-icon { width:38px; height:38px; }
+  .cat-icon img { width:100%; height:100%; object-fit:contain; }
+  .cat b { display:block; font-size:10px !important; letter-spacing:.25px !important; white-space:nowrap; }
+  .cat span,.cat .arrow { display:none !important; }
+
+  .main-grid { display:block; margin-top:0 !important; }
+  .card {
+    border-radius:18px !important;
+    background:#181b22 !important;
+    border-color:rgba(255,255,255,.065) !important;
+    box-shadow:0 14px 34px rgba(0,0,0,.22) !important;
+  }
+  .main-grid > .card { margin-bottom:14px; }
+  .card-head { height:auto; min-height:54px; padding:10px 13px !important; gap:9px; }
+  .card-head h3 { font-size:14px !important; }
+  .tabs { max-width:58%; overflow-x:auto; }
+  .tabs button { padding:7px 10px; font-size:11px; white-space:nowrap; }
+  .tabs button.active { background:#2dff4f; color:#071109; }
+  .match-list { padding:4px 12px 12px !important; }
+  .match { border-radius:14px; }
+
+  .promos { margin-top:14px !important; }
+  .promo-grid {
+    display:flex !important;
+    gap:10px !important;
+    overflow-x:auto;
+    padding:12px !important;
+    scrollbar-width:none;
+  }
+  .promo { flex:0 0 78%; min-height:125px; border-radius:18px !important; }
+  .trust,.footer { display:none !important; }
+
+  .hpf-game-card,.bbf-card,.bb-real-game-card,.premium-game-card,
+  .rf-game-card,.rapid-final-card { border-radius:18px !important; background:#181b22 !important; }
+
+  .bbf-nav,.bb-clean-nav,.bb-bottom-nav-real,.bb-bottom-nav-final {
+    left:0 !important;
+    right:0 !important;
+    bottom:0 !important;
+    height:78px !important;
+    padding:7px 8px calc(7px + env(safe-area-inset-bottom)) !important;
+    border-radius:18px 18px 0 0 !important;
+    background:rgba(24,27,34,.97) !important;
+    border:1px solid rgba(255,255,255,.08) !important;
+    border-bottom:0 !important;
+    box-shadow:0 -10px 30px rgba(0,0,0,.38) !important;
+    backdrop-filter:blur(20px) !important;
+  }
+  .bbf-nav button:first-child,.bb-clean-nav button:first-child,
+  .bb-bottom-nav-real button:first-child,.bb-bottom-nav-final button:first-child { color:#2dff4f !important; }
+  .bbf-nav i,.bb-clean-nav i,.bb-bottom-nav-real i,.bb-bottom-nav-final i { background:#2dff4f !important; }
+}
+
+@media (max-width:380px) {
+  .topbar { padding-right:8px; }
+  .topbar .brand-logo,.topbar .clean-logo { width:94px !important; min-width:94px !important; max-width:94px !important; }
+  .topbar .actions .btn { padding:0 7px; font-size:10px; }
+  .category-row { grid-template-columns:repeat(5,76px) !important; }
+  .hero-slider { min-height:170px; }
+}
+
 
 /* DESKTOP MOBILE NAV CLEANUP */
 @media (min-width: 801px) {
@@ -8750,4 +9055,20 @@ body {
   .hpf-play {
     display:none;
   }
+}
+
+/* Keep the redesigned homepage header and navigation as the single mobile UI. */
+@media (max-width:800px) {
+  .bb-hard-mobile-login-bar,
+  .bb-hard-mobile-login-bar-final,
+  .bb-mobile-auth-actions,
+  .bb-gen-mobile-visuals,
+  .bb-gen-bottom-nav { display:none !important; }
+
+  .hpf-game-card,
+  .bbf-card,
+  .bb-real-game-card,
+  .premium-game-card,
+  .rf-game-card,
+  .rapid-final-card { border-radius:18px !important; }
 }

@@ -4,9 +4,29 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>BozoBet V2</title>
-  <link rel="stylesheet" href="style.css?v=home-popular-final-1" />
+  <link rel="stylesheet" href="style.css?v=mobile-home-redesign-1" />
 </head>
 <body>
+  <input class="mobile-menu-toggle" type="checkbox" id="mobileMenuToggle" aria-hidden="true" />
+  <label class="mobile-menu-button" for="mobileMenuToggle" aria-label="Menüyü aç">
+    <span></span><span></span><span></span>
+  </label>
+  <label class="mobile-menu-backdrop" for="mobileMenuToggle" aria-hidden="true"></label>
+  <aside class="mobile-menu" aria-label="Mobil menü">
+    <div class="mobile-menu-head">
+      <img src="assets/logo/logo.png" alt="BozoBet" />
+      <label for="mobileMenuToggle" aria-label="Menüyü kapat">×</label>
+    </div>
+    <nav>
+      <button onclick="renderHome()">Ana Sayfa <span>›</span></button>
+      <button onclick="renderSports()">Spor Bahisleri <span>›</span></button>
+      <button onclick="renderSports()">Canlı Bahis <span>›</span></button>
+      <button onclick="renderCasino()">Casino &amp; Slot <span>›</span></button>
+      <button onclick="renderPromotions()">Promosyonlar <span>›</span></button>
+      <button onclick="renderVip()">VIP <span>›</span></button>
+      <button onclick="renderSupport()">Destek <span>›</span></button>
+    </nav>
+  </aside>
   <div id="app"></div>
   <script src="team-logos.js"></script>
   <script src="app.js?v=real-games-visual-1"></script>
