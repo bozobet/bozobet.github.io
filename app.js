@@ -282,7 +282,7 @@ new MutationObserver(syncAuthModalScrollLock).observe(document.body, {
 
 function loginModal(){
   modal(`
-    <div class="auth-box">
+    <div class="auth-box login-auth-box">
       <div class="auth-side">
         <div class="auth-badge">BOZOBET</div>
         <h2>Hesabına Giriş Yap</h2>
@@ -9601,7 +9601,7 @@ function betApiPremiumGameCard(g, index){
     <div class="premium-game-card" style="--delay:${Math.min(index, 12) * .035}s">
       <div class="premium-game-image">
         ${img ? `<img src="${img}" alt="${title}" loading="lazy" onerror="this.remove(); this.closest('.premium-game-image').classList.add('no-img')">` : ""}
-        <div class="premium-game-fallback">🎰</div>
+        <div class="premium-game-fallback"><img src="assets/mobile/icons/slot-icon.png" alt="" aria-hidden="true"></div>
 
         <div class="premium-game-provider">${provider}</div>
 
@@ -9887,31 +9887,31 @@ const BB_HOME_POPULAR_STATIC = [
   {
     title:"SWEET BONANZA",
     emoji:"🍬",
-    image:"https://img.freepik.com/free-vector/colorful-candy-background_23-2148966743.jpg",
+    image:"assets/mobile/promos/welcome-bonus.png",
     names:["sweet bonanza","bonanza"]
   },
   {
     title:"GATES OF OLYMPUS",
     emoji:"⚡",
-    image:"https://img.freepik.com/free-vector/greek-columns-realistic-composition_1284-62383.jpg",
+    image:"assets/mobile/banners/big-prize-banner.png",
     names:["gates of olympus","olympus"]
   },
   {
     title:"BIG BASS",
     emoji:"🎣",
-    image:"https://img.freepik.com/free-vector/fishing-concept-illustration_114360-1590.jpg",
+    image:"assets/mobile/banners/live-casino-hero-1.png",
     names:["big bass","bass bonanza","big bass bonanza"]
   },
   {
     title:"SUGAR RUSH",
     emoji:"🍭",
-    image:"https://img.freepik.com/free-vector/sweet-candy-realistic-background_1284-12325.jpg",
+    image:"assets/mobile/promos/freespin.png",
     names:["sugar rush"]
   },
   {
     title:"AVIATOR",
     emoji:"✈️",
-    image:"https://img.freepik.com/free-vector/airplane-sky-background_1308-30821.jpg",
+    image:"assets/mobile/banners/live-casino-hero-2.png",
     names:["aviator"]
   }
 ];
@@ -10170,7 +10170,7 @@ const BB_PUBLIC_GAMES = [
     provider:"Pragmatic Play",
     category:"Slot",
     emoji:"🍬",
-    image:"linear-gradient(135deg,#ff4ea3,#ffd36e)",
+    image:"assets/mobile/promos/welcome-bonus.png",
     keywords:["sweet","bonanza"]
   },
   {
@@ -10178,7 +10178,7 @@ const BB_PUBLIC_GAMES = [
     provider:"Pragmatic Play",
     category:"Slot",
     emoji:"⚡",
-    image:"linear-gradient(135deg,#7864ff,#ffd36e)",
+    image:"assets/mobile/banners/big-prize-banner.png",
     keywords:["gates","olympus"]
   },
   {
@@ -10186,7 +10186,7 @@ const BB_PUBLIC_GAMES = [
     provider:"Pragmatic Play",
     category:"Slot",
     emoji:"🎣",
-    image:"linear-gradient(135deg,#1aa7ff,#31e981)",
+    image:"assets/mobile/banners/live-casino-hero-1.png",
     keywords:["big","bass","bonanza"]
   },
   {
@@ -10194,7 +10194,7 @@ const BB_PUBLIC_GAMES = [
     provider:"Pragmatic Play",
     category:"Slot",
     emoji:"🍭",
-    image:"linear-gradient(135deg,#ff7bd5,#8afff3)",
+    image:"assets/mobile/promos/freespin.png",
     keywords:["sugar","rush"]
   },
   {
@@ -10202,7 +10202,7 @@ const BB_PUBLIC_GAMES = [
     provider:"Spribe",
     category:"Crash",
     emoji:"✈️",
-    image:"linear-gradient(135deg,#e43b3b,#161c24)",
+    image:"assets/mobile/banners/live-casino-hero-2.png",
     keywords:["aviator"]
   },
   {
@@ -10210,7 +10210,7 @@ const BB_PUBLIC_GAMES = [
     provider:"Spribe",
     category:"Crash",
     emoji:"💣",
-    image:"linear-gradient(135deg,#263238,#21d46b)",
+    image:"assets/mobile/icons/casino-icon.png",
     keywords:["mines"]
   },
   {
@@ -10218,7 +10218,7 @@ const BB_PUBLIC_GAMES = [
     provider:"Spribe",
     category:"Arcade",
     emoji:"🔴",
-    image:"linear-gradient(135deg,#ff3d7f,#f5c451)",
+    image:"assets/mobile/icons/slot-icon.png",
     keywords:["plinko"]
   },
   {
@@ -10226,7 +10226,7 @@ const BB_PUBLIC_GAMES = [
     provider:"Evolution",
     category:"Live Casino",
     emoji:"🎡",
-    image:"linear-gradient(135deg,#ff8a00,#8b5cf6)",
+    image:"assets/mobile/dealers/dealer-live-casino-1.png",
     keywords:["crazy","time"]
   },
   {
@@ -10234,7 +10234,7 @@ const BB_PUBLIC_GAMES = [
     provider:"Evolution",
     category:"Live Casino",
     emoji:"⚡",
-    image:"linear-gradient(135deg,#1f2937,#f5c451)",
+    image:"assets/mobile/dealers/dealer-live-casino-2.png",
     keywords:["lightning","roulette"]
   },
   {
@@ -10242,7 +10242,7 @@ const BB_PUBLIC_GAMES = [
     provider:"Pragmatic Play",
     category:"Live Casino",
     emoji:"🎯",
-    image:"linear-gradient(135deg,#00c2ff,#f5c451)",
+    image:"assets/mobile/banners/vip-casino-banner.png",
     keywords:["mega","wheel"]
   },
   {
@@ -10250,7 +10250,7 @@ const BB_PUBLIC_GAMES = [
     provider:"Play'n GO",
     category:"Slot",
     emoji:"📕",
-    image:"linear-gradient(135deg,#7c3f12,#f5c451)",
+    image:"assets/mobile/dealers/dealer-cards.png",
     keywords:["book","dead"]
   },
   {
@@ -10258,7 +10258,7 @@ const BB_PUBLIC_GAMES = [
     provider:"Pragmatic Play",
     category:"Slot",
     emoji:"🐶",
-    image:"linear-gradient(135deg,#ffb703,#8ecae6)",
+    image:"assets/mobile/promos/bonus-campaign.png",
     keywords:["dog","house"]
   }
 ];
@@ -10511,16 +10511,16 @@ document.addEventListener("click", () => {
 // GAMES CATALOG + MOBILE/DESKTOP SHARED FIX
 function bbCatalogFallbackGames(){
   return [
-    {id:"fallback_sweet",gameId:"",title:"Sweet Bonanza",provider:"Pragmatic Play",category:"Slot",image:""},
-    {id:"fallback_gates",gameId:"",title:"Gates of Olympus",provider:"Pragmatic Play",category:"Slot",image:""},
-    {id:"fallback_bigbass",gameId:"",title:"Big Bass Bonanza",provider:"Pragmatic Play",category:"Slot",image:""},
-    {id:"fallback_sugar",gameId:"",title:"Sugar Rush",provider:"Pragmatic Play",category:"Slot",image:""},
-    {id:"fallback_aviator",gameId:"",title:"Aviator",provider:"Spribe",category:"Crash",image:""},
-    {id:"fallback_mines",gameId:"",title:"Mines",provider:"Spribe",category:"Crash",image:""},
-    {id:"fallback_plinko",gameId:"",title:"Plinko",provider:"Spribe",category:"Arcade",image:""},
-    {id:"fallback_crazy",gameId:"",title:"Crazy Time",provider:"Evolution",category:"Live Casino",image:""},
-    {id:"fallback_roulette",gameId:"",title:"Lightning Roulette",provider:"Evolution",category:"Live Casino",image:""},
-    {id:"fallback_blackjack",gameId:"",title:"Blackjack",provider:"Evolution",category:"Live Casino",image:""}
+    {id:"fallback_sweet",gameId:"",title:"Sweet Bonanza",provider:"Pragmatic Play",category:"Slot",image:"assets/mobile/promos/welcome-bonus.png"},
+    {id:"fallback_gates",gameId:"",title:"Gates of Olympus",provider:"Pragmatic Play",category:"Slot",image:"assets/mobile/banners/big-prize-banner.png"},
+    {id:"fallback_bigbass",gameId:"",title:"Big Bass Bonanza",provider:"Pragmatic Play",category:"Slot",image:"assets/mobile/banners/live-casino-hero-1.png"},
+    {id:"fallback_sugar",gameId:"",title:"Sugar Rush",provider:"Pragmatic Play",category:"Slot",image:"assets/mobile/promos/freespin.png"},
+    {id:"fallback_aviator",gameId:"",title:"Aviator",provider:"Spribe",category:"Crash",image:"assets/mobile/banners/live-casino-hero-2.png"},
+    {id:"fallback_mines",gameId:"",title:"Mines",provider:"Spribe",category:"Crash",image:"assets/mobile/icons/casino-icon.png"},
+    {id:"fallback_plinko",gameId:"",title:"Plinko",provider:"Spribe",category:"Arcade",image:"assets/mobile/icons/slot-icon.png"},
+    {id:"fallback_crazy",gameId:"",title:"Crazy Time",provider:"Evolution",category:"Live Casino",image:"assets/mobile/dealers/dealer-live-casino-1.png"},
+    {id:"fallback_roulette",gameId:"",title:"Lightning Roulette",provider:"Evolution",category:"Live Casino",image:"assets/mobile/dealers/dealer-live-casino-2.png"},
+    {id:"fallback_blackjack",gameId:"",title:"Blackjack",provider:"Evolution",category:"Live Casino",image:"assets/mobile/dealers/dealer-cards.png"}
   ];
 }
 
@@ -10617,7 +10617,7 @@ function bbRenderGamesShared(title){
         return `
           <div class="premium-game-card">
             <div class="premium-game-image">
-              ${img ? `<img src="${img}" loading="lazy" onerror="this.remove()">` : `<div class="premium-game-fallback">🎰</div>`}
+              ${img ? `<img src="${img}" loading="lazy" onerror="this.remove()">` : `<div class="premium-game-fallback"><img src="assets/mobile/icons/slot-icon.png" alt="" aria-hidden="true"></div>`}
               <div class="premium-game-provider">${g.provider || "Provider"}</div>
               <button class="premium-game-play-overlay" onclick="bbPlayPublishedGame('${safeTitle}')">Oyna</button>
             </div>

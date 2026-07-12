@@ -5,6 +5,7 @@ window.BOZOBET_GAME_CATALOG = [
     "title": "Sweet Bonanza",
     "provider": "Pragmatic Play",
     "category": "Slot",
+    "image": "assets/mobile/promos/welcome-bonus.png",
     "emoji": "🍬",
     "bg": "linear-gradient(135deg,#ff4fa3,#ffd36e)"
   },
@@ -14,6 +15,7 @@ window.BOZOBET_GAME_CATALOG = [
     "title": "Gates of Olympus",
     "provider": "Pragmatic Play",
     "category": "Slot",
+    "image": "assets/mobile/banners/big-prize-banner.png",
     "emoji": "⚡",
     "bg": "linear-gradient(135deg,#6d5dfc,#f5c451)"
   },
@@ -23,6 +25,7 @@ window.BOZOBET_GAME_CATALOG = [
     "title": "Big Bass Bonanza",
     "provider": "Pragmatic Play",
     "category": "Slot",
+    "image": "assets/mobile/banners/live-casino-hero-1.png",
     "emoji": "🎣",
     "bg": "linear-gradient(135deg,#0ea5e9,#22c55e)"
   },
@@ -32,6 +35,7 @@ window.BOZOBET_GAME_CATALOG = [
     "title": "Sugar Rush",
     "provider": "Pragmatic Play",
     "category": "Slot",
+    "image": "assets/mobile/promos/freespin.png",
     "emoji": "🍭",
     "bg": "linear-gradient(135deg,#ff70c8,#73fbd3)"
   },
@@ -41,6 +45,7 @@ window.BOZOBET_GAME_CATALOG = [
     "title": "Aviator",
     "provider": "Spribe",
     "category": "Crash",
+    "image": "assets/mobile/banners/live-casino-hero-2.png",
     "emoji": "✈️",
     "bg": "linear-gradient(135deg,#ef4444,#111827)"
   },
@@ -50,6 +55,7 @@ window.BOZOBET_GAME_CATALOG = [
     "title": "Mines",
     "provider": "Spribe",
     "category": "Crash",
+    "image": "assets/mobile/icons/casino-icon.png",
     "emoji": "💣",
     "bg": "linear-gradient(135deg,#263238,#21d46b)"
   },
@@ -59,6 +65,7 @@ window.BOZOBET_GAME_CATALOG = [
     "title": "Plinko",
     "provider": "Spribe",
     "category": "Arcade",
+    "image": "assets/mobile/icons/slot-icon.png",
     "emoji": "🔴",
     "bg": "linear-gradient(135deg,#ff3d7f,#f5c451)"
   },
@@ -68,6 +75,7 @@ window.BOZOBET_GAME_CATALOG = [
     "title": "Crazy Time",
     "provider": "Evolution",
     "category": "Live Casino",
+    "image": "assets/mobile/dealers/dealer-live-casino-1.png",
     "emoji": "🎡",
     "bg": "linear-gradient(135deg,#ff8a00,#8b5cf6)"
   },
@@ -77,6 +85,7 @@ window.BOZOBET_GAME_CATALOG = [
     "title": "Lightning Roulette",
     "provider": "Evolution",
     "category": "Live Casino",
+    "image": "assets/mobile/dealers/dealer-live-casino-2.png",
     "emoji": "⚡",
     "bg": "linear-gradient(135deg,#1f2937,#f5c451)"
   },
@@ -86,6 +95,7 @@ window.BOZOBET_GAME_CATALOG = [
     "title": "Blackjack",
     "provider": "Evolution",
     "category": "Live Casino",
+    "image": "assets/mobile/dealers/dealer-cards.png",
     "emoji": "🃏",
     "bg": "linear-gradient(135deg,#052e16,#d4af37)"
   },
@@ -95,6 +105,7 @@ window.BOZOBET_GAME_CATALOG = [
     "title": "Mega Wheel",
     "provider": "Pragmatic Play",
     "category": "Live Casino",
+    "image": "assets/mobile/banners/vip-casino-banner.png",
     "emoji": "🎯",
     "bg": "linear-gradient(135deg,#00c2ff,#f5c451)"
   },
@@ -104,6 +115,7 @@ window.BOZOBET_GAME_CATALOG = [
     "title": "The Dog House",
     "provider": "Pragmatic Play",
     "category": "Slot",
+    "image": "assets/mobile/promos/bonus-campaign.png",
     "emoji": "🐶",
     "bg": "linear-gradient(135deg,#ffb703,#8ecae6)"
   }

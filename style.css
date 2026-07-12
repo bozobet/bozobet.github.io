@@ -137,7 +137,7 @@ button{cursor:pointer}
     linear-gradient(90deg,rgba(3,11,10,.96),rgba(7,25,15,.85) 34%,rgba(3,9,10,.25)),
     radial-gradient(circle at 62% 48%,rgba(33,212,107,.34),transparent 28%),
     radial-gradient(circle at 84% 42%,rgba(245,196,81,.32),transparent 26%),
-    url("https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=1800&auto=format&fit=crop");
+    url("assets/banners/970x250/sports-hero.png");
   background-size:cover;
   background-position:center;
   box-shadow:0 24px 80px rgba(0,0,0,.42);
@@ -8611,6 +8611,46 @@ body.auth-modal-open {
   }
 }
 
+/* Login stays content-sized; only its field group may scroll. */
+.auth-modal-back > .modal:has(.login-auth-box) {
+  height:auto!important;
+  max-height:min(520px,calc(100dvh - 32px))!important;
+  overflow:hidden!important;
+}
+
+.auth-modal-back .login-auth-box {
+  height:auto!important;
+  min-height:0!important;
+  max-height:min(520px,calc(100dvh - 32px))!important;
+  overflow:hidden!important;
+}
+
+.auth-modal-back .login-auth-box .auth-form {
+  height:auto!important;
+  min-height:0!important;
+  max-height:min(520px,calc(100dvh - 32px))!important;
+  overflow:hidden!important;
+}
+
+.auth-modal-back .login-auth-box .auth-fields {
+  flex:0 1 auto!important;
+  min-height:0!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+
+@media (max-width:760px) {
+  .auth-modal-back > .modal:has(.login-auth-box) {
+    width:min(430px,calc(100% - 28px))!important;
+  }
+
+  .auth-modal-back .login-auth-box {
+    display:block!important;
+  }
+}
+
 /* Mobil ikonların devleşmesini engelle */
 @media (max-width: 800px) {
   .bbf-nav img,
@@ -9213,33 +9253,59 @@ body.auth-modal-open {
   .category-row .cat b{font-size:8px!important}
 }
 
-/* Keep the mobile brand centered and reserve separate space for auth actions. */
+/* Keep fixed-size mobile controls evenly spaced without overlap. */
 @media (max-width:800px) {
+  .topbar {
+    height:116px!important;
+    min-height:116px!important;
+    padding:0 12px!important;
+  }
+
   .topbar .brand-logo,
   .topbar .clean-logo {
-    width:130px!important;
-    min-width:130px!important;
-    max-width:130px!important;
+    width:150px!important;
+    min-width:150px!important;
+    max-width:150px!important;
+    height:54px!important;
   }
 
   .topbar .brand-logo {
     position:absolute!important;
     left:50%!important;
-    top:50%!important;
+    top:29px!important;
     transform:translate(-50%,-50%)!important;
   }
 
   .topbar .actions {
+    position:absolute!important;
+    left:50%!important;
+    bottom:8px!important;
     width:auto!important;
-    max-width:calc(50% - 75px)!important;
-    overflow:hidden!important;
+    max-width:100%!important;
+    margin:0!important;
+    justify-content:center!important;
+    gap:8px!important;
+    overflow:visible!important;
+    transform:translateX(-50%)!important;
   }
 
-  .topbar .actions .btn {
-    min-width:0!important;
-    flex:1 1 0!important;
+  .topbar .actions .btn,
+  .topbar .actions button[onclick*="loginModal"],
+  .topbar .actions button[onclick*="registerModal"] {
+    flex:0 0 96px!important;
+    width:96px!important;
+    min-width:96px!important;
+    max-width:96px!important;
+    height:42px!important;
+    min-height:42px!important;
+    padding:0 8px!important;
+    border-radius:14px!important;
+    font-size:16px!important;
+    line-height:42px!important;
     overflow:hidden!important;
-    text-overflow:clip!important;
     white-space:nowrap!important;
   }
+
+  .topbar .actions .btn::after { content:none!important; }
+  .mobile-menu-button { top:11px!important; }
 }

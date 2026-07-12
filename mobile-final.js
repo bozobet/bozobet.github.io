@@ -7,7 +7,7 @@
   const CATALOG = [
     {title:"Sweet Bonanza", provider:"Pragmatic Play", category:"Slot", image:AS+"promos/welcome-bonus.png", keys:["sweet","bonanza"]},
     {title:"Gates of Olympus", provider:"Pragmatic Play", category:"Slot", image:AS+"banners/big-prize-banner.png", keys:["gates","olympus"]},
-    {title:"Big Bass Bonanza", provider:"Pragmatic Play", category:"Slot", image:AS+"icons/football-icon.png", keys:["big","bass"]},
+    {title:"Big Bass Bonanza", provider:"Pragmatic Play", category:"Slot", image:AS+"banners/live-casino-hero-1.png", keys:["big","bass"]},
     {title:"Sugar Rush", provider:"Pragmatic Play", category:"Slot", image:AS+"promos/freespin.png", keys:["sugar","rush"]},
     {title:"Aviator", provider:"Spribe", category:"Crash", image:AS+"banners/live-casino-hero-2.png", keys:["aviator"]},
     {title:"Mines", provider:"Spribe", category:"Crash", image:AS+"icons/casino-icon.png", keys:["mines"]},
