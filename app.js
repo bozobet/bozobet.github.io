@@ -247,13 +247,38 @@ function foot(title,items){
   return `<div><h4>${title}</h4>${items.map(x=>`<a href="#">${x}</a>`).join("")}</div>`;
 }
 
+let authModalScrollY = 0;
+
+function syncAuthModalScrollLock(){
+  const isOpen = Boolean(document.querySelector(".modal-back.auth-modal-back"));
+  const isLocked = document.body.classList.contains("auth-modal-open");
+
+  if(isOpen && !isLocked){
+    authModalScrollY = window.scrollY;
+    document.documentElement.classList.add("auth-modal-open");
+    document.body.classList.add("auth-modal-open");
+    document.body.style.top = `-${authModalScrollY}px`;
+  }else if(!isOpen && isLocked){
+    document.documentElement.classList.remove("auth-modal-open");
+    document.body.classList.remove("auth-modal-open");
+    document.body.style.top = "";
+    window.scrollTo(0, authModalScrollY);
+  }
+}
+
 function modal(html){
   const div = document.createElement("div");
   div.className = "modal-back";
   div.innerHTML = `<div class="modal">${html}</div>`;
+  if(div.querySelector(".auth-box")) div.classList.add("auth-modal-back");
   div.onclick = e => { if(e.target === div) div.remove(); };
   document.body.appendChild(div);
+  syncAuthModalScrollLock();
 }
+
+new MutationObserver(syncAuthModalScrollLock).observe(document.body, {
+  childList:true
+});
 
 function loginModal(){
   modal(`
@@ -270,19 +295,21 @@ function loginModal(){
       </div>
 
       <div class="auth-form">
-        <h2>Giriş Yap</h2>
-        <label class="field">
-          <span>Kullanıcı adı</span>
-          <input id="loginUser" placeholder="Kullanıcı adın" autocomplete="username">
-        </label>
+        <div class="auth-fields">
+          <h2>Giriş Yap</h2>
+          <label class="field">
+            <span>Kullanıcı adı</span>
+            <input id="loginUser" placeholder="Kullanıcı adın" autocomplete="username">
+          </label>
 
-        <label class="field">
-          <span>Şifre</span>
-          <div class="pass-wrap">
-            <input id="loginPass" type="password" placeholder="Şifren" autocomplete="current-password">
-            <button type="button" onclick="togglePass('loginPass', this)">Göster</button>
-          </div>
-        </label>
+          <label class="field">
+            <span>Şifre</span>
+            <div class="pass-wrap">
+              <input id="loginPass" type="password" placeholder="Şifren" autocomplete="current-password">
+              <button type="button" onclick="togglePass('loginPass', this)">Göster</button>
+            </div>
+          </label>
+        </div>
 
         <button class="btn primary full-btn" onclick="login()">Giriş Yap</button>
 
@@ -317,13 +344,14 @@ function registerModal(){
       </div>
 
       <div class="auth-form">
-        <h2>Üye Ol</h2>
+        <div class="auth-fields">
+          <h2>Üye Ol</h2>
 
-        <div class="register-grid">
-          <label class="field">
-            <span>Ad</span>
-            <input id="regName" value="">
-          </label>
+          <div class="register-grid">
+            <label class="field">
+              <span>Ad</span>
+              <input id="regName" value="">
+            </label>
 
           <label class="field">
             <span>Soyad</span>
@@ -355,13 +383,14 @@ function registerModal(){
             <input id="regUser" placeholder="Kullanıcı adın">
           </label>
 
-          <label class="field full-field">
-            <span>Şifre</span>
-            <div class="pass-wrap">
-              <input id="regPass" type="password" placeholder="Şifre oluştur">
-              <button type="button" onclick="togglePass('regPass', this)">Göster</button>
-            </div>
-          </label>
+            <label class="field full-field">
+              <span>Şifre</span>
+              <div class="pass-wrap">
+                <input id="regPass" type="password" placeholder="Şifre oluştur">
+                <button type="button" onclick="togglePass('regPass', this)">Göster</button>
+              </div>
+            </label>
+          </div>
         </div>
 
         <button class="btn primary full-btn" onclick="register()">Hesap Oluştur</button>
@@ -10539,7 +10568,7 @@ function bbMobileMenuFinal(){
   const nav = document.createElement("nav");
   nav.className = "bb-bottom-nav-final";
   nav.innerHTML = `
-    <button class="active" onclick="renderHome && renderHome()">
+    <button onclick="renderHome && renderHome()">
       <span class="bb-nav-ico home">⌂</span>
       <b>Ana Sayfa</b>
     </button>
@@ -10889,6 +10918,57 @@ document.addEventListener("click", () => {
   if(typeof renderHome==='function'){const old=renderHome;renderHome=function(){old();setTimeout(injectMobileHomeVisuals,120);setTimeout(renderGeneratedBottomNav,160);};}
   window.addEventListener('load',()=>{setTimeout(injectMobileHomeVisuals,300);setTimeout(renderGeneratedBottomNav,350);});
   document.addEventListener('click',()=>setTimeout(renderGeneratedBottomNav,200));
+})();
+
+// Keep every mobile bottom navigation in sync with the page being rendered.
+(function(){
+  const pageIndexes = { home:0, sports:1, casino:2, coupon:3, profile:4 };
+  let activePage = "home";
+
+  function syncBottomNav(){
+    const activeIndex = pageIndexes[activePage];
+    document.querySelectorAll(
+      ".bbf-nav,.bb-clean-nav,.bb-bottom-nav-real,.bb-bottom-nav-final,.bb-gen-bottom-nav"
+    ).forEach(nav => {
+      Array.from(nav.querySelectorAll(":scope > button")).forEach((button, index) => {
+        button.classList.toggle("active", index === activeIndex);
+        if(index === activeIndex) button.setAttribute("aria-current", "page");
+        else button.removeAttribute("aria-current");
+      });
+    });
+  }
+
+  function setActivePage(page){
+    activePage = page;
+    window.bbActiveBottomPage = page;
+    syncBottomNav();
+    requestAnimationFrame(syncBottomNav);
+  }
+
+  function wrapRenderer(name, page){
+    const original = window[name];
+    if(typeof original !== "function" || original.bbTracksBottomNav) return;
+
+    const wrapped = function(){
+      setActivePage(page);
+      return original.apply(this, arguments);
+    };
+    wrapped.bbTracksBottomNav = true;
+    window[name] = wrapped;
+  }
+
+  function installTracking(){
+    wrapRenderer("renderHome", "home");
+    wrapRenderer("renderSports", "sports");
+    wrapRenderer("renderCasino", "casino");
+    wrapRenderer("renderCoupon", "coupon");
+    wrapRenderer("renderProfile", "profile");
+    syncBottomNav();
+  }
+
+  new MutationObserver(syncBottomNav).observe(document.body, { childList:true, subtree:true });
+  window.addEventListener("load", installTracking);
+  installTracking();
 })();
 
 // REAL BETNEX GAME LOAD + NO EMOJI CARD FIX V1
