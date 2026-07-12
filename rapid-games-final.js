@@ -1,5 +1,5 @@
 (function () {
-  let rapidGames = [];
+  let providerGames = [];
 
   const esc = (value) =>
     String(value || "")
@@ -10,17 +10,26 @@
       .replaceAll("'", "&#039;");
 
   async function loadGames() {
-    const response = await fetch(`games.json?v=${Date.now()}`, {
-      cache: "no-store"
-    });
-
-    if (!response.ok) {
-      throw new Error(`games.json yüklenemedi: ${response.status}`);
-    }
-
-    const json = await response.json();
-    rapidGames = Array.isArray(json.games) ? json.games : [];
-    return rapidGames;
+    const providerResponse = await fetch("/api/providers");
+    if (!providerResponse.ok) throw new Error(`Provider listesi yüklenemedi: ${providerResponse.status}`);
+    const providerJson = await providerResponse.json();
+    const providerList = Array.isArray(providerJson) ? providerJson : providerJson.providers || providerJson.data || [];
+    const providers = providerList.map(item => typeof item === "string" ? item : item.provider || item.name || item.code || item.id).filter(Boolean);
+    const catalogs = await Promise.all(providers.map(async provider => {
+      const response = await fetch(`/api/games?provider=${encodeURIComponent(provider)}`);
+      if (!response.ok) return [];
+      const json = await response.json();
+      const games = Array.isArray(json) ? json : json.games || json.data || [];
+      return games.map(game => ({
+        id: String(game.gameId || game.game_id || game.id || game.code || ""),
+        name: String(game.gameName || game.name || game.title || "Oyun"),
+        img: String(game.image || game.img || game.icon || game.thumbnail || ""),
+        provider: String(game.provider || game.providerName || provider),
+        type: String(game.category || game.type || game.gameType || "Casino")
+      }));
+    }));
+    providerGames = catalogs.flat();
+    return providerGames;
   }
 
   function currentUser() {
@@ -60,7 +69,7 @@
     `;
   }
 
-  window.openRapidGame = function (gameId) {
+  window.openRapidGame = async function (gameId) {
     if (!currentUser()) {
       alert("Lütfen hesabınıza giriş yapın.");
 
@@ -71,9 +80,19 @@
       return;
     }
 
-    alert(
-      "Oyun listesi ve görseller hazır. GitHub Pages üzerinde oyun açılış bağlantısı için sunucu bağlantısı gerekiyor."
-    );
+    try {
+      const user = currentUser();
+      const response = await fetch("/api/game-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: user.username || user.id, gameId: String(gameId) })
+      });
+      const data = await response.json();
+      if (!response.ok || !data.launchUrl) throw new Error(data.error || "Oyun bağlantısı alınamadı.");
+      window.open(data.launchUrl, "_blank");
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   async function renderGames(title) {

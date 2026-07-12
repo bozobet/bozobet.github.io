@@ -5,17 +5,10 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-KEY = os.environ.get("RAPID_KEY", "").strip()
-HOST = "live-casino-slots-evolution-jili-and-50-plus-provider.p.rapidapi.com"
-BASE = f"https://{HOST}"
-
-if not KEY:
-    raise SystemExit("RAPID_KEY bulunamadı.")
+BASE = os.environ.get("BETNEX_API_BASE", "http://localhost:3000/api").rstrip("/")
 
 headers = {
     "Content-Type": "application/json",
-    "x-rapidapi-host": HOST,
-    "x-rapidapi-key": KEY,
 }
 
 def request_json(url):
@@ -55,7 +48,7 @@ def find_provider_names(value):
     return []
 
 try:
-    providers_response = request_json(f"{BASE}/getallproviders")
+    providers_response = request_json(f"{BASE}/providers")
     providers = find_provider_names(providers_response)
 except Exception as exc:
     print("Provider listesi alınamadı:", exc)
@@ -78,7 +71,7 @@ seen = set()
 for provider in providers:
     try:
         query = urllib.parse.urlencode({"provider": provider})
-        data = request_json(f"{BASE}/getallgamesandprovider?{query}")
+        data = request_json(f"{BASE}/games?{query}")
 
         provider_games = data.get("games", []) if isinstance(data, dict) else []
 

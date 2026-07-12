@@ -614,7 +614,7 @@ function renderCasino(){
       <div>
         <span>CASINO & SLOT</span>
         <h1>Popüler Oyunlar</h1>
-        <p>Rapid API bağlantısı eklenene kadar seçili  oyun kartları gösteriliyor.</p>
+        <p>Betnex bağlantısı eklenene kadar seçili oyun kartları gösteriliyor.</p>
       </div>
       <button class="btn gold">Tüm Oyunlar</button>
     </section>
@@ -8268,9 +8268,9 @@ renderDepositPaymentStep = function(amount, method){
   `;
 };
 
-// RAPIDAPI GAME IMPORT PANEL
-function getRapidApiGameSettings(){
-  return JSON.parse(localStorage.getItem("bozobet_rapidapi_game_settings") || "null") || {
+// BETNEX GAME IMPORT PANEL
+function getBetnexGameSettings(){
+  return JSON.parse(localStorage.getItem("bozobet_betnex_game_settings") || "null") || {
     key:"",
     host:"",
     endpoint:"",
@@ -8282,8 +8282,8 @@ function getRapidApiGameSettings(){
   };
 }
 
-function setRapidApiGameSettings(data){
-  localStorage.setItem("bozobet_rapidapi_game_settings", JSON.stringify(data));
+function setBetnexGameSettings(data){
+  localStorage.setItem("bozobet_betnex_game_settings", JSON.stringify(data));
 }
 
 function getImportedApiGames(){
@@ -8304,7 +8304,7 @@ function readByPath(obj, path){
     .reduce((acc,key) => acc && acc[key], obj);
 }
 
-function saveRapidApiGameSettings(){
+function saveBetnexGameSettings(){
   if(user?.role !== "admin"){
     alert("Bu işlem sadece admin için.");
     return;
@@ -8326,23 +8326,18 @@ function saveRapidApiGameSettings(){
     return;
   }
 
-  setRapidApiGameSettings(data);
-  alert("RapidAPI ayarları kaydedildi.");
-  renderRapidApiGamesAdmin();
+  setBetnexGameSettings(data);
+  alert("Betnex ayarları kaydedildi.");
+  renderBetnexGamesAdmin();
 }
 
-async function importRapidApiGames(){
+async function importBetnexGames(){
   if(user?.role !== "admin"){
     alert("Bu işlem sadece admin için.");
     return;
   }
 
-  const settings = getRapidApiGameSettings();
-
-  if(!settings.key || !settings.host || !settings.endpoint){
-    alert("Önce API ayarlarını kaydetmelisin.");
-    return;
-  }
+  const settings = getBetnexGameSettings();
 
   const btn = document.getElementById("rapidImportBtn");
   if(btn){
@@ -8351,11 +8346,11 @@ async function importRapidApiGames(){
   }
 
   try{
-    const res = await fetch(settings.endpoint, {
+    const provider = document.getElementById("betApiProvider")?.value?.trim() || "SPRIBE";
+    const res = await fetch(`/api/games?provider=${encodeURIComponent(provider)}`, {
       method:"GET",
       headers:{
-        "X-RapidAPI-Key":settings.key,
-        "X-RapidAPI-Host":settings.host
+        "Content-Type":"application/json"
       }
     });
 
@@ -8364,7 +8359,8 @@ async function importRapidApiGames(){
     }
 
     const json = await res.json();
-    const list = readByPath(json, settings.arrayPath);
+    const configuredList = readByPath(json, settings.arrayPath);
+    const list = Array.isArray(configuredList) ? configuredList : findFirstArrayDeep(json);
 
     if(!Array.isArray(list)){
       alert("Oyun listesi bulunamadı. Array path alanını kontrol et.");
@@ -8390,7 +8386,7 @@ async function importRapidApiGames(){
     setImportedApiGames(games);
 
     alert(`${games.length} oyun içeri aktarıldı.`);
-    renderRapidApiGamesAdmin();
+    renderBetnexGamesAdmin();
   }catch(err){
     alert("Oyunlar çekilemedi: " + err.message);
   }finally{
@@ -8401,7 +8397,7 @@ async function importRapidApiGames(){
   }
 }
 
-function clearRapidApiGames(){
+function clearBetnexGames(){
   if(user?.role !== "admin"){
     alert("Bu işlem sadece admin için.");
     return;
@@ -8409,7 +8405,7 @@ function clearRapidApiGames(){
 
   setImportedApiGames([]);
   alert("API oyunları temizlendi.");
-  renderRapidApiGamesAdmin();
+  renderBetnexGamesAdmin();
 }
 
 function apiGameCardHtml(g){
@@ -8432,22 +8428,22 @@ function apiGameCardHtml(g){
   `;
 }
 
-function renderRapidApiGamesAdmin(){
+function renderBetnexGamesAdmin(){
   if(user?.role !== "admin"){
     alert("Bu alana sadece admin hesabı erişebilir.");
     loginModal();
     return;
   }
 
-  const s = getRapidApiGameSettings();
+  const s = getBetnexGameSettings();
   const games = getImportedApiGames();
 
   document.getElementById("app").innerHTML = shell(`
     <section class="page-hero mini admin-mini">
       <div>
         <span>OYUN YÖNETİMİ</span>
-        <h1>RapidAPI Oyun Aktarıcı</h1>
-        <p>RapidAPI bilgilerini gir, oyun listesini çek ve site içinde göster.</p>
+        <h1>Betnex Oyun Aktarıcı</h1>
+        <p>Betnex oyun listesini çek ve site içinde göster.</p>
       </div>
       <button class="btn gold" onclick="renderAdminDashboard()">Admin Panele Dön</button>
     </section>
@@ -8458,13 +8454,13 @@ function renderRapidApiGamesAdmin(){
 
         <div class="rapid-api-form">
           <label class="wide">
-            <span>X-RapidAPI-Key</span>
-            <input id="rapidGameKey" value="${s.key || ""}" placeholder="RapidAPI key">
+            <span>API Key</span>
+            <input id="rapidGameKey" value="${s.key || ""}" placeholder="API key">
           </label>
 
           <label>
-            <span>X-RapidAPI-Host</span>
-            <input id="rapidGameHost" value="${s.host || ""}" placeholder="örnek: example.p.rapidapi.com">
+            <span>API Host</span>
+            <input id="rapidGameHost" value="${s.host || ""}" placeholder="Betnex">
           </label>
 
           <label>
@@ -8499,9 +8495,9 @@ function renderRapidApiGamesAdmin(){
         </div>
 
         <div class="rapid-api-actions">
-          <button class="btn gold" onclick="saveRapidApiGameSettings()">Ayarları Kaydet</button>
-          <button id="rapidImportBtn" class="btn primary" onclick="importRapidApiGames()">API'den Oyunları Çek</button>
-          <button class="btn ghost" onclick="clearRapidApiGames()">Oyunları Temizle</button>
+          <button class="btn gold" onclick="saveBetnexGameSettings()">Ayarları Kaydet</button>
+          <button id="rapidImportBtn" class="btn primary" onclick="importBetnexGames()">API'den Oyunları Çek</button>
+          <button class="btn ghost" onclick="clearBetnexGames()">Oyunları Temizle</button>
         </div>
       </div>
 
@@ -8535,8 +8531,8 @@ if(typeof renderAdminDashboard === "function"){
 
       if(shortcuts && !document.querySelector(".rapid-games-shortcut")){
         shortcuts.insertAdjacentHTML("beforeend", `
-          <button class="rapid-games-shortcut" onclick="renderRapidApiGamesAdmin()">
-            <b>🎮 RapidAPI Oyun Aktarıcı</b>
+          <button class="rapid-games-shortcut" onclick="renderBetnexGamesAdmin()">
+            <b>🎮 Betnex Oyun Aktarıcı</b>
             <span>API oyunlarını çek ve siteye ekle.</span>
           </button>
         `);
@@ -8565,7 +8561,7 @@ function renderApiGamesPage(title, categoryFilter){
       ${filtered.length ? filtered.map(apiGameCardHtml).join("") : `
         <div class="empty-coupon">
           <b>Henüz oyun yok</b>
-          <span>Admin panelinden RapidAPI oyunlarını çek.</span>
+          <span>Admin panelinden Betnex oyunlarını çek.</span>
         </div>
       `}
     </section>
@@ -8607,8 +8603,7 @@ if(typeof renderSlot === "function"){
 }
 
 // BET API PROVIDER / GAMES / LAUNCH INTEGRATION
-const BET_API_HOST = "live-casino-slots-evolution-jili-and-50-plus-provider.p.rapidapi.com";
-const BET_API_BASE = "https://live-casino-slots-evolution-jili-and-50-plus-provider.p.rapidapi.com";
+const BET_API_BASE = "/api";
 
 function getBetApiSettings(){
   return JSON.parse(localStorage.getItem("bozobet_bet_api_settings") || "null") || {
@@ -8637,9 +8632,7 @@ function betApiHeaders(){
   const s = getBetApiSettings();
 
   return {
-    "Content-Type":"application/json",
-    "x-rapidapi-host":BET_API_HOST,
-    "x-rapidapi-key":s.key
+    "Content-Type":"application/json"
   };
 }
 
@@ -8657,11 +8650,6 @@ function saveBetApiSettings(){
     currency:document.getElementById("betApiCurrency")?.value?.trim() || "TRY",
     homeUrl:document.getElementById("betApiHomeUrl")?.value?.trim() || location.origin
   };
-
-  if(!data.key){
-    alert("RapidAPI key boş olamaz.");
-    return;
-  }
 
   setBetApiSettings(data);
   alert("API ayarları kaydedildi.");
@@ -8749,13 +8737,8 @@ async function fetchBetApiProviders(){
 
   const s = getBetApiSettings();
 
-  if(!s.key){
-    alert("Önce API key girip kaydet.");
-    return;
-  }
-
   try{
-    const res = await fetch(`${BET_API_BASE}/getallproviders`, {
+    const res = await fetch(`${BET_API_BASE}/providers`, {
       method:"GET",
       headers:betApiHeaders()
     });
@@ -8790,15 +8773,10 @@ async function fetchBetApiGamesByProvider(){
 
   const s = getBetApiSettings();
 
-  if(!s.key){
-    alert("Önce API key girip kaydet.");
-    return;
-  }
-
   const provider = document.getElementById("betApiProvider")?.value?.trim() || s.provider || "SPRIBE";
 
   try{
-    const url = `${BET_API_BASE}/getallgamesandprovider?provider=${encodeURIComponent(provider)}`;
+    const url = `${BET_API_BASE}/games?provider=${encodeURIComponent(provider)}`;
 
     const res = await fetch(url, {
       method:"GET",
@@ -8863,15 +8841,10 @@ async function launchBetApiGame(gameId){
 
   const s = getBetApiSettings();
 
-  if(!s.key){
-    alert("Oyun API ayarı eksik.");
-    return;
-  }
-
   try{
     const username = `${s.usernamePrefix || "bozobet_user_"}${user.username || user.id}`;
 
-    const res = await fetch(`${BET_API_BASE}/getgameurl`, {
+    const res = await fetch(`${BET_API_BASE}/game-url`, {
       method:"POST",
       headers:betApiHeaders(),
       body:JSON.stringify({
@@ -8887,16 +8860,7 @@ async function launchBetApiGame(gameId){
 
     const json = await res.json();
 
-    const url =
-      json.url ||
-      json.gameUrl ||
-      json.game_url ||
-      json.launch_url ||
-      json.launchUrl ||
-      json.data?.url ||
-      json.data?.gameUrl ||
-      json.data?.game_url ||
-      "";
+    const url = json.launchUrl;
 
     if(!url){
       console.log("Game URL response:", json);
@@ -8937,8 +8901,8 @@ function renderBetApiAdmin(){
 
         <div class="rapid-api-form">
           <label class="wide">
-            <span>X-RapidAPI-Key</span>
-            <input id="betApiKey" value="${s.key || ""}" placeholder="RapidAPI key">
+            <span>API Key</span>
+            <input id="betApiKey" value="${s.key || ""}" placeholder="API key">
           </label>
 
           <label class="wide">
@@ -9207,13 +9171,8 @@ async function fetchBetApiProvidersV2(){
 
   const s = getBetApiSettings();
 
-  if(!s.key){
-    alert("Önce API key girip kaydet.");
-    return;
-  }
-
   try{
-    const res = await fetch(`${BET_API_BASE}/getallproviders`, {
+    const res = await fetch(`${BET_API_BASE}/providers`, {
       method:"GET",
       headers:betApiHeaders()
     });
@@ -9247,7 +9206,7 @@ async function fetchBetApiProvidersV2(){
 async function fetchOneProviderGames(provider, appendMode){
   const s = getBetApiSettings();
 
-  const url = `${BET_API_BASE}/getallgamesandprovider?provider=${encodeURIComponent(provider)}`;
+  const url = `${BET_API_BASE}/games?provider=${encodeURIComponent(provider)}`;
 
   const res = await fetch(url, {
     method:"GET",
@@ -9283,11 +9242,6 @@ async function fetchSelectedBetApiProviderGames(providerName){
 
   const s = getBetApiSettings();
 
-  if(!s.key){
-    alert("Önce API key girip kaydet.");
-    return;
-  }
-
   const provider = providerName || document.getElementById("betApiProvider")?.value?.trim() || s.provider || "SPRIBE";
 
   try{
@@ -9320,11 +9274,6 @@ async function appendSelectedBetApiProviderGames(providerName){
 
   const s = getBetApiSettings();
 
-  if(!s.key){
-    alert("Önce API key girip kaydet.");
-    return;
-  }
-
   const provider = providerName || document.getElementById("betApiProvider")?.value?.trim() || s.provider || "SPRIBE";
 
   try{
@@ -9352,11 +9301,6 @@ async function fetchAllBetApiProviderGames(){
 
   const s = getBetApiSettings();
 
-  if(!s.key){
-    alert("Önce API key girip kaydet.");
-    return;
-  }
-
   let providers = getBetApiProviders();
 
   if(!providers.length){
@@ -9364,7 +9308,7 @@ async function fetchAllBetApiProviderGames(){
     return;
   }
 
-  const ok = confirm(`${providers.length} provider için oyun çekilecek. RapidAPI kotanı kullanabilir. Devam edilsin mi?`);
+  const ok = confirm(`${providers.length} provider için oyun çekilecek. Devam edilsin mi?`);
   if(!ok) return;
 
   setBetApiGames([]);
@@ -9463,8 +9407,8 @@ renderBetApiAdmin = function(){
 
         <div class="rapid-api-form">
           <label class="wide">
-            <span>X-RapidAPI-Key</span>
-            <input id="betApiKey" value="${s.key || ""}" placeholder="RapidAPI key">
+            <span>API Key</span>
+            <input id="betApiKey" value="${s.key || ""}" placeholder="API key">
           </label>
 
           <label class="wide">
@@ -10947,11 +10891,9 @@ document.addEventListener("click", () => {
   document.addEventListener('click',()=>setTimeout(renderGeneratedBottomNav,200));
 })();
 
-// REAL RAPIDAPI GAME LOAD + NO EMOJI CARD FIX V1
+// REAL BETNEX GAME LOAD + NO EMOJI CARD FIX V1
 (function(){
-  const BB_RAPID_HOST = "live-casino-slots-evolution-jili-and-50-plus-provider.p.rapidapi.com";
-  const BB_RAPID_BASE = "https://live-casino-slots-evolution-jili-and-50-plus-provider.p.rapidapi.com";
-  const BB_RAPID_KEY = "d2feaff000msh0860d1e17b42ef2p19096ajsn5ddc9f39720e";
+  const BB_GAME_API_BASE = "/api";
 
   const BB_MOBILE_IMG = {
     slot:"assets/mobile/icons/slot-icon.png",
@@ -11026,7 +10968,7 @@ document.addEventListener("click", () => {
       "";
 
     return {
-      id:"rapid_" + provider + "_" + index,
+      id:"betnex_" + provider + "_" + index,
       gameId:String(gameId || ""),
       title:String(title || ""),
       provider:String(provider || g.provider || g.providerName || ""),
@@ -11035,27 +10977,20 @@ document.addEventListener("click", () => {
     };
   }
 
-  function bbGetStoredRapidGames(){
+  function bbGetStoredBetnexGames(){
     try{
-      return JSON.parse(localStorage.getItem("bozobet_live_rapid_games") || "[]");
+      return JSON.parse(localStorage.getItem("bozobet_live_betnex_games") || "[]");
     }catch(e){
       return [];
     }
   }
 
-  function bbSetStoredRapidGames(games){
-    localStorage.setItem("bozobet_live_rapid_games", JSON.stringify(games || []));
+  function bbSetStoredBetnexGames(games){
+    localStorage.setItem("bozobet_live_betnex_games", JSON.stringify(games || []));
   }
 
   async function bbFetchProviders(){
-    const res = await fetch(`${BB_RAPID_BASE}/getallproviders`, {
-      method:"GET",
-      headers:{
-        "Content-Type":"application/json",
-        "x-rapidapi-host":BB_RAPID_HOST,
-        "x-rapidapi-key":BB_RAPID_KEY
-      }
-    });
+    const res = await fetch(`${BB_GAME_API_BASE}/providers`);
 
     const json = await res.json();
     const list = bbFindArrayDeep(json);
@@ -11069,14 +11004,7 @@ document.addEventListener("click", () => {
   }
 
   async function bbFetchGamesForProvider(provider){
-    const res = await fetch(`${BB_RAPID_BASE}/getallgamesandprovider?provider=${encodeURIComponent(provider)}`, {
-      method:"GET",
-      headers:{
-        "Content-Type":"application/json",
-        "x-rapidapi-host":BB_RAPID_HOST,
-        "x-rapidapi-key":BB_RAPID_KEY
-      }
-    });
+    const res = await fetch(`${BB_GAME_API_BASE}/games?provider=${encodeURIComponent(provider)}`);
 
     const json = await res.json();
     const list = bbFindArrayDeep(json);
@@ -11086,8 +11014,8 @@ document.addEventListener("click", () => {
       .filter(g => g.title && g.gameId);
   }
 
-  async function bbEnsureRapidGames(){
-    const old = bbGetStoredRapidGames();
+  async function bbEnsureBetnexGames(){
+    const old = bbGetStoredBetnexGames();
 
     if(old.length && old.some(g => g.gameId)){
       return old;
@@ -11127,7 +11055,7 @@ document.addEventListener("click", () => {
     const finalGames = [...map.values()];
 
     if(finalGames.length){
-      bbSetStoredRapidGames(finalGames);
+      bbSetStoredBetnexGames(finalGames);
     }
 
     return finalGames;
@@ -11147,10 +11075,10 @@ document.addEventListener("click", () => {
   }
 
   function bbGetAllGamesNow(){
-    const rapid = bbGetStoredRapidGames();
+    const loaded = bbGetStoredBetnexGames();
 
-    if(rapid.length){
-      return rapid;
+    if(loaded.length){
+      return loaded;
     }
 
     const catalog = Array.isArray(window.BOZOBET_GAME_CATALOG) ? window.BOZOBET_GAME_CATALOG : [];
@@ -11174,19 +11102,17 @@ document.addEventListener("click", () => {
 
     if(!gameId){
       alert("Oyun bağlantısı hazırlanıyor. Birkaç saniye sonra tekrar dene.");
-      await bbEnsureRapidGames();
+      await bbEnsureBetnexGames();
       return;
     }
 
     try{
       const username = "bozobet_user_" + (user.username || user.id || Date.now());
 
-      const res = await fetch(`${BB_RAPID_BASE}/getgameurl`, {
+      const res = await fetch(`${BB_GAME_API_BASE}/game-url`, {
         method:"POST",
         headers:{
-          "Content-Type":"application/json",
-          "x-rapidapi-host":BB_RAPID_HOST,
-          "x-rapidapi-key":BB_RAPID_KEY
+          "Content-Type":"application/json"
         },
         body:JSON.stringify({
           username,
@@ -11201,16 +11127,7 @@ document.addEventListener("click", () => {
 
       const json = await res.json();
 
-      const url =
-        json.url ||
-        json.gameUrl ||
-        json.game_url ||
-        json.launch_url ||
-        json.launchUrl ||
-        json.data?.url ||
-        json.data?.gameUrl ||
-        json.data?.game_url ||
-        "";
+      const url = json.launchUrl;
 
       if(!url){
         console.log("Game URL response:", json);
@@ -11266,7 +11183,7 @@ document.addEventListener("click", () => {
       </section>
     `);
 
-    const live = await bbEnsureRapidGames();
+    const live = await bbEnsureBetnexGames();
 
     if(live.length){
       games = bbGetAllGamesNow();
@@ -11276,7 +11193,7 @@ document.addEventListener("click", () => {
           <div>
             <span>OYUNLAR</span>
             <h1>${bbEsc(title)}</h1>
-            <p>RapidAPI sağlayıcılarından çekilen aktif oyunlar.</p>
+            <p>Betnex sağlayıcılarından çekilen aktif oyunlar.</p>
           </div>
           <strong>${games.length}</strong>
         </section>
@@ -11304,8 +11221,8 @@ document.addEventListener("click", () => {
     bbRenderRealGames("Sanal Oyunlar");
   };
 
-  window.bbClearRapidGameCache = function(){
-    localStorage.removeItem("bozobet_live_rapid_games");
+  window.bbClearBetnexGameCache = function(){
+    localStorage.removeItem("bozobet_live_betnex_games");
     alert("Oyun cache temizlendi. Sayfayı yenile.");
   };
 })();

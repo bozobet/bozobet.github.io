@@ -1,8 +1,6 @@
 // BOZOBET MOBILE FINAL OVERRIDE
 (function(){
-  const RAPID_HOST = "live-casino-slots-evolution-jili-and-50-plus-provider.p.rapidapi.com";
-  const RAPID_BASE = "https://live-casino-slots-evolution-jili-and-50-plus-provider.p.rapidapi.com";
-  const RAPID_KEY = "d2feaff000msh0860d1e17b42ef2p19096ajsn5ddc9f39720e";
+  const GAME_API_BASE = "/api";
 
   const AS = "assets/mobile/";
 
@@ -40,21 +38,21 @@
     return `<main class="app-shell">${html}</main>`;
   }
 
-  function storedRapid(){
-    try{return JSON.parse(localStorage.getItem("bozobet_real_rapid_games_final") || "[]");}
+  function storedGames(){
+    try{return JSON.parse(localStorage.getItem("bozobet_betnex_games_final") || "[]");}
     catch(e){return [];}
   }
 
-  function saveRapid(games){
-    localStorage.setItem("bozobet_real_rapid_games_final", JSON.stringify(games || []));
+  function saveGames(games){
+    localStorage.setItem("bozobet_betnex_games_final", JSON.stringify(games || []));
   }
 
   function mergeGames(){
-    const rapid = storedRapid();
+    const loadedGames = storedGames();
     const merged = [];
 
     CATALOG.forEach(c => {
-      const match = rapid.find(r => {
+      const match = loadedGames.find(r => {
         const t = String(r.title || "").toLowerCase();
         return c.keys.some(k => t.includes(k));
       });
@@ -68,7 +66,7 @@
       });
     });
 
-    rapid.forEach(r => {
+    loadedGames.forEach(r => {
       const exists = merged.some(m => String(m.gameId) === String(r.gameId) || String(m.title).toLowerCase() === String(r.title).toLowerCase());
       if(!exists) merged.push(r);
     });
@@ -99,21 +97,18 @@
   }
 
   async function fetchProvider(provider){
-    const res = await fetch(`${RAPID_BASE}/getallgamesandprovider?provider=${encodeURIComponent(provider)}`, {
-      headers:{
-        "Content-Type":"application/json",
-        "x-rapidapi-host":RAPID_HOST,
-        "x-rapidapi-key":RAPID_KEY
-      }
-    });
+    const res = await fetch(`${GAME_API_BASE}/games?provider=${encodeURIComponent(provider)}`);
+    if(!res.ok) throw new Error(`Oyun kataloğu yüklenemedi: ${res.status}`);
     const json = await res.json();
     return findArray(json).map((g,i)=>norm(g,provider,i)).filter(g=>g.gameId && g.title);
   }
 
-  async function loadRapidGames(){
-    if(storedRapid().some(g => g.gameId)) return storedRapid();
+  async function loadProviderGames(){
+    if(storedGames().some(g => g.gameId)) return storedGames();
 
-    const providers = ["SPRIBE","PRAGMATIC PLAY","PRAGMATICPLAY","EVOLUTION","JILI"];
+    const providerResponse = await fetch(`${GAME_API_BASE}/providers`);
+    if(!providerResponse.ok) throw new Error(`Provider listesi yüklenemedi: ${providerResponse.status}`);
+    const providers = findArray(await providerResponse.json()).map(p => typeof p === "string" ? p : p.provider || p.name || p.code || p.id).filter(Boolean);
     const all = [];
 
     for(const p of providers){
@@ -129,7 +124,7 @@
     const map = new Map();
     all.forEach(g => map.set(`${g.provider}_${g.gameId}`, g));
     const final = [...map.values()];
-    if(final.length) saveRapid(final);
+    if(final.length) saveGames(final);
     return final;
   }
 
@@ -149,7 +144,7 @@
     let g = games.find(x => String(x.title).toLowerCase() === String(title).toLowerCase());
 
     if(!g?.gameId){
-      await loadRapidGames();
+      await loadProviderGames();
       games = mergeGames();
       g = games.find(x => String(x.title).toLowerCase() === String(title).toLowerCase());
     }
@@ -163,12 +158,10 @@
       const u = currentUser();
       const username = "bozobet_user_" + (u.username || u.id || Date.now());
 
-      const res = await fetch(`${RAPID_BASE}/getgameurl`, {
+      const res = await fetch(`${GAME_API_BASE}/game-url`, {
         method:"POST",
         headers:{
-          "Content-Type":"application/json",
-          "x-rapidapi-host":RAPID_HOST,
-          "x-rapidapi-key":RAPID_KEY
+          "Content-Type":"application/json"
         },
         body:JSON.stringify({
           username,
@@ -182,7 +175,7 @@
       });
 
       const json = await res.json();
-      const url = json.url || json.gameUrl || json.game_url || json.launch_url || json.launchUrl || json.data?.url || json.data?.gameUrl || json.data?.game_url || "";
+      const url = json.launchUrl;
 
       if(!url){
         console.log("Game URL response:", json);
@@ -261,7 +254,7 @@
 
     bottomNav();
 
-    loadRapidGames().then(() => {
+    loadProviderGames().then(() => {
       const fresh = mergeGames();
       const grid = document.querySelector(".bbf-grid");
       const count = document.querySelector(".bbf-hero strong");
@@ -316,7 +309,7 @@
   });
 
   window.bbClearRealGames = function(){
-    localStorage.removeItem("bozobet_real_rapid_games_final");
+    localStorage.removeItem("bozobet_betnex_games_final");
     alert("Oyun cache temizlendi. Sayfayı yenile.");
   };
 })();

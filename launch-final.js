@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const API_URL = "https://bozobet-v2.vercel.app/api/game-url";
+  const API_URL = "/api/game-url";
 
   function getUser() {
     try {

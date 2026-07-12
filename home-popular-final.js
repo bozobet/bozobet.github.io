@@ -38,16 +38,25 @@
   async function loadGames() {
     if (allGames.length) return allGames;
 
-    const response = await fetch(`games.json?v=home-popular-final-1`, {
-      cache: "no-store"
-    });
-
-    if (!response.ok) {
-      throw new Error("games.json yüklenemedi");
-    }
-
-    const json = await response.json();
-    allGames = Array.isArray(json.games) ? json.games : [];
+    const providerResponse = await fetch("/api/providers");
+    if (!providerResponse.ok) throw new Error("Provider listesi yüklenemedi");
+    const providerJson = await providerResponse.json();
+    const providerList = Array.isArray(providerJson) ? providerJson : providerJson.providers || providerJson.data || [];
+    const providers = providerList.map(item => typeof item === "string" ? item : item.provider || item.name || item.code || item.id).filter(Boolean);
+    const catalogs = await Promise.all(providers.map(async provider => {
+      const response = await fetch(`/api/games?provider=${encodeURIComponent(provider)}`);
+      if(!response.ok) return [];
+      const json = await response.json();
+      const list = Array.isArray(json) ? json : json.games || json.data || [];
+      return list.map(game => ({
+        id: String(game.gameId || game.game_id || game.id || game.code || ""),
+        name: String(game.gameName || game.name || game.title || "Oyun"),
+        img: String(game.image || game.img || game.icon || game.thumbnail || ""),
+        provider: String(game.provider || game.providerName || provider),
+        type: String(game.category || game.type || game.gameType || "Casino")
+      }));
+    }));
+    allGames = catalogs.flat();
 
     return allGames;
   }

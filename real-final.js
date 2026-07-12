@@ -33,18 +33,41 @@
   }
 
   async function loadGames() {
-    const response = await fetch(`games.json?v=real-final-5`, {
-      cache: "no-store"
-    });
+    const providerResponse = await fetch("/api/providers");
+    if (!providerResponse.ok) throw new Error(`Provider listesi yüklenemedi: ${providerResponse.status}`);
+    const providerJson = await providerResponse.json();
+    const providers = findArray(providerJson)
+      .map(item => typeof item === "string" ? item : item.provider || item.name || item.code || item.id)
+      .filter(Boolean);
 
-    if (!response.ok) {
-      throw new Error(`games.json yüklenemedi: ${response.status}`);
-    }
-
-    const json = await response.json();
-    games = Array.isArray(json.games) ? json.games : [];
+    const catalogs = await Promise.all(providers.map(async provider => {
+      const response = await fetch(`/api/games?provider=${encodeURIComponent(provider)}`);
+      if (!response.ok) throw new Error(`${provider} oyunları yüklenemedi: ${response.status}`);
+      return findArray(await response.json()).map((game, index) => normalizeGame(game, provider, index));
+    }));
+    games = catalogs.flat().filter(game => game.id && game.name);
 
     return games;
+  }
+
+  function findArray(value) {
+    if (Array.isArray(value)) return value;
+    if (!value || typeof value !== "object") return [];
+    for (const key of ["data", "providers", "games", "result", "results", "items", "list"]) {
+      const found = findArray(value[key]);
+      if (found.length) return found;
+    }
+    return [];
+  }
+
+  function normalizeGame(game, provider, index) {
+    return {
+      id: String(game.gameId || game.game_id || game.id || game.code || game.slug || ""),
+      name: String(game.gameName || game.name || game.title || `Oyun ${index + 1}`),
+      img: String(game.image || game.img || game.icon || game.thumbnail || game.logo || ""),
+      provider: String(game.provider || game.providerName || provider),
+      type: String(game.category || game.type || game.gameType || "Casino")
+    };
   }
 
   function filteredGames() {
@@ -151,7 +174,7 @@
     renderGrid();
   };
 
-  window.rfOpenGame = function (gameId) {
+  window.rfOpenGame = async function (gameId) {
     if (!currentUser()) {
       alert("Lütfen hesabınıza giriş yapın.");
 
@@ -162,9 +185,19 @@
       return;
     }
 
-    alert(
-      "Oyun listesi ve gerçek görseller hazır. Oyunu açmak için API anahtarını gizleyen sunucu bağlantısını eklememiz gerekiyor."
-    );
+    try {
+      const current = currentUser();
+      const response = await fetch("/api/game-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: current.username || current.id, gameId: String(gameId) })
+      });
+      const data = await response.json();
+      if (!response.ok || !data.launchUrl) throw new Error(data.error || "Oyun bağlantısı alınamadı.");
+      window.open(data.launchUrl, "_blank");
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   async function renderGamesPage(title) {
@@ -189,7 +222,7 @@
           <div>
             <span>OYUNLAR</span>
             <h1>${esc(title)}</h1>
-            <p>RapidAPI sağlayıcılarından alınan gerçek oyun kataloğu.</p>
+            <p>Betnex sağlayıcılarından alınan gerçek oyun kataloğu.</p>
           </div>
 
           <strong>${games.length}</strong>
@@ -406,7 +439,7 @@ window.rfOpenGame = async function (gameId) {
 
   try {
     const response = await fetch(
-      "https://bozobet-v2.vercel.app/api/game-url",
+      "/api/game-url",
       {
         method: "POST",
         headers: {
