@@ -93,8 +93,8 @@ function shell(content){
 
       <div class="actions">
         ${user ? `<div class="balance" onclick="renderProfile()">${money(user.balance)} <span>⌄</span></div><button class="btn icon" onclick="renderDepositSitePage()">+</button>` : ""}
-        ${user ? `<button class="btn" onclick="logout()">Çıkış</button>` : `<button class="btn" onclick="loginModal()">Giriş Yap</button>`}
-        ${user ? "" : `<button class="btn primary" onclick="registerModal()">👤 Üye Ol</button>`}
+        ${user ? `<button class="btn" type="button" onclick="logout()">Çıkış</button>` : `<button id="headerLoginButton" class="btn" type="button" data-auth-trigger="login" onclick="loginModal()">Giriş Yap</button>`}
+        ${user ? "" : `<button id="headerRegisterButton" class="btn primary" type="button" data-auth-trigger="register" onclick="registerModal()">👤 Üye Ol</button>`}
       </div>
     </header>
 
@@ -119,10 +119,10 @@ function renderHome(){
 
     <section class="mobile-hero-slider" id="mobileHeroSlider" aria-label="Kampanyalar">
       <div class="mobile-hero-track">
-        <img class="mobile-hero-slide active" src="assets/banners/home-hero.webp" alt="BozoBet hoş geldin kampanyası">
-        <img class="mobile-hero-slide" src="assets/banners/sports-hero.webp" alt="BozoBet spor kampanyası">
-        <img class="mobile-hero-slide" src="assets/banners/roulette-hero.webp" alt="BozoBet rulet kampanyası">
-        <img class="mobile-hero-slide" src="assets/banners/slot-hero.webp" alt="BozoBet slot kampanyası">
+        <img class="mobile-hero-slide active" src="assets/banners/970x250/home-hero.png" alt="BozoBet hoş geldin kampanyası">
+        <img class="mobile-hero-slide" src="assets/banners/970x250/sports-hero.png" alt="BozoBet spor kampanyası">
+        <img class="mobile-hero-slide" src="assets/banners/970x250/roulette-hero.png" alt="BozoBet rulet kampanyası">
+        <img class="mobile-hero-slide" src="assets/banners/970x250/slot-hero.png" alt="BozoBet slot kampanyası">
         <img class="mobile-hero-slide" src="assets/mobile/banners/live-casino-hero-1.png" alt="BozoBet canlı casino kampanyası">
         <img class="mobile-hero-slide" src="assets/mobile/banners/big-prize-banner.png" alt="BozoBet büyük ödül kampanyası">
         <img class="mobile-hero-slide" src="assets/mobile/banners/vip-casino-banner.png" alt="BozoBet VIP casino kampanyası">
@@ -308,6 +308,17 @@ function modal(html){
 new MutationObserver(syncAuthModalScrollLock).observe(document.body, {
   childList:true
 });
+
+document.addEventListener("click", event => {
+  const trigger = event.target.closest("[data-auth-trigger]");
+  if(!trigger) return;
+
+  event.preventDefault();
+  event.stopImmediatePropagation();
+
+  if(trigger.dataset.authTrigger === "login") loginModal();
+  if(trigger.dataset.authTrigger === "register") registerModal();
+}, true);
 
 function loginModal(){
   modal(`
@@ -640,6 +651,7 @@ function updateMobileHeroSlider(){
 
   const slides = [...slider.querySelectorAll(".mobile-hero-slide")];
   const dots = [...slider.querySelectorAll(".mobile-hero-dots button")];
+  if(!slides.length) return;
   const index = ((window.bozobetMobileHeroIndex % slides.length) + slides.length) % slides.length;
 
   window.bozobetMobileHeroIndex = index;

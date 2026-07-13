@@ -9292,6 +9292,8 @@ body.auth-modal-open {
     height:48px!important;
     margin:0 auto 0 0!important;
     transform:none!important;
+    z-index:4!important;
+    pointer-events:auto!important;
     z-index:2!important;
   }
 
@@ -9339,6 +9341,10 @@ body.auth-modal-open {
     text-overflow:ellipsis!important;
     overflow:hidden!important;
     white-space:nowrap!important;
+    position:relative!important;
+    z-index:5!important;
+    pointer-events:auto!important;
+    touch-action:manipulation;
   }
 
   .topbar .actions .btn.primary,
@@ -9367,7 +9373,9 @@ body.auth-modal-open {
     position:relative;
     display:block;
     width:100%!important;
-    height:auto!important;
+    height:clamp(130px,43.75vw,210px)!important;
+    min-height:130px!important;
+    max-height:210px!important;
     aspect-ratio:16 / 7!important;
     margin:12px 0 0!important;
     border-radius:18px!important;
@@ -9376,6 +9384,8 @@ body.auth-modal-open {
     overflow:hidden!important;
     box-shadow:0 16px 34px rgba(0,0,0,.34);
     touch-action:pan-y;
+    visibility:visible!important;
+    opacity:1!important;
   }
 
   .mobile-hero-track,
