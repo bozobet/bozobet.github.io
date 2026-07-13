@@ -1,4 +1,218 @@
-let user = JSON.parse(localStorage.getItem("bozobet_user") || "null");
+const AUTH_CURRENT_USER_KEY = "bozobetCurrentUser";
+const AUTH_SESSION_KEY = "bozobetSession";
+const AUTH_REMEMBER_KEY = "bozobetRememberMe";
+const AUTH_SESSION_MAX_IDLE = 2 * 60 * 60 * 1000;
+const AUTH_TOUCH_THROTTLE = 30 * 1000;
+const LEGACY_AUTH_KEYS = [
+  "bozobet_user",
+  "bozobet_current_user",
+  "currentUser",
+  "loggedInUser",
+  "userSession",
+  "bozobetUser"
+];
+
+function parseStoredJson(storage, key){
+  try{
+    return JSON.parse(storage.getItem(key) || "null");
+  }catch(error){
+    storage.removeItem(key);
+    return null;
+  }
+}
+
+function sessionStorageFor(rememberMe){
+  return rememberMe ? localStorage : sessionStorage;
+}
+
+function sanitizeSessionUser(value){
+  if(!value || typeof value !== "object" || (!value.username && !value.id)) return null;
+  const safeUser = {...value};
+  delete safeUser.password;
+  return safeUser;
+}
+
+function isSessionValid(session){
+  if(!session || typeof session !== "object") return false;
+  const lastActivity = Number(session.lastActivity);
+  return Boolean(
+    (session.userId || session.username) &&
+    Number.isFinite(lastActivity) &&
+    Date.now() - lastActivity < AUTH_SESSION_MAX_IDLE
+  );
+}
+
+function writeSession(storage, authUser, session){
+  storage.setItem(AUTH_CURRENT_USER_KEY, JSON.stringify(authUser));
+  storage.setItem(AUTH_SESSION_KEY, JSON.stringify(session));
+  storage.setItem(AUTH_REMEMBER_KEY, String(session.rememberMe));
+}
+
+function clearAuthStorage(storage){
+  storage.removeItem(AUTH_CURRENT_USER_KEY);
+  storage.removeItem(AUTH_SESSION_KEY);
+  storage.removeItem(AUTH_REMEMBER_KEY);
+}
+
+function saveSession(authUser, rememberMe){
+  const safeUser = sanitizeSessionUser(authUser);
+  if(!safeUser) return null;
+
+  const persistent = Boolean(rememberMe);
+  const now = Date.now();
+  const session = {
+    userId:safeUser.id || safeUser.username,
+    username:safeUser.username || String(safeUser.id),
+    loginTime:now,
+    lastActivity:now,
+    rememberMe:persistent
+  };
+
+  clearAuthStorage(localStorage);
+  clearAuthStorage(sessionStorage);
+  writeSession(sessionStorageFor(persistent), safeUser, session);
+  LEGACY_AUTH_KEYS.forEach(key => {
+    localStorage.removeItem(key);
+    sessionStorage.removeItem(key);
+  });
+  return safeUser;
+}
+
+function loadSessionFrom(storage, expectedRememberMe){
+  const session = parseStoredJson(storage, AUTH_SESSION_KEY);
+  const storedUser = sanitizeSessionUser(parseStoredJson(storage, AUTH_CURRENT_USER_KEY));
+  const rememberValue = storage.getItem(AUTH_REMEMBER_KEY) === "true";
+
+  if(!session && !storedUser) return null;
+  if(!isSessionValid(session) || !storedUser || rememberValue !== expectedRememberMe || Boolean(session.rememberMe) !== expectedRememberMe){
+    clearAuthStorage(storage);
+    return null;
+  }
+  if(String(session.userId) !== String(storedUser.id || storedUser.username)){
+    clearAuthStorage(storage);
+    return null;
+  }
+  return storedUser;
+}
+
+function migrateLegacySession(){
+  const legacyUser = sanitizeSessionUser(parseStoredJson(localStorage, "bozobet_user"));
+  LEGACY_AUTH_KEYS.forEach(key => {
+    localStorage.removeItem(key);
+    sessionStorage.removeItem(key);
+  });
+  return legacyUser ? saveSession(legacyUser, true) : null;
+}
+
+function loadSession(){
+  const persistentUser = loadSessionFrom(localStorage, true);
+  if(persistentUser){
+    clearAuthStorage(sessionStorage);
+    return persistentUser;
+  }
+
+  const temporaryUser = loadSessionFrom(sessionStorage, false);
+  if(temporaryUser) return temporaryUser;
+
+  return migrateLegacySession();
+}
+
+function clearSession(){
+  clearAuthStorage(localStorage);
+  clearAuthStorage(sessionStorage);
+  LEGACY_AUTH_KEYS.forEach(key => {
+    localStorage.removeItem(key);
+    sessionStorage.removeItem(key);
+  });
+}
+
+function activeSessionStorage(){
+  if(isSessionValid(parseStoredJson(localStorage, AUTH_SESSION_KEY))) return localStorage;
+  if(isSessionValid(parseStoredJson(sessionStorage, AUTH_SESSION_KEY))) return sessionStorage;
+  return null;
+}
+
+function touchSession(){
+  if(!user) return false;
+  const storage = activeSessionStorage();
+  if(!storage){
+    clearSession();
+    applyGuestUI(true);
+    return false;
+  }
+
+  const session = parseStoredJson(storage, AUTH_SESSION_KEY);
+  session.lastActivity = Date.now();
+  storage.setItem(AUTH_SESSION_KEY, JSON.stringify(session));
+  return true;
+}
+
+function persistSessionUser(){
+  if(!user) return;
+  const storage = activeSessionStorage();
+  const safeUser = sanitizeSessionUser(user);
+  if(storage && safeUser) storage.setItem(AUTH_CURRENT_USER_KEY, JSON.stringify(safeUser));
+  window.user = safeUser;
+}
+
+function applyAuthenticatedUI(authUser, rerender){
+  user = sanitizeSessionUser(authUser);
+  window.user = user;
+  document.body.classList.toggle("is-authenticated", Boolean(user));
+  document.body.classList.toggle("is-guest", !user);
+  if(rerender && typeof renderHome === "function") renderHome();
+}
+
+function applyGuestUI(rerender){
+  user = null;
+  window.user = null;
+  document.body.classList.remove("is-authenticated");
+  document.body.classList.add("is-guest");
+  if(rerender && typeof renderHome === "function") renderHome();
+}
+
+function getAuthenticatedUser(){
+  if(!user) return null;
+  if(!activeSessionStorage()){
+    clearSession();
+    applyGuestUI(true);
+    return null;
+  }
+  return user;
+}
+
+let user = null;
+user = loadSession();
+if(user) applyAuthenticatedUI(user);
+else applyGuestUI();
+
+window.saveSession = saveSession;
+window.loadSession = loadSession;
+window.clearSession = clearSession;
+window.isSessionValid = isSessionValid;
+window.touchSession = touchSession;
+window.applyAuthenticatedUI = applyAuthenticatedUI;
+window.applyGuestUI = applyGuestUI;
+window.getAuthenticatedUser = getAuthenticatedUser;
+
+let lastSessionTouch = 0;
+function throttledSessionTouch(){
+  const now = Date.now();
+  if(now - lastSessionTouch < AUTH_TOUCH_THROTTLE) return;
+  lastSessionTouch = now;
+  touchSession();
+}
+
+["mousemove", "keydown", "click", "touchstart"].forEach(eventName => {
+  document.addEventListener(eventName, throttledSessionTouch, {passive:true});
+});
+
+setInterval(() => {
+  if(user && !activeSessionStorage()){
+    clearSession();
+    applyGuestUI(true);
+  }
+}, 60 * 1000);
 let coupon = (() => {
   try{
     const stored = JSON.parse(localStorage.getItem("bozobetBetSlip") || "[]");
@@ -552,7 +766,7 @@ function money(n){
 }
 
 function saveUser(){
-  localStorage.setItem("bozobet_user", JSON.stringify(user));
+  persistSessionUser();
 }
 
 function shell(content){
@@ -578,7 +792,7 @@ function shell(content){
       </nav>
 
       <div class="actions mobile-header-actions">
-        ${user ? `<div class="balance" onclick="renderProfile()">${money(user.balance)} <span>⌄</span></div><button class="btn icon" onclick="renderDepositSitePage()">+</button>` : ""}
+        ${user ? `<div class="balance" onclick="renderProfile()"><strong>${user.username}</strong> · ${money(user.balance)} <span>⌄</span></div><button class="btn icon" onclick="renderDepositSitePage()">+</button>` : ""}
         ${user ? `<button class="btn" type="button" onclick="logout()">Çıkış</button>` : `<button id="headerLoginButton" class="btn" type="button" data-auth-trigger="login" onclick="loginModal()">Giriş Yap</button>`}
         ${user ? "" : `<button id="headerRegisterButton" class="btn primary" type="button" data-auth-trigger="register" onclick="registerModal()">👤 Üye Ol</button>`}
       </div>
@@ -846,7 +1060,7 @@ function loginModal(){
 
         <div class="login-extra">
           <label>
-            <input type="checkbox" checked>
+            <input id="loginRememberMe" type="checkbox" checked>
             <span>Beni hatırla</span>
           </label>
           <a href="#">Şifremi unuttum</a>
@@ -1017,7 +1231,8 @@ function loginLegacy(){
     };
   }
 
-  saveUser();
+  user = saveSession(user, document.getElementById("loginRememberMe")?.checked === true);
+  applyAuthenticatedUI(user);
   document.querySelector(".modal-back").remove();
   renderHome();
 }
@@ -1061,15 +1276,15 @@ function registerLegacy(){
     role:"user"
   };
 
-  saveUser();
+  user = saveSession(user, true);
+  applyAuthenticatedUI(user);
   document.querySelector(".modal-back").remove();
   renderHome();
 }
 
 function logout(){
-  user = null;
-  localStorage.removeItem("bozobet_user");
-  renderHome();
+  clearSession();
+  applyGuestUI(true);
 }
 
 function fakeDeposit(){
@@ -1929,7 +2144,8 @@ function register(){
   user = {...newUser};
   delete user.password;
 
-  saveUser();
+  user = saveSession(user, true);
+  applyAuthenticatedUI(user);
   document.querySelector(".modal-back").remove();
   renderHome();
 }
@@ -1956,7 +2172,8 @@ function login(){
       role:"admin"
     };
 
-    saveUser();
+    user = saveSession(user, document.getElementById("loginRememberMe")?.checked === true);
+    applyAuthenticatedUI(user);
     document.querySelector(".modal-back").remove();
     renderAdminDashboard();
     return;
@@ -1974,7 +2191,8 @@ function login(){
   user = {...found};
   delete user.password;
 
-  saveUser();
+  user = saveSession(user, document.getElementById("loginRememberMe")?.checked === true);
+  applyAuthenticatedUI(user);
   document.querySelector(".modal-back").remove();
   renderHome();
 }
@@ -3092,7 +3310,8 @@ login = function(){
       status:"active"
     };
 
-    saveUser();
+    user = saveSession(user, document.getElementById("loginRememberMe")?.checked === true);
+    applyAuthenticatedUI(user);
     document.querySelector(".modal-back")?.remove();
     renderAdminDashboard();
     return;
@@ -3115,7 +3334,8 @@ login = function(){
   user = {...found, status: found.status || "active"};
   delete user.password;
 
-  saveUser();
+  user = saveSession(user, document.getElementById("loginRememberMe")?.checked === true);
+  applyAuthenticatedUI(user);
   document.querySelector(".modal-back")?.remove();
   renderHome();
 };

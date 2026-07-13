@@ -15,15 +15,9 @@
       .replaceAll("'", "&#039;");
 
   function currentUser() {
-    try {
-      return (
-        window.user ||
-        JSON.parse(localStorage.getItem("bozobet_user") || "null") ||
-        JSON.parse(localStorage.getItem("bozobet_current_user") || "null")
-      );
-    } catch {
-      return window.user || null;
-    }
+    return typeof window.getAuthenticatedUser === "function"
+      ? window.getAuthenticatedUser()
+      : window.user || null;
   }
 
   function shellSafe(content) {
@@ -365,16 +359,9 @@
 
 // GAME LAUNCH HARD FIX V2
 window.rfOpenGame = async function (gameId) {
-  let currentUser = null;
-
-  try {
-    currentUser =
-      window.user ||
-      JSON.parse(localStorage.getItem("bozobet_user") || "null") ||
-      JSON.parse(localStorage.getItem("bozobet_current_user") || "null");
-  } catch (error) {
-    currentUser = window.user || null;
-  }
+  const currentUser = typeof window.getAuthenticatedUser === "function"
+    ? window.getAuthenticatedUser()
+    : window.user || null;
 
   if (!currentUser) {
     alert("Lütfen hesabınıza giriş yapın.");

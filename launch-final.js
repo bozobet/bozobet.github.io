@@ -4,15 +4,9 @@
   const API_URL = "/api/game-url";
 
   function getUser() {
-    try {
-      return (
-        window.user ||
-        JSON.parse(localStorage.getItem("bozobet_user") || "null") ||
-        JSON.parse(localStorage.getItem("bozobet_current_user") || "null")
-      );
-    } catch {
-      return window.user || null;
-    }
+    return typeof window.getAuthenticatedUser === "function"
+      ? window.getAuthenticatedUser()
+      : window.user || null;
   }
 
   function makeUsername(user) {
