@@ -1,5 +1,488 @@
 let user = JSON.parse(localStorage.getItem("bozobet_user") || "null");
-let coupon = [];
+let coupon = (() => {
+  try{
+    const stored = JSON.parse(localStorage.getItem("bozobetBetSlip") || "[]");
+    return Array.isArray(stored) ? stored : [];
+  }catch(error){
+    return [];
+  }
+})();
+
+// MOBILE ROUTING + PERSISTENT DEMO COUPON SYSTEM
+(function(){
+  "use strict";
+
+  const BET_SLIP_KEY = "bozobetBetSlip";
+  const COUPON_HISTORY_KEY = "bozobetCouponHistory";
+  const COUPON_STAKE_KEY = "bozobetCouponStake";
+  const MOBILE_VIEW_KEY = "bozobetMobileView";
+  const mobilePages = ["home", "sports", "casino", "coupon", "profile"];
+  let activeMobilePage = "home";
+  let activeCouponTab = "active";
+  let navSyncQueued = false;
+
+  function esc(value){
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function readArray(key){
+    try{
+      const value = JSON.parse(localStorage.getItem(key) || "[]");
+      return Array.isArray(value) ? value : [];
+    }catch(error){
+      return [];
+    }
+  }
+
+  function saveCoupon(){
+    localStorage.setItem(BET_SLIP_KEY, JSON.stringify(coupon));
+  }
+
+  function getStake(){
+    const stored = localStorage.getItem(COUPON_STAKE_KEY);
+    const legacy = localStorage.getItem("coupon_stake");
+    const value = Number(stored ?? legacy ?? 100);
+    return Number.isFinite(value) && value >= 0 ? value : 0;
+  }
+
+  function totalOdd(){
+    return coupon.reduce((total, selection) => {
+      const odd = Number(selection.odd);
+      return total * (Number.isFinite(odd) && odd > 0 ? odd : 1);
+    }, 1);
+  }
+
+  function selectionResult(match, pick){
+    if(pick === "1") return match.home || "Ev sahibi";
+    if(pick === "X") return "Beraberlik";
+    return match.away || "Deplasman";
+  }
+
+  function matchKey(match){
+    return `${match.home || ""} - ${match.away || ""}`;
+  }
+
+  function isSelected(match, pick){
+    return coupon.some(item => item.match === match && item.pick === pick);
+  }
+
+  // The live and upcoming match renderers share this markup on home and sports pages.
+  window.matchHtml = function(match){
+    const key = matchKey(match);
+    const teamLogo = typeof teamLogoHtml === "function"
+      ? teamLogoHtml
+      : (name, fallback) => `<span class="club-logo">${esc(fallback || "⚽")}</span>`;
+    const oddButton = (pick, odd) => `
+      <button
+        type="button"
+        class="odd ${isSelected(key, pick) ? "selected" : ""}"
+        data-match-id="${esc(key)}"
+        data-league="${esc(match.league)}"
+        data-pick="${pick}"
+        data-result="${esc(selectionResult(match, pick))}"
+        data-odd="${esc(odd)}"
+        aria-pressed="${isSelected(key, pick)}"
+        onclick="addToCouponFromButton(this)"
+      ><span>${pick}</span><b>${esc(odd)}</b></button>`;
+
+    return `
+      <div class="match pro-match" data-match-id="${esc(key)}">
+        <div class="match-status">
+          <span class="${match.status === "CANLI" ? "live live-pulse" : "time-badge"}">${esc(match.status)}</span>
+          <small>${esc(match.minute)}</small>
+        </div>
+        <div class="teams pro-teams">
+          <small><span>${esc(match.flag)}</span> ${esc(match.league)}</small>
+          <div class="team-row">
+            <div class="club">${teamLogo(match.home, match.homeLogo)}<b>${esc(match.home)}</b></div>
+            <div class="score-box">${esc(match.score)}</div>
+            <div class="club away"><b>${esc(match.away)}</b>${teamLogo(match.away, match.awayLogo)}</div>
+          </div>
+        </div>
+        <div class="odds pro-odds">
+          ${oddButton("1", match.odds?.[0])}
+          ${oddButton("X", match.odds?.[1])}
+          ${oddButton("2", match.odds?.[2])}
+        </div>
+        <div class="more">${esc(match.markets)} ›</div>
+      </div>`;
+  };
+
+  function syncSelectedOdds(){
+    document.querySelectorAll(".odd[data-match-id]").forEach(button => {
+      const selected = coupon.some(item =>
+        item.match === button.dataset.matchId && item.pick === button.dataset.pick
+      );
+      button.classList.toggle("selected", selected);
+      button.setAttribute("aria-pressed", String(selected));
+    });
+  }
+
+  function couponBadgeCount(){
+    return coupon.length;
+  }
+
+  function canonicalNavHtml(){
+    const items = [
+      ["home", "assets/mobile/icons/nav-home-transparent.png", "Ana Sayfa"],
+      ["sports", "assets/mobile/icons/nav-sports-transparent.png", "Spor"],
+      ["casino", "assets/mobile/icons/nav-casino-transparent.png", "Casino"],
+      ["coupon", "assets/mobile/icons/nav-coupon-transparent.png", "Kupon"],
+      ["profile", "assets/mobile/icons/nav-account-transparent.png", "Hesabım"]
+    ];
+
+    return items.map(([page, icon, label]) => `
+      <button type="button" data-page="${page}" class="${page === "coupon" ? "coupon" : ""}">
+        <img src="${icon}" alt="" aria-hidden="true">
+        ${page === "coupon" ? `<i class="bb-mobile-coupon-badge">${couponBadgeCount()}</i>` : ""}
+        <b>${label}</b>
+      </button>`).join("");
+  }
+
+  function syncBottomNav(){
+    const navs = Array.from(document.querySelectorAll(".bb-bottom-nav-real"));
+    const nav = navs.at(-1);
+    navs.slice(0, -1).forEach(item => item.remove());
+    document.querySelectorAll(".bb-bottom-nav-final,.bb-gen-bottom-nav,.bbf-nav,.bb-clean-nav")
+      .forEach(item => item.remove());
+
+    if(!nav) return;
+    if(nav.dataset.mobileCouponNav !== "1"){
+      nav.dataset.mobileCouponNav = "1";
+      nav.setAttribute("aria-label", "Mobil alt navigasyon");
+      nav.innerHTML = canonicalNavHtml();
+    }
+
+    nav.querySelectorAll(":scope > button").forEach(button => {
+      const isActive = button.dataset.page === activeMobilePage;
+      button.classList.toggle("active", isActive);
+      if(isActive) button.setAttribute("aria-current", "page");
+      else button.removeAttribute("aria-current");
+    });
+
+    const badge = nav.querySelector(".bb-mobile-coupon-badge");
+    if(badge) badge.textContent = String(couponBadgeCount());
+  }
+
+  function queueNavSync(){
+    if(navSyncQueued) return;
+    navSyncQueued = true;
+    requestAnimationFrame(() => {
+      navSyncQueued = false;
+      syncBottomNav();
+    });
+  }
+
+  function ensureBottomNav(){
+    let nav = document.querySelector(".bb-bottom-nav-real");
+    if(!nav){
+      nav = document.createElement("nav");
+      nav.className = "bb-bottom-nav-real";
+      document.body.appendChild(nav);
+    }
+    syncBottomNav();
+  }
+
+  function setMobilePage(page, updateHistory){
+    if(!mobilePages.includes(page)) page = "home";
+    activeMobilePage = page;
+    window.bbActiveBottomPage = page;
+    localStorage.setItem(MOBILE_VIEW_KEY, page);
+
+    if(updateHistory){
+      const hash = `#${page}`;
+      if(location.hash !== hash) history.pushState({ bozobetPage:page }, "", hash);
+    }
+    queueNavSync();
+  }
+
+  function renderCouponEmpty(){
+    return `
+      <div class="mobile-coupon-empty">
+        <div class="mobile-coupon-empty-icon" aria-hidden="true">▤</div>
+        <h2>Kuponunuz henüz boş</h2>
+        <p>Bahis oranlarına dokunarak kuponunuza seçim ekleyebilirsiniz.</p>
+        <button type="button" class="btn primary" onclick="navigateMobile('sports')">Bahislere Git</button>
+      </div>`;
+  }
+
+  function renderCouponSelections(){
+    const stake = getStake();
+    const odd = totalOdd();
+    const possibleWin = stake * odd;
+
+    return `
+      <div class="mobile-coupon-selections">
+        ${coupon.map(selection => `
+          <article class="mobile-coupon-selection">
+            <div class="mobile-coupon-selection-head">
+              <small>${esc(selection.league || "Spor Bahisleri")}</small>
+              <button type="button" data-match-id="${esc(selection.match)}" onclick="removeCouponSelection(this)" aria-label="Seçimi kaldır">×</button>
+            </div>
+            <h3>${esc(selection.match)}</h3>
+            <div class="mobile-coupon-pick">
+              <span><b>${esc(selection.pick)}</b>${esc(selection.result || selection.pick)}</span>
+              <strong>${Number(selection.odd).toFixed(2)}</strong>
+            </div>
+          </article>`).join("")}
+
+        <section class="mobile-coupon-summary">
+          <div><span>Toplam Oran</span><strong id="mobileCouponTotalOdd">${odd.toFixed(2)}</strong></div>
+          <label for="mobileCouponStake">Bahis Tutarı</label>
+          <div class="mobile-coupon-stake-wrap">
+            <span>₺</span>
+            <input id="mobileCouponStake" type="number" min="0.01" step="0.01" inputmode="decimal" value="${stake}" oninput="updateMobileCouponStake(this)">
+          </div>
+          <p id="mobileCouponStakeError" class="mobile-coupon-error" hidden>Geçerli ve pozitif bir bahis tutarı girin.</p>
+          <div><span>Tahmini Kazanç</span><strong id="mobileCouponPossibleWin">${money(possibleWin)}</strong></div>
+          <button id="mobileCouponPlay" type="button" class="btn primary full-btn" onclick="playCoupon()">Kuponu Oyna</button>
+          <button type="button" class="mobile-coupon-clear" onclick="clearCoupon()">Tümünü Temizle</button>
+        </section>
+      </div>`;
+  }
+
+  function currentUserHistory(){
+    const history = readArray(COUPON_HISTORY_KEY);
+    if(!user) return [];
+    const identity = String(user.id || user.username || "");
+    return history.filter(item => String(item.userId || item.username || "") === identity || item.username === user.username);
+  }
+
+  function renderCouponHistory(){
+    const history = currentUserHistory();
+    if(!user){
+      return `<div class="mobile-coupon-history-empty"><h2>Kupon geçmişi için giriş yapın</h2><p>Oynadığınız demo kuponlar hesabınıza göre listelenir.</p><button class="btn primary" type="button" onclick="loginModal()">Giriş Yap</button></div>`;
+    }
+    if(!history.length){
+      return `<div class="mobile-coupon-history-empty"><h2>Henüz oynanmış kupon yok</h2><p>Oynadığınız demo kuponlar burada görünecek.</p></div>`;
+    }
+
+    return `<div class="mobile-coupon-history-list">${history.map(item => `
+      <article class="mobile-coupon-history-card">
+        <div class="mobile-coupon-history-head"><span>${esc(new Date(item.createdAt).toLocaleString("tr-TR"))}</span><b class="status-${esc(String(item.status).toLowerCase())}">${esc(item.status)}</b></div>
+        <div class="mobile-coupon-history-grid">
+          <div><small>Seçim</small><strong>${Number(item.selectionCount || item.selections?.length || 0)}</strong></div>
+          <div><small>Toplam Oran</small><strong>${Number(item.totalOdd).toFixed(2)}</strong></div>
+          <div><small>Bahis Tutarı</small><strong>${money(item.stake)}</strong></div>
+          <div><small>Tahmini Kazanç</small><strong>${money(item.possibleWin)}</strong></div>
+        </div>
+      </article>`).join("")}</div>`;
+  }
+
+  function renderCouponView(){
+    const app = document.getElementById("app");
+    if(!app) return;
+    app.innerHTML = shell(`
+      <section id="mobile-coupon-view" class="mobile-coupon-page">
+        <header class="mobile-coupon-page-head">
+          <button type="button" onclick="navigateMobile('sports')" aria-label="Spor sayfasına dön">‹</button>
+          <div><small>BAHİS KUPONU</small><h1>Kuponum</h1></div>
+          <span>${coupon.length}</span>
+        </header>
+        <div class="mobile-coupon-tabs" role="tablist">
+          <button type="button" role="tab" aria-selected="${activeCouponTab === "active"}" class="${activeCouponTab === "active" ? "active" : ""}" onclick="setCouponTab('active')">Aktif Kupon</button>
+          <button type="button" role="tab" aria-selected="${activeCouponTab === "history"}" class="${activeCouponTab === "history" ? "active" : ""}" onclick="setCouponTab('history')">Kupon Geçmişi</button>
+        </div>
+        <div class="mobile-coupon-tab-content">
+          ${activeCouponTab === "history" ? renderCouponHistory() : (coupon.length ? renderCouponSelections() : renderCouponEmpty())}
+        </div>
+      </section>`);
+    ensureBottomNav();
+  }
+
+  window.setCouponTab = function(tab){
+    activeCouponTab = tab === "history" ? "history" : "active";
+    renderCouponView();
+  };
+
+  window.renderCoupon = function(){
+    setMobilePage("coupon", true);
+    renderCouponView();
+    window.scrollTo({ top:0, behavior:"auto" });
+  };
+
+  window.addToCouponFromButton = function(button){
+    window.addToCoupon(
+      button.dataset.matchId,
+      button.dataset.pick,
+      button.dataset.odd,
+      button.dataset.league,
+      button.dataset.result
+    );
+  };
+
+  window.addToCoupon = function(match, pick, odd, league, result){
+    const numericOdd = Number(odd);
+    if(!match || !["1", "X", "2"].includes(String(pick)) || !Number.isFinite(numericOdd) || numericOdd <= 0) return;
+    const selection = {
+      match:String(match),
+      league:String(league || "Spor Bahisleri"),
+      pick:String(pick),
+      result:String(result || pick),
+      odd:Number(numericOdd.toFixed(2))
+    };
+    const existingIndex = coupon.findIndex(item => item.match === selection.match);
+    if(existingIndex >= 0) coupon.splice(existingIndex, 1, selection);
+    else coupon.push(selection);
+    saveCoupon();
+    refreshCouponBox();
+    syncSelectedOdds();
+    queueNavSync();
+  };
+
+  window.removeCouponSelection = function(button){
+    const match = button.dataset.matchId;
+    coupon = coupon.filter(item => item.match !== match);
+    saveCoupon();
+    syncSelectedOdds();
+    renderCouponView();
+  };
+
+  window.removeCoupon = function(index){
+    if(Number.isInteger(Number(index))) coupon.splice(Number(index), 1);
+    saveCoupon();
+    refreshCouponBox();
+    syncSelectedOdds();
+    if(document.getElementById("mobile-coupon-view")) renderCouponView();
+    queueNavSync();
+  };
+
+  window.clearCoupon = function(){
+    coupon = [];
+    saveCoupon();
+    refreshCouponBox();
+    syncSelectedOdds();
+    if(document.getElementById("mobile-coupon-view")) renderCouponView();
+    queueNavSync();
+  };
+
+  window.updateMobileCouponStake = function(input){
+    const value = input.valueAsNumber;
+    const valid = Number.isFinite(value) && value > 0;
+    const error = document.getElementById("mobileCouponStakeError");
+    const playButton = document.getElementById("mobileCouponPlay");
+    if(valid){
+      localStorage.setItem(COUPON_STAKE_KEY, String(value));
+      localStorage.setItem("coupon_stake", String(value));
+    }else{
+      localStorage.setItem(COUPON_STAKE_KEY, "0");
+      localStorage.setItem("coupon_stake", "0");
+    }
+    if(error) error.hidden = valid;
+    if(playButton) playButton.disabled = !valid;
+    const possibleWin = document.getElementById("mobileCouponPossibleWin");
+    if(possibleWin) possibleWin.textContent = money(valid ? value * totalOdd() : 0);
+  };
+
+  window.playCoupon = function(){
+    if(!user){
+      loginModal();
+      return;
+    }
+    if(!coupon.length){
+      alert("Önce kuponunuza bir seçim ekleyin.");
+      return;
+    }
+    const stake = getStake();
+    if(!Number.isFinite(stake) || stake <= 0){
+      alert("Geçerli ve pozitif bir bahis tutarı girin.");
+      return;
+    }
+
+    const odd = totalOdd();
+    const history = readArray(COUPON_HISTORY_KEY);
+    const id = typeof crypto?.randomUUID === "function"
+      ? crypto.randomUUID()
+      : `coupon-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    history.unshift({
+      id,
+      userId:String(user.id || user.username || ""),
+      username:user.username || "",
+      createdAt:new Date().toISOString(),
+      status:"Bekliyor",
+      selectionCount:coupon.length,
+      selections:coupon.map(item => ({ ...item })),
+      totalOdd:Number(odd.toFixed(2)),
+      stake:Number(stake.toFixed(2)),
+      possibleWin:Number((stake * odd).toFixed(2))
+    });
+    localStorage.setItem(COUPON_HISTORY_KEY, JSON.stringify(history));
+    coupon = [];
+    saveCoupon();
+    activeCouponTab = "history";
+    renderCouponView();
+    queueNavSync();
+  };
+
+  // Keep the existing desktop sports coupon usable while sharing mobile state.
+  window.couponHtml = function(){
+    if(!coupon.length) return `<h3>Bahis Kuponu</h3><div class="empty-coupon"><b>Kuponun boş</b><span>Oran seçerek kupona ekleyebilirsin.</span></div>`;
+    return `<div class="coupon-head"><h3>Bahis Kuponu</h3><button onclick="clearCoupon()">Temizle</button></div><div class="coupon-items">${coupon.map((item, index) => `<div class="coupon-item"><button class="coupon-remove" onclick="removeCoupon(${index})">×</button><b>${esc(item.match)}</b><span>Seçim: ${esc(item.pick)} · ${esc(item.result)}</span><strong>${Number(item.odd).toFixed(2)}</strong></div>`).join("")}</div><div class="coupon-total"><span>Toplam Oran</span><b>${totalOdd().toFixed(2)}</b></div><button class="btn primary full-btn" onclick="renderCoupon()">Kuponu Aç</button>`;
+  };
+
+  function openMobilePage(page, updateHistory){
+    if(!mobilePages.includes(page)) page = "home";
+    if(page === "profile" && !user){
+      loginModal();
+      return;
+    }
+    setMobilePage(page, updateHistory);
+    if(page === "coupon") renderCouponView();
+    else if(page === "home" && typeof renderHome === "function") renderHome();
+    else if(page === "sports" && typeof renderSports === "function") renderSports();
+    else if(page === "casino" && typeof renderCasino === "function") renderCasino();
+    else if(page === "profile" && typeof renderProfile === "function") renderProfile();
+    queueNavSync();
+    window.scrollTo({ top:0, behavior:"auto" });
+  }
+
+  window.navigateMobile = function(page){
+    openMobilePage(page, true);
+  };
+
+  function installRendererTracking(){
+    const mapping = { renderHome:"home", renderSports:"sports", renderCasino:"casino", renderProfile:"profile" };
+    Object.entries(mapping).forEach(([name, page]) => {
+      const original = window[name];
+      if(typeof original !== "function" || original.mobileCouponTracked) return;
+      const wrapped = function(){
+        setMobilePage(page, location.hash !== `#${page}`);
+        const output = original.apply(this, arguments);
+        queueNavSync();
+        return output;
+      };
+      wrapped.mobileCouponTracked = true;
+      window[name] = wrapped;
+    });
+  }
+
+  document.addEventListener("click", event => {
+    const button = event.target.closest(".bb-bottom-nav-real > button[data-page]");
+    if(!button) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    openMobilePage(button.dataset.page, true);
+  }, true);
+
+  new MutationObserver(queueNavSync).observe(document.body, { childList:true, subtree:true });
+  window.addEventListener("popstate", () => openMobilePage(location.hash.slice(1) || "home", false));
+  window.addEventListener("load", () => {
+    installRendererTracking();
+    ensureBottomNav();
+    const hashPage = location.hash.slice(1);
+    const storedPage = localStorage.getItem(MOBILE_VIEW_KEY);
+    const initialPage = mobilePages.includes(hashPage)
+      ? hashPage
+      : (mobilePages.includes(storedPage) ? storedPage : "home");
+    if(window.innerWidth <= 760) openMobilePage(initialPage, false);
+    else syncSelectedOdds();
+  });
+})();
 
 let matches = JSON.parse(localStorage.getItem("bozobet_matches") || "null") || [
   {
@@ -74,8 +557,8 @@ function saveUser(){
 
 function shell(content){
   return `
-    <header class="topbar">
-      <div class="brand-logo logo-img-only" onclick="renderHome()">
+    <header class="topbar mobile-header">
+      <div class="brand-logo logo-img-only mobile-header-logo" onclick="renderHome()">
         <img src="assets/logo/logo.png" alt="BozoBet" class="clean-logo">
       </div>
 
@@ -91,7 +574,7 @@ function shell(content){
         ${user?.role === "admin" ? `<a href="#" onclick="renderAdminDashboard()">Admin</a>` : ""}
       </nav>
 
-      <div class="actions">
+      <div class="actions mobile-header-actions">
         ${user ? `<div class="balance" onclick="renderProfile()">${money(user.balance)} <span>⌄</span></div><button class="btn icon" onclick="renderDepositSitePage()">+</button>` : ""}
         ${user ? `<button class="btn" type="button" onclick="logout()">Çıkış</button>` : `<button id="headerLoginButton" class="btn" type="button" data-auth-trigger="login" onclick="loginModal()">Giriş Yap</button>`}
         ${user ? "" : `<button id="headerRegisterButton" class="btn primary" type="button" data-auth-trigger="register" onclick="registerModal()">👤 Üye Ol</button>`}
@@ -105,10 +588,10 @@ function shell(content){
 function renderHome(){
   document.getElementById("app").innerHTML = shell(`
     <section class="hero hero-slider" id="heroSlider">
-      <img class="hero-slide-img active" src="assets/banners/970x250/home-hero.png" alt="BozoBet Banner 1">
-      <img class="hero-slide-img " src="assets/banners/970x250/sports-hero.png" alt="BozoBet Banner 2">
-      <img class="hero-slide-img " src="assets/banners/970x250/roulette-hero.png" alt="BozoBet Banner 3">
-      <img class="hero-slide-img " src="assets/banners/970x250/slot-hero.png" alt="BozoBet Banner 4">
+      <img class="hero-slide-img active" src="assets/banners/home-hero.png" alt="BozoBet Banner 1">
+      <img class="hero-slide-img " src="assets/banners/sports-hero.png" alt="BozoBet Banner 2">
+      <img class="hero-slide-img " src="assets/banners/roulette-hero.png" alt="BozoBet Banner 3">
+      <img class="hero-slide-img " src="assets/banners/slot-hero.png" alt="BozoBet Banner 4">
       <div class="hero-dots">
         <span class="active" onclick="setHeroSlide(0)"></span>
         <span class="" onclick="setHeroSlide(1)"></span>
@@ -119,10 +602,10 @@ function renderHome(){
 
     <section class="mobile-hero-slider" id="mobileHeroSlider" aria-label="Kampanyalar">
       <div class="mobile-hero-track">
-        <img class="mobile-hero-slide active" src="assets/banners/970x250/home-hero.png" alt="BozoBet hoş geldin kampanyası">
-        <img class="mobile-hero-slide" src="assets/banners/970x250/sports-hero.png" alt="BozoBet spor kampanyası">
-        <img class="mobile-hero-slide" src="assets/banners/970x250/roulette-hero.png" alt="BozoBet rulet kampanyası">
-        <img class="mobile-hero-slide" src="assets/banners/970x250/slot-hero.png" alt="BozoBet slot kampanyası">
+        <img class="mobile-hero-slide active" src="assets/banners/home-hero.png" alt="BozoBet hoş geldin kampanyası">
+        <img class="mobile-hero-slide" src="assets/banners/sports-hero.png" alt="BozoBet spor kampanyası">
+        <img class="mobile-hero-slide" src="assets/banners/roulette-hero.png" alt="BozoBet rulet kampanyası">
+        <img class="mobile-hero-slide" src="assets/banners/slot-hero.png" alt="BozoBet slot kampanyası">
         <img class="mobile-hero-slide" src="assets/mobile/banners/live-casino-hero-1.png" alt="BozoBet canlı casino kampanyası">
         <img class="mobile-hero-slide" src="assets/mobile/banners/big-prize-banner.png" alt="BozoBet büyük ödül kampanyası">
         <img class="mobile-hero-slide" src="assets/mobile/banners/vip-casino-banner.png" alt="BozoBet VIP casino kampanyası">

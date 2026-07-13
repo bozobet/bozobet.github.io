@@ -12,6 +12,7 @@
   --radius:18px;
 }
 
+
 *{box-sizing:border-box}
 body{
   margin:0;
@@ -137,7 +138,7 @@ button{cursor:pointer}
     linear-gradient(90deg,rgba(3,11,10,.96),rgba(7,25,15,.85) 34%,rgba(3,9,10,.25)),
     radial-gradient(circle at 62% 48%,rgba(33,212,107,.34),transparent 28%),
     radial-gradient(circle at 84% 42%,rgba(245,196,81,.32),transparent 26%),
-    url("assets/banners/970x250/sports-hero.png");
+    url("assets/banners/sports-hero.png");
   background-size:cover;
   background-position:center;
   box-shadow:0 24px 80px rgba(0,0,0,.42);
@@ -8536,6 +8537,102 @@ body {
   }
 }
 
+@media (max-width:760px) {
+  .mobile-coupon-page {
+    width:min(100%,620px);min-height:calc(100dvh - 86px - env(safe-area-inset-top));margin:0 auto;
+    padding:14px 0 calc(96px + env(safe-area-inset-bottom));color:#fff;
+  }
+  .mobile-coupon-page-head {
+    min-height:68px;padding:10px 12px;display:grid;grid-template-columns:42px 1fr 42px;align-items:center;gap:10px;
+    border:1px solid rgba(255,255,255,.09);border-radius:16px;background:#151a1e;
+  }
+  .mobile-coupon-page-head > button {
+    width:40px;height:40px;padding:0;border:1px solid rgba(255,255,255,.1);border-radius:12px;
+    background:#20262b;color:#fff;font-size:30px;line-height:1;
+  }
+  .mobile-coupon-page-head div { min-width:0; }
+  .mobile-coupon-page-head small { color:#65ff35;font-size:9px;font-weight:900;letter-spacing:1px; }
+  .mobile-coupon-page-head h1 { margin:2px 0 0;font-size:21px;line-height:1.1; }
+  .mobile-coupon-page-head > span {
+    width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:12px;
+    background:rgba(101,255,53,.14);color:#65ff35;font-weight:1000;
+  }
+  .mobile-coupon-tabs {
+    margin:12px 0;padding:4px;display:grid;grid-template-columns:1fr 1fr;gap:4px;
+    border:1px solid rgba(255,255,255,.08);border-radius:15px;background:#111619;
+  }
+  .mobile-coupon-tabs button {
+    min-height:44px;border:0;border-radius:11px;background:transparent;color:#8e979c;font-weight:900;
+  }
+  .mobile-coupon-tabs button.active { background:#65ff35;color:#07110c; }
+  .mobile-coupon-tab-content { min-height:300px; }
+  .mobile-coupon-empty,
+  .mobile-coupon-history-empty {
+    min-height:330px;padding:44px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:#151a1e;
+  }
+  .mobile-coupon-empty-icon {
+    width:72px;height:72px;margin-bottom:18px;display:flex;align-items:center;justify-content:center;
+    border:1px solid rgba(101,255,53,.3);border-radius:22px;background:rgba(101,255,53,.1);color:#65ff35;font-size:36px;
+  }
+  .mobile-coupon-empty h2,
+  .mobile-coupon-history-empty h2 { margin:0 0 8px;font-size:20px; }
+  .mobile-coupon-empty p,
+  .mobile-coupon-history-empty p { max-width:340px;margin:0 0 22px;color:#929aa0;font-size:13px;line-height:1.55; }
+  .mobile-coupon-selections,
+  .mobile-coupon-history-list { display:grid;gap:10px; }
+  .mobile-coupon-selection,
+  .mobile-coupon-summary,
+  .mobile-coupon-history-card {
+    padding:14px;border:1px solid rgba(255,255,255,.09);border-radius:16px;background:#151a1e;
+  }
+  .mobile-coupon-selection-head,
+  .mobile-coupon-pick,
+  .mobile-coupon-summary > div,
+  .mobile-coupon-history-head { display:flex;align-items:center;justify-content:space-between;gap:12px; }
+  .mobile-coupon-selection-head small { color:#8f989e;font-size:10px; }
+  .mobile-coupon-selection-head button {
+    width:30px;height:30px;padding:0;border:1px solid rgba(255,255,255,.1);border-radius:9px;
+    background:#22282d;color:#aeb5b9;font-size:20px;
+  }
+  .mobile-coupon-selection h3 { margin:8px 0 12px;font-size:14px; }
+  .mobile-coupon-pick { padding-top:11px;border-top:1px solid rgba(255,255,255,.07); }
+  .mobile-coupon-pick span { display:flex;align-items:center;gap:9px;color:#c2c8cb;font-size:12px; }
+  .mobile-coupon-pick span b {
+    width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:8px;
+    background:rgba(101,255,53,.13);color:#65ff35;
+  }
+  .mobile-coupon-pick strong,
+  .mobile-coupon-summary strong { color:#65ff35; }
+  .mobile-coupon-summary { margin-top:2px;display:grid;gap:13px; }
+  .mobile-coupon-summary > div { color:#a2aaaf;font-size:13px; }
+  .mobile-coupon-summary label { color:#a2aaaf;font-size:12px;font-weight:800; }
+  .mobile-coupon-stake-wrap {
+    height:48px;padding:0 13px;display:flex!important;justify-content:flex-start!important;
+    border:1px solid rgba(255,255,255,.12);border-radius:12px;background:#0d1114;
+  }
+  .mobile-coupon-stake-wrap span { color:#65ff35;font-weight:1000; }
+  .mobile-coupon-stake-wrap input {
+    width:100%;height:100%;padding:0 8px;border:0;outline:0;background:transparent;color:#fff;font-size:16px;font-weight:900;
+  }
+  .mobile-coupon-error { margin:-5px 0 0;color:#ff7777;font-size:11px; }
+  .mobile-coupon-summary button:disabled { opacity:.45;cursor:not-allowed; }
+  .mobile-coupon-clear {
+    min-height:43px;border:1px solid rgba(255,255,255,.11);border-radius:12px;background:transparent;color:#a9b0b4;font-weight:900;
+  }
+  .mobile-coupon-history-head { margin-bottom:14px; }
+  .mobile-coupon-history-head span { color:#929a9f;font-size:10px; }
+  .mobile-coupon-history-head b {
+    padding:6px 9px;border-radius:999px;background:rgba(255,190,55,.12);color:#ffc451;font-size:10px;
+  }
+  .mobile-coupon-history-head b.status-kazandı { background:rgba(101,255,53,.12);color:#65ff35; }
+  .mobile-coupon-history-head b.status-kaybetti { background:rgba(255,87,87,.12);color:#ff7777; }
+  .mobile-coupon-history-grid { display:grid;grid-template-columns:1fr 1fr;gap:9px; }
+  .mobile-coupon-history-grid div { padding:10px;border-radius:11px;background:#0e1316; }
+  .mobile-coupon-history-grid small { display:block;margin-bottom:5px;color:#7f898f;font-size:9px; }
+  .mobile-coupon-history-grid strong { color:#e8ecee;font-size:12px; }
+}
+
 /* Authentication modals own scrolling while open; the page stays fixed behind them. */
 html.auth-modal-open,
 body.auth-modal-open {
@@ -9273,8 +9370,8 @@ body.auth-modal-open {
 
   /* Header */
   .topbar {
-    height:calc(76px + env(safe-area-inset-top))!important;
-    min-height:calc(76px + env(safe-area-inset-top))!important;
+    height:calc(64px + env(safe-area-inset-top))!important;
+    min-height:calc(64px + env(safe-area-inset-top))!important;
     padding:env(safe-area-inset-top) max(8px,env(safe-area-inset-right)) 0 58px!important;
     display:flex!important;
     align-items:center!important;
@@ -9284,13 +9381,14 @@ body.auth-modal-open {
   }
 
   .topbar .brand-logo {
-    position:static!important;
-    flex:0 1 clamp(96px,34vw,150px)!important;
-    width:clamp(96px,34vw,150px)!important;
-    min-width:0!important;
-    max-width:150px!important;
+    position:absolute!important;
+    left:58px!important;
+    flex:none!important;
+    width:clamp(150px,42vw,165px)!important;
+    min-width:150px!important;
+    max-width:165px!important;
     height:48px!important;
-    margin:0 auto 0 0!important;
+    margin:0!important;
     transform:none!important;
     z-index:4!important;
     pointer-events:auto!important;
@@ -9298,11 +9396,11 @@ body.auth-modal-open {
   }
 
   .topbar .clean-logo {
-    content:url("assets/logo/logo-cropped.png")!important;
     width:100%!important;
     min-width:0!important;
-    max-width:150px!important;
+    max-width:165px!important;
     height:48px!important;
+    display:block!important;
     object-fit:contain!important;
     object-position:left center!important;
   }
@@ -9359,7 +9457,7 @@ body.auth-modal-open {
   .topbar .actions .btn::after { content:none!important; }
 
   .mobile-menu-button {
-    top:calc(env(safe-area-inset-top) + 17px)!important;
+    top:calc(env(safe-area-inset-top) + 11px)!important;
     left:max(12px,env(safe-area-inset-left))!important;
     width:42px!important;
     height:42px!important;
@@ -9373,11 +9471,12 @@ body.auth-modal-open {
     position:relative;
     display:block;
     width:100%!important;
-    height:clamp(130px,43.75vw,210px)!important;
-    min-height:130px!important;
-    max-height:210px!important;
+    height:clamp(140px,44vw,190px)!important;
+    min-height:140px!important;
+    max-height:190px!important;
     aspect-ratio:16 / 7!important;
     margin:12px 0 0!important;
+    padding:0!important;
     border-radius:18px!important;
     border:1px solid rgba(255,255,255,.08);
     background:#070b0d!important;
@@ -9391,14 +9490,17 @@ body.auth-modal-open {
   .mobile-hero-track,
   .mobile-hero-slide {
     position:absolute;
-    inset:0;
+    inset:0!important;
     width:100%!important;
     height:100%!important;
+    padding:0!important;
+    margin:0!important;
   }
 
   .mobile-hero-slide {
     display:block;
-    object-fit:contain!important;
+    border-radius:18px!important;
+    object-fit:cover!important;
     object-position:center!important;
     opacity:0;
     transform:scale(1.01);
@@ -9867,5 +9969,116 @@ body.auth-modal-open {
     color:#fff;
     font-size:23px;
     line-height:1;
+  }
+}
+
+/* Final mobile priority: the legacy stylesheet contains earlier header/nav overrides. */
+@media (max-width:760px) {
+  .topbar.mobile-header {
+    box-sizing:border-box!important;
+    height:calc(86px + env(safe-area-inset-top))!important;
+    min-height:calc(86px + env(safe-area-inset-top))!important;
+    padding:env(safe-area-inset-top) max(8px,env(safe-area-inset-right)) 0 max(8px,env(safe-area-inset-left))!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+    align-items:center!important;
+    gap:0!important;
+    overflow:visible!important;
+  }
+  .topbar.mobile-header .nav { display:none!important; }
+  .topbar.mobile-header .mobile-header-logo {
+    position:static!important;
+    grid-column:2!important;
+    justify-self:center!important;
+    width:clamp(130px,36vw,145px)!important;
+    min-width:0!important;
+    max-width:145px!important;
+    height:50px!important;
+    margin:0!important;
+    transform:none!important;
+    background:none!important;
+    z-index:2!important;
+  }
+  .topbar.mobile-header .mobile-header-logo .clean-logo {
+    content:normal!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:145px!important;
+    height:50px!important;
+    display:block!important;
+    object-fit:contain!important;
+    object-position:center!important;
+    background:none!important;
+  }
+  .topbar.mobile-header .mobile-header-logo::before,
+  .topbar.mobile-header .mobile-header-logo::after,
+  .topbar.mobile-header .clean-logo::before,
+  .topbar.mobile-header .clean-logo::after { content:none!important;display:none!important;background:none!important;background-image:none!important; }
+  .topbar.mobile-header .mobile-header-actions {
+    position:static!important;
+    grid-column:3!important;
+    justify-self:end!important;
+    width:auto!important;
+    min-width:0!important;
+    margin:0!important;
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    gap:4px!important;
+    transform:none!important;
+    overflow:visible!important;
+    z-index:3!important;
+  }
+  .topbar.mobile-header .mobile-header-actions .btn,
+  .topbar.mobile-header .mobile-header-actions button[onclick*="loginModal"],
+  .topbar.mobile-header .mobile-header-actions button[onclick*="registerModal"] {
+    flex:0 0 44px!important;width:44px!important;min-width:44px!important;max-width:44px!important;
+    height:38px!important;min-height:38px!important;padding:0 3px!important;border-radius:12px!important;
+    font-size:10px!important;line-height:1.05!important;overflow:hidden!important;white-space:normal!important;
+  }
+  .topbar.mobile-header .mobile-header-actions .btn.primary,
+  .topbar.mobile-header .mobile-header-actions button[onclick*="registerModal"] {
+    flex-basis:52px!important;width:52px!important;min-width:52px!important;max-width:52px!important;
+  }
+  .mobile-menu-button {
+    top:calc(env(safe-area-inset-top) + 22px)!important;left:max(10px,env(safe-area-inset-left))!important;
+    width:42px!important;height:42px!important;z-index:1000002!important;
+  }
+  .bb-bottom-nav-real > button { border:0!important;background:transparent!important;color:#8d969d!important; }
+  .bb-bottom-nav-real > button img {
+    width:28px!important;height:28px!important;background:transparent!important;
+    filter:grayscale(1) saturate(0) brightness(1.25)!important;opacity:.68!important;
+  }
+  .bb-bottom-nav-real > button.active,
+  .bb-bottom-nav-real > button.active b { color:#65ff35!important; }
+  .bb-bottom-nav-real > button.active img { filter:none!important;opacity:1!important; }
+  .bb-bottom-nav-real .bb-mobile-coupon-badge {
+    position:absolute!important;top:2px!important;right:22%!important;z-index:2!important;
+    min-width:20px!important;height:20px!important;padding:0 5px!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    border:2px solid #11171c!important;border-radius:999px!important;background:#65ff35!important;
+    color:#07110c!important;font-size:10px!important;font-style:normal!important;font-weight:1000!important;
+    line-height:1!important;box-shadow:none!important;pointer-events:none!important;
+  }
+  .pro-odds .odd.selected {
+    border-color:#65ff35!important;background:rgba(101,255,53,.18)!important;color:#65ff35!important;
+    box-shadow:inset 0 0 0 1px rgba(101,255,53,.28),0 0 14px rgba(101,255,53,.12)!important;
+  }
+  .pro-odds .odd.selected span,
+  .pro-odds .odd.selected b { color:#65ff35!important; }
+}
+
+@media (max-width:360px) {
+  .topbar.mobile-header .mobile-header-logo { width:clamp(108px,35vw,125px)!important;height:46px!important; }
+  .topbar.mobile-header .mobile-header-logo .clean-logo { max-width:125px!important;height:46px!important; }
+  .topbar.mobile-header .mobile-header-actions { gap:3px!important; }
+  .topbar.mobile-header .mobile-header-actions .btn,
+  .topbar.mobile-header .mobile-header-actions button[onclick*="loginModal"] {
+    flex-basis:44px!important;width:44px!important;min-width:44px!important;max-width:44px!important;font-size:9px!important;
+  }
+  .topbar.mobile-header .mobile-header-actions .btn.primary,
+  .topbar.mobile-header .mobile-header-actions button[onclick*="registerModal"] {
+    flex-basis:50px!important;width:50px!important;min-width:50px!important;max-width:50px!important;
   }
 }
