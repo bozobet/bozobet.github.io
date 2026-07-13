@@ -6,22 +6,32 @@
   const wantedGames = [
     {
       label: "Sweet Bonanza",
+      fallback: "assets/mobile/promos/welcome-bonus.png",
+      badge: "Popüler",
       matches: ["sweet bonanza"]
     },
     {
       label: "Gates of Olympus",
+      fallback: "assets/mobile/banners/big-prize-banner.png",
+      badge: "Popüler",
       matches: ["gates of olympus", "gates olympus"]
     },
     {
       label: "Big Bass",
+      fallback: "assets/mobile/banners/live-casino-hero-1.png",
+      badge: "Yeni",
       matches: ["big bass bonanza", "big bass"]
     },
     {
       label: "Sugar Rush",
+      fallback: "assets/mobile/promos/freespin.png",
+      badge: "Yeni",
       matches: ["sugar rush"]
     },
     {
       label: "Aviator",
+      fallback: "assets/mobile/banners/live-casino-hero-2.png",
+      badge: "Popüler",
       matches: ["aviator"]
     }
   ];
@@ -71,16 +81,17 @@
     });
   }
 
-  function cardHtml(game, requestedName) {
+  function cardHtml(game, item) {
     if (!game) {
       return `
-        <article class="hpf-game-card unavailable">
+        <article class="hpf-game-card">
           <div class="hpf-game-image">
-            <div class="hpf-no-image"></div>
+            <img src="${esc(item.fallback)}" alt="${esc(item.label)}" loading="lazy" decoding="async">
+            <span class="hpf-game-badge">${esc(item.badge)}</span>
           </div>
 
           <div class="hpf-game-content">
-            <b>${esc(requestedName)}</b>
+            <b>${esc(item.label)}</b>
             <span>Yakında</span>
           </div>
         </article>
@@ -98,10 +109,11 @@
             alt="${esc(game.name)}"
             loading="lazy"
             decoding="async"
-            onerror="this.closest('.hpf-game-card').style.display='none'"
+            onerror="this.onerror=null;this.src='${esc(item.fallback)}'"
           >
 
           <span>${esc(game.provider || "Provider")}</span>
+          <span class="hpf-game-badge">${esc(item.badge)}</span>
 
           <div class="hpf-play">
             Oyna
@@ -151,7 +163,7 @@
       await loadGames();
 
       const selected = wantedGames.map(item => ({
-        requestedName: item.label,
+        item,
         game: findGame(item)
       }));
 
@@ -184,7 +196,7 @@
           <div class="hpf-popular-grid">
             ${selected
               .map(item =>
-                cardHtml(item.game, item.requestedName)
+                cardHtml(item.game, item.item)
               )
               .join("")}
           </div>

@@ -9253,59 +9253,609 @@ body.auth-modal-open {
   .category-row .cat b{font-size:8px!important}
 }
 
-/* Keep fixed-size mobile controls evenly spaced without overlap. */
-@media (max-width:800px) {
-  .topbar {
-    height:116px!important;
-    min-height:116px!important;
-    padding:0 12px!important;
+/* Mobile homepage — final compact layout. Desktop declarations stay untouched. */
+.login-modal-close { display:none; }
+.mobile-hero-slider,
+.mobile-promo-strip,
+.mobile-slot-category,
+.mobile-popular-heading { display:none; }
+
+@media (max-width:760px) {
+  body {
+    padding-bottom:calc(72px + env(safe-area-inset-bottom))!important;
   }
 
-  .topbar .brand-logo,
-  .topbar .clean-logo {
-    width:150px!important;
-    min-width:150px!important;
-    max-width:150px!important;
-    height:54px!important;
+  .wrap {
+    width:100%!important;
+    padding-right:12px!important;
+    padding-left:12px!important;
+  }
+
+  /* Header */
+  .topbar {
+    height:calc(76px + env(safe-area-inset-top))!important;
+    min-height:calc(76px + env(safe-area-inset-top))!important;
+    padding:env(safe-area-inset-top) max(8px,env(safe-area-inset-right)) 0 58px!important;
+    display:flex!important;
+    align-items:center!important;
+    flex-wrap:nowrap!important;
+    gap:4px!important;
+    overflow:hidden!important;
   }
 
   .topbar .brand-logo {
-    position:absolute!important;
-    left:50%!important;
-    top:29px!important;
-    transform:translate(-50%,-50%)!important;
+    position:static!important;
+    flex:0 1 clamp(96px,34vw,150px)!important;
+    width:clamp(96px,34vw,150px)!important;
+    min-width:0!important;
+    max-width:150px!important;
+    height:48px!important;
+    margin:0 auto 0 0!important;
+    transform:none!important;
+    z-index:2!important;
+  }
+
+  .topbar .clean-logo {
+    content:url("assets/logo/logo-cropped.png")!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:150px!important;
+    height:48px!important;
+    object-fit:contain!important;
+    object-position:left center!important;
   }
 
   .topbar .actions {
-    position:absolute!important;
-    left:50%!important;
-    bottom:8px!important;
+    position:static!important;
+    flex:0 0 auto!important;
     width:auto!important;
-    max-width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
     margin:0!important;
-    justify-content:center!important;
-    gap:8px!important;
+    justify-content:flex-end!important;
+    gap:4px!important;
     overflow:visible!important;
-    transform:translateX(-50%)!important;
+    transform:none!important;
   }
 
   .topbar .actions .btn,
   .topbar .actions button[onclick*="loginModal"],
   .topbar .actions button[onclick*="registerModal"] {
-    flex:0 0 96px!important;
-    width:96px!important;
-    min-width:96px!important;
-    max-width:96px!important;
-    height:42px!important;
-    min-height:42px!important;
-    padding:0 8px!important;
-    border-radius:14px!important;
-    font-size:16px!important;
-    line-height:42px!important;
+    flex:0 0 clamp(64px,19vw,82px)!important;
+    width:clamp(64px,19vw,82px)!important;
+    min-width:64px!important;
+    max-width:82px!important;
+    height:40px!important;
+    min-height:40px!important;
+    padding:0 5px!important;
+    border-radius:13px!important;
+    border-color:rgba(45,255,79,.55)!important;
+    font-size:clamp(12px,3.35vw,14px)!important;
+    line-height:1!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    text-align:center!important;
+    text-overflow:ellipsis!important;
     overflow:hidden!important;
     white-space:nowrap!important;
   }
 
+  .topbar .actions .btn.primary,
+  .topbar .actions button[onclick*="registerModal"] {
+    flex-basis:clamp(72px,21vw,92px)!important;
+    width:clamp(72px,21vw,92px)!important;
+    min-width:72px!important;
+    max-width:92px!important;
+  }
+
+  .topbar .actions .btn.primary::first-letter { font-size:inherit!important; }
   .topbar .actions .btn::after { content:none!important; }
-  .mobile-menu-button { top:11px!important; }
+
+  .mobile-menu-button {
+    top:calc(env(safe-area-inset-top) + 17px)!important;
+    left:max(12px,env(safe-area-inset-left))!important;
+    width:42px!important;
+    height:42px!important;
+    border-radius:13px!important;
+  }
+
+  /* Hero */
+  .hero-slider { display:none!important; }
+
+  .mobile-hero-slider {
+    position:relative;
+    display:block;
+    width:100%!important;
+    height:auto!important;
+    aspect-ratio:16 / 7!important;
+    margin:12px 0 0!important;
+    border-radius:18px!important;
+    border:1px solid rgba(255,255,255,.08);
+    background:#070b0d!important;
+    overflow:hidden!important;
+    box-shadow:0 16px 34px rgba(0,0,0,.34);
+    touch-action:pan-y;
+  }
+
+  .mobile-hero-track,
+  .mobile-hero-slide {
+    position:absolute;
+    inset:0;
+    width:100%!important;
+    height:100%!important;
+  }
+
+  .mobile-hero-slide {
+    display:block;
+    object-fit:contain!important;
+    object-position:center!important;
+    opacity:0;
+    transform:scale(1.01);
+    transition:opacity .38s ease,transform .5s ease;
+  }
+
+  .mobile-hero-slide.active {
+    opacity:1;
+    transform:scale(1);
+  }
+
+  .mobile-hero-dots {
+    position:absolute;
+    bottom:9px!important;
+    left:50%!important;
+    display:flex!important;
+    gap:6px!important;
+    transform:translateX(-50%)!important;
+    z-index:2;
+  }
+
+  .mobile-hero-dots button {
+    width:7px!important;
+    height:7px!important;
+    padding:0;
+    border:0;
+    border-radius:999px;
+    background:rgba(255,255,255,.58);
+    transition:width .2s ease,background .2s ease;
+  }
+
+  .mobile-hero-dots button.active {
+    width:22px!important;
+    background:#2dff4f;
+  }
+
+  /* Compact promo strip replaces the mobile announcement. */
+  .site-announcement { display:none!important; }
+
+  .mobile-promo-strip {
+    width:calc(100% + 12px);
+    margin:9px -12px 0 0;
+    padding:0 12px 3px 0;
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .mobile-promo-strip::-webkit-scrollbar { display:none; }
+
+  .mobile-promo-card {
+    flex:0 0 42%;
+    min-width:128px;
+    max-width:178px;
+    aspect-ratio:2 / 1;
+    padding:0;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;
+    background:#151a1d;
+    box-shadow:0 10px 22px rgba(0,0,0,.22);
+  }
+
+  .mobile-promo-card img {
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+  }
+
+  /* Categories: four compact cards plus a visible continuation. */
+  .category-row {
+    width:calc(100% + 12px)!important;
+    margin:9px -12px 12px 0!important;
+    padding:2px 12px 5px 0!important;
+    display:flex!important;
+    gap:10px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    scroll-snap-type:x proximity;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .category-row::-webkit-scrollbar,
+  .hpf-popular-grid::-webkit-scrollbar,
+  .bb-home-popular-real::-webkit-scrollbar,
+  .bb-home-popular-final-grid::-webkit-scrollbar,
+  .bb-home-popular-games-fixed::-webkit-scrollbar { display:none!important; }
+
+  .category-row .cat {
+    flex:0 0 clamp(72px,23vw,105px)!important;
+    width:clamp(72px,23vw,105px)!important;
+    min-width:72px!important;
+    max-width:105px!important;
+    height:124px!important;
+    min-height:124px!important;
+    padding:10px 5px 9px!important;
+    scroll-snap-align:start;
+    border-radius:16px!important;
+    background:#171c20!important;
+    border:1px solid rgba(160,180,190,.16)!important;
+    transition:transform .14s ease,border-color .14s ease,background .14s ease!important;
+  }
+
+  .category-row .cat:active {
+    transform:scale(.96)!important;
+    border-color:rgba(45,255,79,.45)!important;
+    background:#20262d!important;
+  }
+
+  .category-row .cat-icon,
+  .category-row .cat-icon img {
+    width:62px!important;
+    min-width:62px!important;
+    max-width:62px!important;
+    height:62px!important;
+    min-height:62px!important;
+    max-height:62px!important;
+    object-fit:contain!important;
+    background:transparent!important;
+  }
+
+  .category-row .cat b {
+    width:100%;
+    display:block;
+    font-size:10px!important;
+    line-height:1.15!important;
+    white-space:normal!important;
+    text-align:center;
+  }
+
+  .mobile-slot-category {
+    display:flex!important;
+  }
+
+  /* Popular games */
+  .mobile-popular-heading {
+    min-height:42px;
+    padding:7px 12px 0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+
+  .mobile-popular-heading b {
+    color:#fff;
+    font-size:13px;
+    letter-spacing:.2px;
+  }
+
+  .mobile-popular-heading button {
+    padding:0;
+    border:0;
+    background:transparent;
+    color:#2dff4f;
+    font-size:11px;
+    font-weight:900;
+  }
+
+  .hpf-popular-grid,
+  .bb-home-popular-real,
+  .bb-home-popular-final-grid,
+  .bb-home-popular-games-fixed {
+    width:100%!important;
+    padding:9px 12px 12px!important;
+    display:flex!important;
+    grid-template-columns:none!important;
+    gap:8px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    scroll-snap-type:x proximity;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .hpf-game-card,
+  .bb-home-popular-real .bb-catalog-game-card,
+  .bb-home-popular-final-grid .bb-public-game-card-final,
+  .bb-home-popular-games-fixed .bb-home-popular-game-card {
+    flex:0 0 clamp(74px,26vw,128px)!important;
+    width:clamp(74px,26vw,128px)!important;
+    min-width:74px!important;
+    max-width:128px!important;
+    scroll-snap-align:start;
+    border-radius:12px!important;
+    box-shadow:0 10px 24px rgba(0,0,0,.3)!important;
+  }
+
+  .hpf-game-image,
+  .bb-home-popular-real .bb-catalog-game-media,
+  .bb-home-popular-final-grid .bb-public-game-art-gradient,
+  .bb-home-popular-games-fixed .bb-home-popular-game-art {
+    height:auto!important;
+    aspect-ratio:3 / 4!important;
+    background:#0b1410!important;
+  }
+
+  .hpf-game-image img,
+  .bb-home-popular-real .bb-catalog-game-media img,
+  .bb-home-popular-final-grid img,
+  .bb-home-popular-games-fixed img {
+    width:100%!important;
+    height:100%!important;
+    object-fit:cover!important;
+  }
+
+  .hpf-game-content b,
+  .bb-home-popular-real .bb-catalog-game-info b,
+  .bb-home-popular-final-grid .bb-public-game-card-info b,
+  .bb-home-popular-games-fixed .bb-home-popular-game-card > b {
+    display:-webkit-box!important;
+    height:34px!important;
+    overflow:hidden!important;
+    line-height:1.25!important;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:2;
+  }
+
+  .hpf-game-content {
+    padding:8px!important;
+  }
+
+  .hpf-game-content b {
+    font-size:11px!important;
+  }
+
+  .bb-home-popular-games-fixed .bb-home-popular-game-card > b {
+    padding:0 6px!important;
+    font-size:10px!important;
+  }
+
+  .bb-home-popular-games-fixed .bb-home-popular-game-card small {
+    padding:0 6px 8px!important;
+    font-size:9px!important;
+  }
+
+  .hpf-game-content small,
+  .hpf-game-content > span {
+    margin-top:4px!important;
+    font-size:9px!important;
+  }
+
+  .hpf-game-image > .hpf-game-badge {
+    top:7px!important;
+    right:7px!important;
+    left:auto!important;
+    width:auto!important;
+    max-width:calc(100% - 14px)!important;
+    padding:4px 6px!important;
+    background:#2dff4f!important;
+    color:#061009!important;
+    font-size:8px!important;
+    line-height:1!important;
+  }
+
+  .main-grid {
+    display:flex!important;
+    flex-direction:column!important;
+    gap:10px!important;
+  }
+
+  .main-grid > .card:nth-child(2) { order:1; }
+  .main-grid > .card:nth-child(1) { order:2; }
+
+  .main-grid > .card .card-head {
+    min-height:46px!important;
+    padding:8px 11px!important;
+  }
+
+  .main-grid > .card .card-head h3 {
+    font-size:13px!important;
+  }
+
+  .main-grid > .card:nth-child(2) .card-head > .btn {
+    border:0!important;
+    background:transparent!important;
+    color:#2dff4f!important;
+    font-size:11px!important;
+    padding:0!important;
+  }
+
+  /* Compact match rows stay inside a 320px viewport. */
+  .match-list { padding:2px 7px 8px!important; }
+
+  .pro-match {
+    grid-template-columns:40px minmax(0,1fr) 105px 22px!important;
+    gap:3px!important;
+    min-height:78px!important;
+    padding:8px 3px!important;
+    overflow:hidden!important;
+  }
+
+  .match-status { min-width:0!important; }
+  .match-status > span { padding:5px 4px!important; font-size:9px!important; }
+  .match-status small { font-size:9px!important; }
+
+  .pro-teams { min-width:0!important; }
+  .pro-teams > small {
+    display:block!important;
+    overflow:hidden!important;
+    font-size:8px!important;
+    white-space:nowrap!important;
+    text-overflow:ellipsis!important;
+  }
+
+  .team-row {
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    gap:3px!important;
+  }
+
+  .team-row .club,
+  .team-row .club.away {
+    min-width:0!important;
+    justify-content:flex-start!important;
+    flex-direction:row!important;
+    gap:4px!important;
+  }
+
+  .team-row .club b {
+    max-width:100%!important;
+    font-size:10px!important;
+  }
+
+  .team-row .club-logo {
+    width:18px!important;
+    min-width:18px!important;
+    height:18px!important;
+  }
+
+  .score-box { display:none!important; }
+
+  .pro-odds {
+    width:105px!important;
+    min-width:105px!important;
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:3px!important;
+  }
+
+  .pro-odds .odd {
+    width:33px!important;
+    min-width:0!important;
+    height:44px!important;
+    padding:0!important;
+    border-radius:9px!important;
+  }
+
+  .pro-odds .odd span { font-size:8px!important; }
+  .pro-odds .odd b { font-size:10px!important; }
+
+  .pro-match .more {
+    min-width:0!important;
+    width:22px!important;
+    overflow:hidden!important;
+    color:#2dff4f!important;
+    font-size:10px!important;
+    text-align:right!important;
+  }
+
+  /* Bottom navigation */
+  .bb-bottom-nav-real {
+    right:0!important;
+    bottom:0!important;
+    left:0!important;
+    width:100%!important;
+    height:calc(70px + env(safe-area-inset-bottom))!important;
+    padding:5px max(6px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(6px,env(safe-area-inset-left))!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    gap:0!important;
+    border-width:1px 0 0!important;
+    border-radius:18px 18px 0 0!important;
+    overflow:visible!important;
+    background:rgba(17,23,28,.96)!important;
+    border-color:rgba(255,255,255,.1)!important;
+    backdrop-filter:blur(18px)!important;
+  }
+
+  .bb-bottom-nav-real > button {
+    position:relative!important;
+    z-index:1!important;
+    width:100%!important;
+    min-width:0!important;
+    height:64px!important;
+    padding:4px 0!important;
+    pointer-events:auto!important;
+    touch-action:manipulation;
+  }
+
+  .bb-bottom-nav-real > button img {
+    width:28px!important;
+    min-width:28px!important;
+    max-width:28px!important;
+    height:28px!important;
+    min-height:28px!important;
+    max-height:28px!important;
+    object-fit:contain!important;
+    opacity:.72;
+    filter:grayscale(.35)!important;
+  }
+
+  .bb-bottom-nav-real > button.active { color:#65ff35!important; }
+  .bb-bottom-nav-real > button.active img {
+    opacity:1;
+    filter:none!important;
+  }
+
+  .bb-bottom-nav-real > button b {
+    font-size:10px!important;
+    pointer-events:none!important;
+  }
+
+  .bb-bottom-nav-real .coupon i,
+  .bb-mobile-coupon-badge {
+    z-index:2!important;
+    pointer-events:none!important;
+  }
+
+  /* Login modal */
+  .auth-modal-back {
+    padding:16px 0!important;
+  }
+
+  .auth-modal-back > .modal:has(.login-auth-box) {
+    position:relative!important;
+    width:calc(100% - 28px)!important;
+    height:auto!important;
+    max-height:min(520px,calc(100dvh - 32px))!important;
+    border-radius:20px!important;
+  }
+
+  .auth-modal-back .login-auth-box,
+  .auth-modal-back .login-auth-box .auth-form {
+    height:auto!important;
+    max-height:min(520px,calc(100dvh - 32px))!important;
+  }
+
+  .auth-modal-back .login-auth-box .auth-form {
+    padding:26px 20px 20px!important;
+  }
+
+  .auth-modal-back .login-auth-box .auth-fields {
+    flex:0 1 auto!important;
+    overflow-y:auto!important;
+  }
+
+  .login-modal-close {
+    position:absolute;
+    top:10px;
+    right:10px;
+    z-index:5;
+    width:34px;
+    height:34px;
+    padding:0;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:11px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#20272b;
+    color:#fff;
+    font-size:23px;
+    line-height:1;
+  }
 }

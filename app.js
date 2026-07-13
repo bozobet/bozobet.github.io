@@ -117,12 +117,35 @@ function renderHome(){
       </div>
     </section>
 
+    <section class="mobile-hero-slider" id="mobileHeroSlider" aria-label="Kampanyalar">
+      <div class="mobile-hero-track">
+        <img class="mobile-hero-slide active" src="assets/banners/home-hero.webp" alt="BozoBet hoş geldin kampanyası">
+        <img class="mobile-hero-slide" src="assets/banners/sports-hero.webp" alt="BozoBet spor kampanyası">
+        <img class="mobile-hero-slide" src="assets/banners/roulette-hero.webp" alt="BozoBet rulet kampanyası">
+        <img class="mobile-hero-slide" src="assets/banners/slot-hero.webp" alt="BozoBet slot kampanyası">
+        <img class="mobile-hero-slide" src="assets/mobile/banners/live-casino-hero-1.png" alt="BozoBet canlı casino kampanyası">
+        <img class="mobile-hero-slide" src="assets/mobile/banners/big-prize-banner.png" alt="BozoBet büyük ödül kampanyası">
+        <img class="mobile-hero-slide" src="assets/mobile/banners/vip-casino-banner.png" alt="BozoBet VIP casino kampanyası">
+      </div>
+      <div class="mobile-hero-dots" aria-label="Banner seçimi">
+        ${Array.from({length:7},(_,i)=>`<button class="${i === 0 ? "active" : ""}" type="button" aria-label="${i + 1}. banner" onclick="setMobileHeroSlide(${i})"></button>`).join("")}
+      </div>
+    </section>
+
+    <section class="mobile-promo-strip" aria-label="Promosyonlar">
+      ${mobilePromo("assets/promos/welcome-bonus.webp","Hoş Geldin Bonusu")}
+      ${mobilePromo("assets/promos/freespin-250.webp","250 Freespin")}
+      ${mobilePromo("assets/promos/loss-bonus.webp","Kayıp Bonusu")}
+      ${mobilePromo("assets/promos/vip.webp","VIP Ayrıcalıkları")}
+    </section>
+
     <section class="category-row">
       ${cat("assets/icons/categories/football.webp","FUTBOL","500+ Lig")}
       ${cat("assets/icons/categories/basketball.webp","BASKETBOL","200+ Lig")}
       ${cat("assets/icons/categories/tennis.webp","TENİS","150+ Turnuva")}
       ${cat("assets/icons/categories/esport.webp","E-SPOR","100+ Karşılaşma")}
       ${cat("assets/icons/categories/live-bet.webp","CANLI BAHİS","Anında Bahis")}
+      <div class="cat mobile-slot-category"><div class="cat-left"><div class="cat-icon"><img src="assets/mobile/icons/slot-icon.png" alt="Slot"></div><div><b>SLOT</b><span>Slot Oyunları</span></div></div><div class="arrow">›</div></div>
     </section>
 
     <section class="main-grid">
@@ -192,13 +215,15 @@ function renderHome(){
       </div>
     </footer>
   `);
+
+  requestAnimationFrame(initMobileHomeSlider);
 }
 
 function cat(icon,title,sub){
   return `<div class="cat"><div class="cat-left"><div class="cat-icon"><img src="${icon}" alt="${title}"></div><div><b>${title}</b><span>${sub}</span></div></div><div class="arrow">›</div></div>`;
 }
 
-function matchHtml(m){
+function matchHtmlLegacy(m){
   return `
     <div class="match pro-match">
       <div class="match-status">
@@ -237,6 +262,10 @@ function matchHtml(m){
 
 function promo(img,a,b,c){
   return `<div class="promo promo-img-card only-img" style="background-image:url('${img}')"></div>`;
+}
+
+function mobilePromo(img, title){
+  return `<button type="button" class="mobile-promo-card" onclick="renderPromotions()"><img src="${img}" alt="${title}" loading="lazy" decoding="async"></button>`;
 }
 
 function trust(i,b,s){
@@ -283,6 +312,7 @@ new MutationObserver(syncAuthModalScrollLock).observe(document.body, {
 function loginModal(){
   modal(`
     <div class="auth-box login-auth-box">
+      <button class="login-modal-close" type="button" aria-label="Giriş penceresini kapat" onclick="this.closest('.modal-back').remove()">×</button>
       <div class="auth-side">
         <div class="auth-badge">BOZOBET</div>
         <h2>Hesabına Giriş Yap</h2>
@@ -403,7 +433,7 @@ function registerModal(){
   `);
 }
 
-function depositModal(){
+function depositModalLegacy(){
   modal(`
     <div class="pay-modal">
       <div class="pay-head">
@@ -455,7 +485,7 @@ function depositModal(){
   `);
 }
 
-function login(){
+function loginLegacy(){
   const name = document.getElementById("loginUser").value.trim();
   const pass = document.getElementById("loginPass").value || "";
 
@@ -495,7 +525,7 @@ function login(){
   renderHome();
 }
 
-function register(){
+function registerLegacy(){
   const username = document.getElementById("regUser").value.trim();
   const password = document.getElementById("regPass").value || "";
   const name = document.getElementById("regName").value || "";
@@ -600,6 +630,60 @@ setInterval(() => {
     restartHeroTimer();
   }
 }, 300);
+
+window.bozobetMobileHeroIndex = 0;
+window.bozobetMobileHeroTimer = null;
+
+function updateMobileHeroSlider(){
+  const slider = document.getElementById("mobileHeroSlider");
+  if(!slider) return;
+
+  const slides = [...slider.querySelectorAll(".mobile-hero-slide")];
+  const dots = [...slider.querySelectorAll(".mobile-hero-dots button")];
+  const index = ((window.bozobetMobileHeroIndex % slides.length) + slides.length) % slides.length;
+
+  window.bozobetMobileHeroIndex = index;
+  slides.forEach((slide, i) => slide.classList.toggle("active", i === index));
+  dots.forEach((dot, i) => {
+    dot.classList.toggle("active", i === index);
+    dot.setAttribute("aria-current", i === index ? "true" : "false");
+  });
+}
+
+function restartMobileHeroTimer(){
+  if(window.bozobetMobileHeroTimer) clearInterval(window.bozobetMobileHeroTimer);
+  window.bozobetMobileHeroTimer = setInterval(() => {
+    window.bozobetMobileHeroIndex += 1;
+    updateMobileHeroSlider();
+  }, 4000);
+}
+
+function setMobileHeroSlide(index){
+  window.bozobetMobileHeroIndex = index;
+  updateMobileHeroSlider();
+  restartMobileHeroTimer();
+}
+
+function initMobileHomeSlider(){
+  const slider = document.getElementById("mobileHeroSlider");
+  if(!slider || slider.dataset.ready === "1") return;
+
+  slider.dataset.ready = "1";
+  let touchStartX = 0;
+
+  slider.addEventListener("touchstart", event => {
+    touchStartX = event.changedTouches[0]?.clientX || 0;
+  }, {passive:true});
+
+  slider.addEventListener("touchend", event => {
+    const distance = (event.changedTouches[0]?.clientX || 0) - touchStartX;
+    if(Math.abs(distance) < 38) return;
+    setMobileHeroSlide(window.bozobetMobileHeroIndex + (distance < 0 ? 1 : -1));
+  }, {passive:true});
+
+  updateMobileHeroSlider();
+  restartMobileHeroTimer();
+}
 
 
 function renderSports(){
@@ -708,7 +792,7 @@ function renderVip(){
   `);
 }
 
-function renderSupport(){
+function renderSupportLegacy(){
   document.getElementById("app").innerHTML = shell(`
     <section class="page-hero mini support-mini">
       <div>
@@ -768,7 +852,7 @@ function renderProfile(){
   `);
 }
 
-function withdrawModal(){
+function withdrawModalLegacy(){
   modal(`
     <div class="pay-modal">
       <div class="pay-head">
@@ -882,7 +966,7 @@ function clearCoupon(){
   refreshCouponBox();
 }
 
-function playCoupon(){
+function playCouponLegacy(){
   if(!user){
     loginModal();
     return;
@@ -918,7 +1002,7 @@ function saveMatches(){
   localStorage.setItem("bozobet_matches", JSON.stringify(matches));
 }
 
-function renderMatchAdmin(){
+function renderMatchAdminLegacy(){
   if(user?.role !== "admin"){
     alert("Bu alana sadece admin hesabı erişebilir.");
     loginModal();
@@ -1397,7 +1481,7 @@ function login(){
   renderHome();
 }
 
-function renderAdminDashboard(){
+function renderAdminDashboardLegacy(){
   if(user?.role !== "admin"){
     alert("Bu alana sadece admin hesabı erişebilir.");
     loginModal();
@@ -1467,7 +1551,7 @@ function renderAdminDashboard(){
   `);
 }
 
-function renderUsersAdmin(){
+function renderUsersAdminLegacy1(){
   if(user?.role !== "admin"){
     alert("Bu alana sadece admin hesabı erişebilir.");
     loginModal();
@@ -1534,7 +1618,7 @@ function renderUsersAdmin(){
 }
 
 // ADMIN USER BALANCE MANAGEMENT
-function updateUserBalance(userId, type){
+function updateUserBalanceLegacy(userId, type){
   if(user?.role !== "admin"){
     alert("Bu işlem sadece admin için.");
     return;
@@ -1575,7 +1659,7 @@ function updateUserBalance(userId, type){
 }
 
 // renderUsersAdmin override - bakiye işlemli
-function renderUsersAdmin(){
+function renderUsersAdminLegacy2(){
   if(user?.role !== "admin"){
     alert("Bu alana sadece admin hesabı erişebilir.");
     loginModal();
@@ -2032,7 +2116,7 @@ function rejectPaymentRequest(id){
   renderPaymentRequestsAdmin();
 }
 
-function renderPaymentRequestsAdmin(){
+function renderPaymentRequestsAdminLegacy1(){
   if(user?.role !== "admin"){
     alert("Bu alana sadece admin hesabı erişebilir.");
     loginModal();
@@ -2336,7 +2420,7 @@ function filteredPaymentRequests(){
   return reqs;
 }
 
-function renderPaymentRequestsAdmin(){
+function renderPaymentRequestsAdminLegacy2(){
   if(user?.role !== "admin"){
     alert("Bu alana sadece admin hesabı erişebilir.");
     loginModal();
@@ -2539,7 +2623,7 @@ login = function(){
 };
 
 // renderUsersAdmin override - aktif/pasif kontrollü
-function renderUsersAdmin(){
+function renderUsersAdminLegacy3(){
   if(user?.role !== "admin"){
     alert("Bu alana sadece admin hesabı erişebilir.");
     loginModal();
@@ -2770,7 +2854,7 @@ renderProfile = function(){
   }, 100);
 };
 
-function renderBetsAdmin(){
+function renderBetsAdminLegacy1(){
   if(user?.role !== "admin"){
     alert("Bu alana sadece admin hesabı erişebilir.");
     loginModal();
@@ -2908,7 +2992,7 @@ function settleBet(betId, result){
 }
 
 // renderBetsAdmin override - sonuçlandırmalı
-function renderBetsAdmin(){
+function renderBetsAdminLegacy2(){
   if(user?.role !== "admin"){
     alert("Bu alana sadece admin hesabı erişebilir.");
     loginModal();
@@ -3499,7 +3583,7 @@ function renderUsersAdmin(){
 }
 
 // ADMIN USER DETAIL PAGE
-function renderUserDetailAdmin(userId){
+function renderUserDetailAdminLegacy(userId){
   if(user?.role !== "admin"){
     alert("Bu alana sadece admin hesabı erişebilir.");
     loginModal();
@@ -4267,7 +4351,7 @@ function replySupportTicket(ticketId){
   renderSupportTicketsAdmin();
 }
 
-function renderSupportTicketsAdmin(){
+function renderSupportTicketsAdminLegacy1(){
   if(user?.role !== "admin"){
     alert("Bu alana sadece admin hesabı erişebilir.");
     loginModal();
@@ -4400,7 +4484,7 @@ function filteredSupportTickets(){
 }
 
 // renderSupportTicketsAdmin override - filtreli
-function renderSupportTicketsAdmin(){
+function renderSupportTicketsAdminLegacy2(){
   if(user?.role !== "admin"){
     alert("Bu alana sadece admin hesabı erişebilir.");
     loginModal();
@@ -5165,7 +5249,7 @@ function setSiteDepositMethod(method){
   if(text) text.textContent = method;
 }
 
-function renderDepositSitePage(){
+function renderDepositSitePageLegacy(){
   if(!user){
     loginModal();
     return;
@@ -9015,7 +9099,7 @@ if(typeof renderAdminDashboard === "function"){
   };
 }
 
-function renderBetApiGamesPublic(title, filter){
+function renderBetApiGamesPublicLegacy(title, filter){
   const games = getBetApiGames();
   const q = String(filter || "").toLowerCase();
 
@@ -10004,6 +10088,10 @@ function bbReplaceHomePopularGamesPublished(){
   });
 
   card.insertAdjacentHTML("beforeend", `
+    <div class="mobile-popular-heading">
+      <b>POPÜLER OYUNLAR</b>
+      <button type="button" onclick="renderCasino()">Tümünü Gör</button>
+    </div>
     <div class="bb-home-popular-games-fixed bb-home-popular-published">
       ${BB_HOME_POPULAR_STATIC.map(bbHomePopularGameCardStaticHtml).join("")}
     </div>
@@ -10564,6 +10652,7 @@ function bbCouponBadgeHtml(){
 
 function bbMobileMenuFinal(){
   document.querySelectorAll(".bb-bottom-nav-final").forEach(x => x.remove());
+  if(document.querySelector(".bb-bottom-nav-real")) return;
 
   const nav = document.createElement("nav");
   nav.className = "bb-bottom-nav-final";
@@ -10826,17 +10915,17 @@ document.addEventListener("click", () => {
   }
 
   function renderBottomNav(){
-    document.querySelectorAll(".bb-bottom-nav-real").forEach(function(x){ x.remove(); });
+    document.querySelectorAll(".bb-bottom-nav-real,.bb-bottom-nav-final").forEach(function(x){ x.remove(); });
 
     var nav = document.createElement("nav");
     nav.className = "bb-bottom-nav-real";
 
     nav.innerHTML = ''
-      + '<button onclick="renderHome && renderHome()"><span>⌂</span><b>Ana Sayfa</b></button>'
-      + '<button onclick="renderSports && renderSports()"><span>⚽</span><b>Spor</b></button>'
-      + '<button onclick="renderCasino && renderCasino()"><span>▣</span><b>Casino</b></button>'
-      + '<button class="coupon" onclick="renderCoupon ? renderCoupon() : alert(\'Kuponunuz boş.\')"><span>▤</span><i>' + activeCouponCount() + '</i><b>Kupon</b></button>'
-      + '<button onclick="user ? (renderProfile && renderProfile()) : (loginModal && loginModal())"><span>●</span><b>Hesabım</b></button>';
+      + '<button data-page="home" onclick="renderHome && renderHome()"><img src="assets/mobile/icons/nav-home-transparent.png" alt=""><b>Ana Sayfa</b></button>'
+      + '<button data-page="sports" onclick="renderSports && renderSports()"><img src="assets/mobile/icons/nav-sports-transparent.png" alt=""><b>Spor</b></button>'
+      + '<button data-page="casino" onclick="renderCasino && renderCasino()"><img src="assets/mobile/icons/nav-casino-transparent.png" alt=""><b>Casino</b></button>'
+      + '<button data-page="coupon" class="coupon" onclick="renderCoupon ? renderCoupon() : alert(\'Kuponunuz boş.\')"><img src="assets/mobile/icons/nav-coupon-transparent.png" alt=""><i>' + activeCouponCount() + '</i><b>Kupon</b></button>'
+      + '<button data-page="profile" onclick="user ? (renderProfile && renderProfile()) : (loginModal && loginModal())"><img src="assets/mobile/icons/nav-account-transparent.png" alt=""><b>Hesabım</b></button>';
 
     document.body.appendChild(nav);
   }
@@ -10865,7 +10954,12 @@ document.addEventListener("click", () => {
 
     var top = getCatalogGames().slice(0,5);
 
-    card.insertAdjacentHTML("beforeend", '<div class="bb-home-popular-real">' + top.map(gameCard).join("") + '</div>');
+    card.insertAdjacentHTML("beforeend", ''
+      + '<div class="mobile-popular-heading">'
+      +   '<b>POPÜLER OYUNLAR</b>'
+      +   '<button type="button" onclick="renderCasino()">Tümünü Gör</button>'
+      + '</div>'
+      + '<div class="bb-home-popular-real">' + top.map(gameCard).join("") + '</div>');
   }
 
   if(typeof renderHome === "function"){
@@ -10907,7 +11001,7 @@ document.addEventListener("click", () => {
     banners:[AS+'banners/live-casino-hero-1.png',AS+'banners/live-casino-hero-2.png',AS+'banners/live-casino-hero-3.png',AS+'banners/vip-casino-banner.png',AS+'banners/big-prize-banner.png'],
     promos:[['Hoş Geldin Bonusu',AS+'promos/welcome-bonus.png'],['Çevrimsiz Bonus',AS+'promos/no-wager-bonus.png'],['Kayıp Bonusu',AS+'promos/loss-bonus.png'],['Free Spin',AS+'promos/freespin.png'],['Bonus Kampanyası',AS+'promos/bonus-campaign.png'],['Cebinde BozoBet',AS+'promos/mobile-pocket.png']],
     dealers:[AS+'dealers/dealer-live-casino-1.png',AS+'dealers/dealer-live-casino-2.png',AS+'dealers/dealer-live-casino-3.png',AS+'dealers/dealer-live-casino-4.png',AS+'dealers/dealer-live-casino-5.png',AS+'dealers/dealer-cards.png'],
-    nav:{home:AS+'icons/nav-home.png',sports:AS+'icons/nav-sports.png',casino:AS+'icons/nav-casino.png',coupon:AS+'icons/nav-coupon.png',account:AS+'icons/nav-account.png'},
+    nav:{home:AS+'icons/nav-home-transparent.png',sports:AS+'icons/nav-sports-transparent.png',casino:AS+'icons/nav-casino-transparent.png',coupon:AS+'icons/nav-coupon-transparent.png',account:AS+'icons/nav-account-transparent.png'},
     icons:[['Casino',AS+'icons/casino-icon.png'],['Futbol',AS+'icons/football-icon.png'],['Basketbol',AS+'icons/basketball-icon.png'],['Cüzdan',AS+'icons/wallet-icon.png'],['Hediye',AS+'icons/gift-icon.png'],['VIP',AS+'icons/crown-icon.png'],['Slot',AS+'icons/slot-icon.png']]
   };
   window.BB_GENERATED_MOBILE_ASSETS=bbAssets;
