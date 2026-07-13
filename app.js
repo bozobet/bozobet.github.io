@@ -559,7 +559,10 @@ function shell(content){
   return `
     <header class="topbar mobile-header">
       <div class="brand-logo logo-img-only mobile-header-logo" onclick="renderHome()">
-        <img src="assets/logo/logo.png" alt="BozoBet" class="clean-logo">
+        <picture>
+          <source media="(max-width: 760px)" srcset="assets/logo/logo-mobile.png">
+          <img src="assets/logo/logo.png" alt="BozoBet" class="clean-logo">
+        </picture>
       </div>
 
       <nav class="nav">

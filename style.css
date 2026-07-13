@@ -10082,3 +10082,355 @@ body.auth-modal-open {
     flex-basis:50px!important;width:50px!important;min-width:50px!important;max-width:50px!important;
   }
 }
+
+/* Mobile sportsbook demo. Kept inside the mobile breakpoint so desktop remains unchanged. */
+@media (max-width:760px) {
+  .topbar.mobile-header {
+    height:calc(64px + env(safe-area-inset-top))!important;
+    min-height:calc(64px + env(safe-area-inset-top))!important;
+  }
+  .topbar.mobile-header .mobile-header-logo {
+    width:clamp(120px,34vw,135px)!important;
+    max-width:135px!important;
+    height:46px!important;
+  }
+  .topbar.mobile-header .mobile-header-logo picture {
+    width:100%;
+    height:100%;
+    display:block;
+  }
+  .topbar.mobile-header .mobile-header-logo .clean-logo {
+    width:100%!important;
+    max-width:135px!important;
+    height:46px!important;
+    object-fit:contain!important;
+    object-position:center!important;
+  }
+  .mobile-menu-button {
+    top:calc(env(safe-area-inset-top) + 11px)!important;
+  }
+
+  .mobile-sportsbook {
+    --sb-green:#65ff35;
+    width:min(100%,620px);
+    min-height:calc(100dvh - 64px - env(safe-area-inset-top));
+    margin:0 auto;
+    padding:12px 0 calc(92px + env(safe-area-inset-bottom));
+    color:#f5f7f6;
+    overflow:hidden;
+  }
+  .sportsbook-head {
+    min-height:58px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .sportsbook-head small,.sportsbook-list-head small {
+    display:block;
+    color:var(--sb-green);
+    font-size:9px;
+    font-weight:1000;
+    letter-spacing:1.25px;
+  }
+  .sportsbook-head h1 {
+    margin:3px 0 0;
+    font-size:24px;
+    line-height:1.05;
+    letter-spacing:-.5px;
+  }
+  .sportsbook-head > button {
+    flex:0 0 42px;
+    width:42px;
+    height:42px;
+    padding:0;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:13px;
+    background:#1a2024;
+    color:#fff;
+    font-size:25px;
+    line-height:1;
+  }
+  .sportsbook-search {
+    max-height:0;
+    opacity:0;
+    overflow:hidden;
+    transition:max-height .2s ease,opacity .2s ease,margin .2s ease;
+  }
+  .sportsbook-search.open { max-height:54px;opacity:1;margin:7px 0 10px; }
+  .sportsbook-search input {
+    box-sizing:border-box;
+    width:100%;
+    height:44px;
+    padding:0 14px;
+    border:1px solid rgba(101,255,53,.3);
+    border-radius:13px;
+    outline:none;
+    background:#12181b;
+    color:#fff;
+    font-size:13px;
+    font-weight:700;
+  }
+  .sportsbook-search input:focus { border-color:var(--sb-green);box-shadow:0 0 0 3px rgba(101,255,53,.08); }
+  .sportsbook-tabs {
+    height:47px;
+    padding:4px;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:4px;
+    border:1px solid rgba(255,255,255,.075);
+    border-radius:14px;
+    background:#111619;
+  }
+  .sportsbook-tabs button {
+    position:relative;
+    min-width:0;
+    border:0;
+    border-radius:10px;
+    background:transparent;
+    color:#879197;
+    font-size:12px;
+    font-weight:950;
+  }
+  .sportsbook-tabs button.active { background:#20272b;color:var(--sb-green);box-shadow:inset 0 -2px 0 var(--sb-green); }
+  .sportsbook-tabs button i {
+    width:5px;height:5px;margin-left:5px;display:inline-block;vertical-align:2px;
+    border-radius:50%;background:#ff435b;box-shadow:0 0 8px rgba(255,67,91,.8);
+  }
+  .sportsbook-sports {
+    display:flex;
+    gap:8px;
+    margin:12px -12px 0;
+    padding:0 12px 8px;
+    overflow-x:auto;
+    overscroll-behavior-inline:contain;
+    scrollbar-width:none;
+  }
+  .sportsbook-sports::-webkit-scrollbar,.sportsbook-leagues::-webkit-scrollbar { display:none; }
+  .sportsbook-sports button {
+    flex:0 0 69px;
+    min-width:69px;
+    height:66px;
+    padding:7px 4px 6px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+    border:1px solid rgba(255,255,255,.075);
+    border-radius:14px;
+    background:#171d20;
+    color:#8f999e;
+  }
+  .sportsbook-sports button span {
+    width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+    border-radius:10px;background:#242c30;color:#dce3e0;font-size:17px;font-weight:1000;
+  }
+  .sportsbook-sports button b { font-size:9px;white-space:nowrap; }
+  .sportsbook-sports button.active { border-color:rgba(101,255,53,.45);background:rgba(101,255,53,.1);color:var(--sb-green); }
+  .sportsbook-sports button.active span { background:var(--sb-green);color:#071009;box-shadow:0 0 15px rgba(101,255,53,.2); }
+  .sportsbook-date-filters {
+    margin:10px 0 2px;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:7px;
+  }
+  .sportsbook-date-filters button {
+    min-width:0;
+    height:36px;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:11px;
+    background:#171d20;
+    color:#899399;
+    font-size:10px;
+    font-weight:950;
+  }
+  .sportsbook-date-filters button.active { border-color:var(--sb-green);background:var(--sb-green);color:#071009; }
+  .sportsbook-leagues {
+    max-height:244px;
+    margin:11px 0 3px;
+    display:grid;
+    gap:6px;
+    overflow-y:auto;
+    scrollbar-width:none;
+  }
+  .sportsbook-leagues button {
+    min-height:48px;
+    padding:7px 10px;
+    display:grid;
+    grid-template-columns:32px minmax(0,1fr) auto 18px;
+    align-items:center;
+    gap:8px;
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:12px;
+    background:#171d20;
+    color:#e9eeeb;
+    text-align:left;
+  }
+  .sportsbook-leagues button > span { width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:9px;background:#232a2e;color:#788287;font-size:12px; }
+  .sportsbook-leagues button b { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px; }
+  .sportsbook-leagues button small { color:#788287;font-size:9px;font-weight:800; }
+  .sportsbook-leagues button i { color:#788287;font-size:20px;font-style:normal; }
+  .sportsbook-leagues button.active { border-color:rgba(101,255,53,.45);background:rgba(101,255,53,.09); }
+  .sportsbook-leagues button.active > span,.sportsbook-leagues button.active b,.sportsbook-leagues button.active i { color:var(--sb-green); }
+  .sportsbook-list-head {
+    min-height:55px;
+    padding:11px 2px 8px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .sportsbook-list-head h2 { margin:2px 0 0;font-size:16px;line-height:1.1; }
+  .sportsbook-list-head > span { color:#778187;font-size:9px;font-weight:850;white-space:nowrap; }
+  .sportsbook-event-list { display:grid;gap:9px; }
+  .sportsbook-event {
+    padding:11px;
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:15px;
+    background:linear-gradient(180deg,#191f23,#14191c);
+    box-shadow:0 10px 24px rgba(0,0,0,.2);
+  }
+  .sportsbook-event > header { min-height:25px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px; }
+  .sportsbook-event-meta { min-width:0;display:flex;align-items:center;gap:7px;overflow:hidden; }
+  .sportsbook-event-meta > span:last-child { min-width:0;overflow:hidden;color:#7e898f;font-size:9px;font-weight:850;text-overflow:ellipsis;white-space:nowrap; }
+  .sportsbook-event-meta > b { color:#dfe6e2;font-size:10px;white-space:nowrap; }
+  .sportsbook-live {
+    height:20px;padding:0 7px;display:flex;align-items:center;gap:4px;
+    border-radius:7px;background:rgba(255,61,83,.13);color:#ff5369!important;font-size:8px!important;font-weight:1000!important;
+  }
+  .sportsbook-live i { width:5px;height:5px;border-radius:50%;background:#ff435b;box-shadow:0 0 7px #ff435b;animation:sportsbookPulse 1.25s infinite; }
+  .sportsbook-time { height:20px;padding:0 8px;display:flex;align-items:center;border-radius:7px;background:rgba(101,255,53,.11);color:var(--sb-green)!important;font-size:10px!important;font-weight:1000!important; }
+  @keyframes sportsbookPulse { 50%{opacity:.35} }
+  .sportsbook-favorite {
+    flex:0 0 26px;width:26px;height:26px;padding:0;border:0;background:transparent;color:#6f797e;font-size:21px;line-height:1;
+  }
+  .sportsbook-favorite.active { color:#ffe05b; }
+  .sportsbook-fixture { min-height:64px;padding:5px 1px 8px;display:grid;grid-template-columns:minmax(0,1fr) 36px;align-items:center;gap:8px; }
+  .sportsbook-teams { min-width:0;display:grid;gap:6px; }
+  .sportsbook-teams > div { min-width:0;display:flex;align-items:center;gap:8px; }
+  .sportsbook-team-logo {
+    flex:0 0 25px;width:25px;height:25px;display:flex;align-items:center;justify-content:center;
+    overflow:hidden;border:1px solid rgba(255,255,255,.08);border-radius:50%;background:#252c30;color:#a9b2b6;font-size:8px;font-weight:1000;
+  }
+  .sportsbook-team-logo img { width:21px;height:21px;display:block;object-fit:contain; }
+  .sportsbook-teams strong { min-width:0;overflow:hidden;color:#f4f6f5;font-size:11px;text-overflow:ellipsis;white-space:nowrap; }
+  .sportsbook-score { color:var(--sb-green);font-size:13px;font-weight:1000;line-height:24px;text-align:center; }
+  .sportsbook-market { padding-top:9px;border-top:1px solid rgba(255,255,255,.055); }
+  .sportsbook-market-label { display:block;margin-bottom:6px;color:#69747a;font-size:8px;font-weight:850; }
+  .sportsbook-odds { display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 42px;gap:5px; }
+  .sportsbook-odd {
+    min-width:0;height:40px;padding:0 7px;display:flex;align-items:center;justify-content:space-between;gap:4px;
+    border:1px solid rgba(255,255,255,.075);border-radius:9px;background:#242b2f;color:#eef2f0;
+  }
+  .sportsbook-odd small { color:#778187;font-size:9px;font-weight:900; }
+  .sportsbook-odd strong { font-size:11px; }
+  .sportsbook-odd.selected {
+    border-color:var(--sb-green)!important;background:rgba(101,255,53,.15)!important;color:var(--sb-green)!important;
+    box-shadow:inset 0 0 0 1px rgba(101,255,53,.16),0 0 12px rgba(101,255,53,.08)!important;
+  }
+  .sportsbook-odd.selected small { color:var(--sb-green); }
+  .sportsbook-more {
+    min-width:0;height:40px;padding:0 3px;border:1px solid rgba(101,255,53,.15);border-radius:9px;
+    background:rgba(101,255,53,.07);color:var(--sb-green);font-size:9px;font-weight:1000;
+  }
+  .sportsbook-more-link { width:100%;margin-top:8px;padding:8px 0 0;border:0;border-top:1px solid rgba(255,255,255,.045);background:transparent;color:#8d979b;font-size:9px;font-weight:900;text-align:right; }
+  .sportsbook-more-link span { margin-left:4px;color:var(--sb-green);font-size:14px; }
+  .sportsbook-empty { min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px dashed rgba(255,255,255,.1);border-radius:15px;background:#14191c;text-align:center; }
+  .sportsbook-empty span { color:var(--sb-green);font-size:32px; }
+  .sportsbook-empty b { margin-top:8px;font-size:13px; }
+  .sportsbook-empty p { margin:5px 0 0;color:#758087;font-size:10px; }
+}
+
+@media (max-width:360px) {
+  .topbar.mobile-header .mobile-header-logo { width:clamp(105px,34vw,115px)!important;max-width:115px!important;height:44px!important; }
+  .topbar.mobile-header .mobile-header-logo .clean-logo { max-width:115px!important;height:44px!important; }
+  .sportsbook-odds { grid-template-columns:repeat(3,minmax(0,1fr)) 38px;gap:4px; }
+  .sportsbook-odd { padding:0 5px; }
+  .sportsbook-sports button { flex-basis:65px;min-width:65px; }
+}
+
+/* Gamble Hub Stage casino client — mobile only; desktop casino keeps its current renderer. */
+@media (max-width:760px) {
+  .gamblehub-casino {
+    width:min(100%,620px);
+    min-height:calc(100dvh - 64px - env(safe-area-inset-top));
+    margin:0 auto;
+    padding:12px 0 calc(92px + env(safe-area-inset-bottom));
+    color:#f5f7f6;
+  }
+  .gamblehub-hero {
+    min-height:96px;
+    padding:16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    border:1px solid rgba(101,255,53,.18);
+    border-radius:18px;
+    background:radial-gradient(circle at 88% 15%,rgba(101,255,53,.16),transparent 35%),linear-gradient(135deg,#171e21,#101517);
+  }
+  .gamblehub-hero small { color:#65ff35;font-size:9px;font-weight:1000;letter-spacing:1.2px; }
+  .gamblehub-hero h1 { margin:4px 0 3px;font-size:22px;line-height:1.05; }
+  .gamblehub-hero p { margin:0;color:#7f8a90;font-size:10px;font-weight:750; }
+  .gamblehub-hero > strong {
+    flex:0 0 47px;width:47px;height:47px;display:flex;align-items:center;justify-content:center;
+    border:1px solid rgba(101,255,53,.25);border-radius:14px;background:rgba(101,255,53,.1);color:#65ff35;font-size:17px;
+  }
+  .gamblehub-stage-label {
+    min-height:38px;
+    margin:10px 0;
+    padding:0 12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    border:1px solid rgba(255,204,74,.15);
+    border-radius:12px;
+    background:rgba(255,204,74,.065);
+    color:#d8c99a;
+    font-size:9px;
+    font-weight:900;
+  }
+  .gamblehub-stage-label i { width:7px;height:7px;border-radius:50%;background:#ffcc4a;box-shadow:0 0 9px rgba(255,204,74,.5); }
+  .gamblehub-games-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px; }
+  .gamblehub-game-card {
+    min-width:0;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:15px;
+    background:#171d20;
+    box-shadow:0 10px 24px rgba(0,0,0,.2);
+  }
+  .gamblehub-game-image { position:relative;height:116px;overflow:hidden;background:#222a2e; }
+  .gamblehub-game-image img { width:100%;height:100%;display:block;object-fit:cover; }
+  .gamblehub-game-image > span {
+    position:absolute;left:7px;bottom:7px;max-width:calc(100% - 14px);padding:4px 7px;
+    overflow:hidden;border-radius:7px;background:rgba(5,10,12,.82);color:#e7ece9;font-size:8px;font-weight:900;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .gamblehub-game-info { padding:9px;display:grid;gap:5px; }
+  .gamblehub-game-info b { min-width:0;overflow:hidden;font-size:11px;text-overflow:ellipsis;white-space:nowrap; }
+  .gamblehub-game-info small { color:#778188;font-size:8px;font-weight:800; }
+  .gamblehub-game-info button {
+    width:100%;height:34px;margin-top:2px;border:0;border-radius:9px;background:#65ff35;color:#071009;font-size:10px;font-weight:1000;
+  }
+  .gamblehub-game-info button:disabled { background:#272e32;color:#707a80;cursor:not-allowed; }
+  .gamblehub-loading {
+    min-height:calc(100dvh - 150px);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:13px;
+    color:#aeb7b2;
+    font-size:12px;
+  }
+  .gamblehub-loading > span {
+    width:34px;height:34px;border:3px solid rgba(101,255,53,.15);border-top-color:#65ff35;border-radius:50%;animation:gamblehubSpin .8s linear infinite;
+  }
+  @keyframes gamblehubSpin { to{transform:rotate(360deg)} }
+}
+
+@media (max-width:340px) {
+  .gamblehub-games-grid { gap:7px; }
+  .gamblehub-game-image { height:104px; }
+}

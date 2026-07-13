@@ -2,6 +2,9 @@
   "functions": {
     "api/game-url.js": {
       "maxDuration": 20
+    },
+    "api/gamblehub/*.js": {
+      "maxDuration": 20
     }
   }
 }
