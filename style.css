@@ -8537,6 +8537,700 @@ body {
   }
 }
 
+/* Mobile home content v2. Desktop remains on the existing home layout. */
+.bb-mobile-home-content {
+  display:none;
+}
+
+@media (max-width:760px) {
+  html,
+  body {
+    max-width:100%;
+    overflow-x:hidden;
+  }
+
+  body {
+    padding-bottom:calc(88px + env(safe-area-inset-bottom))!important;
+  }
+
+  main.wrap {
+    min-width:0;
+    padding-bottom:calc(94px + env(safe-area-inset-bottom))!important;
+  }
+
+  .bb-mobile-home-legacy,
+  .main-grid.bb-mobile-home-legacy,
+  section.bb-mobile-home-legacy,
+  footer.bb-mobile-home-legacy {
+    display:none!important;
+  }
+
+  .bb-mobile-home-content {
+    width:100%;
+    min-width:0;
+    margin:18px 0 0;
+    padding:0 0 8px;
+    display:block;
+    color:#f4f7f5;
+  }
+
+  .mobile-home-section {
+    width:100%;
+    min-width:0;
+    margin:0 0 22px;
+  }
+
+  .section-header {
+    width:100%;
+    min-height:29px;
+    margin:0 0 10px;
+    padding:0 1px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+
+  .section-title {
+    min-width:0;
+    margin:0;
+    color:#f7faf8;
+    font-size:18px;
+    font-weight:900;
+    line-height:1.2;
+    letter-spacing:.15px;
+  }
+
+  .section-see-all {
+    flex:0 0 auto;
+    min-height:32px;
+    padding:0 1px 0 8px;
+    border:0;
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    background:transparent;
+    color:#65ff35;
+    font-size:13px;
+    font-weight:800;
+    line-height:1;
+  }
+
+  .section-see-all span {
+    margin-top:-1px;
+    font-size:19px;
+    font-weight:500;
+  }
+
+  .mobile-horizontal-row {
+    width:100%;
+    min-width:0;
+    padding:1px 14px 5px 0;
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    overscroll-behavior-inline:contain;
+    scroll-snap-type:x proximity;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .mobile-horizontal-row::after {
+    content:"";
+    flex:0 0 1px;
+  }
+
+  .mobile-horizontal-row::-webkit-scrollbar {
+    display:none;
+  }
+
+  .mobile-game-card {
+    flex:0 0 clamp(118px,32vw,132px);
+    width:clamp(118px,32vw,132px);
+    min-width:118px;
+    max-width:132px;
+    padding:0;
+    overflow:hidden;
+    scroll-snap-align:start;
+    border:1px solid rgba(160,178,169,.19);
+    border-radius:14px;
+    background:#171c1c;
+    box-shadow:0 9px 22px rgba(0,0,0,.25);
+  }
+
+  .mobile-game-card:focus-within {
+    border-color:rgba(101,255,53,.62);
+  }
+
+  .mobile-game-art {
+    position:relative;
+    width:100%;
+    aspect-ratio:4 / 5;
+    overflow:hidden;
+    background:#101615;
+  }
+
+  .mobile-game-art::after {
+    content:"";
+    position:absolute;
+    right:0;
+    bottom:0;
+    left:0;
+    height:44%;
+    background:linear-gradient(180deg,transparent,rgba(7,11,10,.78));
+    pointer-events:none;
+  }
+
+  .mobile-game-art img {
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+  }
+
+  .mobile-game-badge {
+    position:absolute;
+    top:7px;
+    left:7px;
+    z-index:1;
+    max-width:calc(100% - 14px);
+    padding:4px 6px 3px;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.11);
+    border-radius:6px;
+    background:rgba(101,255,53,.93);
+    color:#071108;
+    font-size:8px;
+    font-weight:1000;
+    line-height:1;
+    letter-spacing:.35px;
+    text-overflow:ellipsis;
+    text-transform:uppercase;
+    white-space:nowrap;
+  }
+
+  .mobile-game-badge.is-live {
+    background:#ff3d4f;
+    color:#fff;
+  }
+
+  .mobile-game-info {
+    padding:8px;
+  }
+
+  .mobile-game-info h3 {
+    height:29px;
+    margin:0 0 5px;
+    display:-webkit-box;
+    overflow:hidden;
+    color:#fff;
+    font-size:11.5px;
+    font-weight:850;
+    line-height:1.25;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:2;
+  }
+
+  .mobile-game-meta {
+    min-width:0;
+    margin-bottom:7px;
+    display:flex;
+    align-items:center;
+    gap:5px;
+  }
+
+  .mobile-game-meta span {
+    min-width:0;
+    flex:1 1 auto;
+    overflow:hidden;
+    color:#abb4af;
+    font-size:9px;
+    line-height:1.2;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .mobile-game-meta small {
+    flex:0 0 auto;
+    max-width:46px;
+    padding:2px 4px;
+    overflow:hidden;
+    border-radius:4px;
+    background:#252d2a;
+    color:#cbd2ce;
+    font-size:7px;
+    font-weight:800;
+    line-height:1.1;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .mobile-game-play {
+    width:100%;
+    height:38px;
+    padding:0 8px;
+    border:1px solid rgba(101,255,53,.38);
+    border-radius:10px;
+    background:linear-gradient(180deg,#6dff43,#42df29);
+    color:#071108;
+    font-size:12px;
+    font-weight:1000;
+    box-shadow:0 6px 13px rgba(71,229,40,.15);
+  }
+
+  .mobile-game-play:active,
+  .section-see-all:active,
+  .mobile-provider-card:active,
+  .mobile-promotion-card:active {
+    transform:scale(.97);
+  }
+
+  .mobile-live-casino-row .mobile-game-card {
+    flex-basis:clamp(145px,42vw,165px);
+    width:clamp(145px,42vw,165px);
+    min-width:145px;
+    max-width:165px;
+  }
+
+  .mobile-live-casino-row .mobile-game-art {
+    aspect-ratio:5 / 4;
+  }
+
+  .mobile-live-match-list {
+    width:100%;
+    min-width:0;
+    display:grid;
+    gap:8px;
+  }
+
+  .mobile-live-match {
+    width:100%;
+    min-width:0;
+    padding:10px;
+    overflow:hidden;
+    border:1px solid rgba(160,178,169,.17);
+    border-radius:14px;
+    background:linear-gradient(145deg,#171e1c,#111615);
+    box-shadow:0 9px 24px rgba(0,0,0,.22);
+  }
+
+  .mobile-live-match > header {
+    min-width:0;
+    margin-bottom:8px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+  }
+
+  .mobile-live-match > header > div {
+    min-width:0;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  .mobile-live-label {
+    flex:0 0 auto;
+    height:19px;
+    padding:0 6px;
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    border-radius:5px;
+    background:rgba(255,61,79,.14);
+    color:#ff5363;
+    font-size:8px;
+    font-weight:1000;
+    letter-spacing:.25px;
+  }
+
+  .mobile-live-label i {
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:#ff4052;
+    box-shadow:0 0 7px #ff4052;
+  }
+
+  .mobile-live-match > header b {
+    flex:0 0 auto;
+    color:#65ff35;
+    font-size:10px;
+  }
+
+  .mobile-live-match > header small {
+    min-width:0;
+    overflow:hidden;
+    color:#8f9994;
+    font-size:9px;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .mobile-live-match > header > strong {
+    flex:0 0 auto;
+    color:#fff;
+    font-size:14px;
+    letter-spacing:.3px;
+  }
+
+  .mobile-live-teams {
+    min-width:0;
+    margin-bottom:9px;
+    display:grid;
+    gap:5px;
+  }
+
+  .mobile-live-teams > div {
+    min-width:0;
+    display:flex;
+    align-items:center;
+    gap:7px;
+  }
+
+  .mobile-live-team-logo {
+    flex:0 0 22px;
+    width:22px;
+    height:22px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:50%;
+    background:#252c2a;
+  }
+
+  .mobile-live-team-logo img {
+    width:18px;
+    height:18px;
+    display:block;
+    object-fit:contain;
+  }
+
+  .mobile-live-team-logo b {
+    color:#c7cfcb;
+    font-size:7px;
+    font-weight:900;
+  }
+
+  .mobile-live-teams span:last-child {
+    min-width:0;
+    overflow:hidden;
+    color:#eef2ef;
+    font-size:11px;
+    font-weight:750;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .mobile-live-market {
+    width:100%;
+    min-width:0;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr)) 42px;
+    gap:5px;
+  }
+
+  .mobile-live-odd,
+  .mobile-live-more {
+    min-width:0;
+    height:39px;
+    padding:0 4px;
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:8px;
+    background:#242b29;
+    color:#f2f5f3;
+  }
+
+  .mobile-live-odd {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:3px;
+  }
+
+  .mobile-live-odd small {
+    color:#929c97;
+    font-size:8px;
+    font-weight:850;
+  }
+
+  .mobile-live-odd strong {
+    font-size:10px;
+    font-weight:950;
+  }
+
+  .mobile-live-odd.selected {
+    border-color:#65ff35!important;
+    background:rgba(101,255,53,.16)!important;
+    color:#65ff35!important;
+    box-shadow:inset 0 0 0 1px rgba(101,255,53,.2);
+  }
+
+  .mobile-live-odd.selected small,
+  .mobile-live-odd.selected strong {
+    color:#65ff35!important;
+  }
+
+  .mobile-live-more {
+    color:#65ff35;
+    font-size:9px;
+    font-weight:900;
+  }
+
+  .mobile-promotion-row {
+    gap:10px;
+  }
+
+  .mobile-promotion-card {
+    flex:0 0 clamp(174px,54vw,210px);
+    width:clamp(174px,54vw,210px);
+    min-width:174px;
+    max-width:210px;
+    aspect-ratio:2 / 1;
+    padding:0;
+    overflow:hidden;
+    scroll-snap-align:start;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:14px;
+    background:#151b19;
+    box-shadow:0 10px 24px rgba(0,0,0,.26);
+  }
+
+  .mobile-promotion-card img {
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+  }
+
+  .mobile-provider-section {
+    margin-bottom:19px;
+  }
+
+  .mobile-provider-row {
+    gap:8px;
+  }
+
+  .mobile-provider-card {
+    flex:0 0 clamp(100px,29vw,120px);
+    width:clamp(100px,29vw,120px);
+    min-width:100px;
+    max-width:120px;
+    height:58px;
+    padding:7px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    scroll-snap-align:start;
+    border:1px solid rgba(159,180,169,.16);
+    border-radius:12px;
+    background:linear-gradient(145deg,#1b2220,#131817);
+    color:#e7ede9;
+  }
+
+  .mobile-provider-card span {
+    display:block;
+    font-size:11px;
+    font-weight:900;
+    line-height:1.15;
+    text-align:center;
+  }
+
+  .mobile-provider-card:nth-child(3n+1) {
+    border-color:rgba(101,255,53,.26);
+  }
+
+  .mobile-home-trust {
+    width:100%;
+    min-width:0;
+    padding:1px 14px 5px 0;
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .mobile-home-trust::-webkit-scrollbar {
+    display:none;
+  }
+
+  .mobile-home-trust article {
+    flex:0 0 142px;
+    min-width:142px;
+    height:60px;
+    padding:9px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:12px;
+    background:#151b19;
+  }
+
+  .mobile-home-trust img {
+    flex:0 0 30px;
+    width:30px;
+    height:30px;
+    object-fit:contain;
+  }
+
+  .mobile-home-trust div {
+    min-width:0;
+  }
+
+  .mobile-home-trust b,
+  .mobile-home-trust span {
+    display:block;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .mobile-home-trust b {
+    color:#eff4f1;
+    font-size:10px;
+    line-height:1.2;
+  }
+
+  .mobile-home-trust span {
+    margin-top:3px;
+    color:#87918c;
+    font-size:8px;
+  }
+
+  .mobile-promotion-modal {
+    position:relative;
+    overflow:hidden;
+    border-radius:20px;
+    background:#151c19;
+  }
+
+  .mobile-promotion-modal > img {
+    width:100%;
+    aspect-ratio:2 / 1;
+    display:block;
+    object-fit:cover;
+  }
+
+  .mobile-promotion-modal > div {
+    padding:18px;
+  }
+
+  .mobile-promotion-modal > div > span {
+    color:#65ff35;
+    font-size:9px;
+    font-weight:950;
+    letter-spacing:.8px;
+  }
+
+  .mobile-promotion-modal h2 {
+    margin:6px 0 8px;
+    color:#fff;
+    font-size:20px;
+  }
+
+  .mobile-promotion-modal p {
+    margin:0 0 16px;
+    color:#aeb8b2;
+    font-size:12px;
+    line-height:1.5;
+  }
+
+  .mobile-promotion-close {
+    position:absolute;
+    top:9px;
+    right:9px;
+    z-index:2;
+    width:34px;
+    height:34px;
+    padding:0;
+    border:1px solid rgba(255,255,255,.14);
+    border-radius:10px;
+    background:rgba(9,13,12,.8);
+    color:#fff;
+    font-size:22px;
+  }
+
+  .bb-real-game-card[hidden],
+  .bb-catalog-game-card[hidden],
+  .premium-game-card[hidden],
+  .bb-public-game-card-final[hidden],
+  .gamblehub-game-card[hidden] {
+    display:none!important;
+  }
+
+  .bb-filtered-casino-results {
+    width:100%!important;
+    padding:0!important;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+  }
+
+  .bb-filtered-casino-results .mobile-game-card {
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+  }
+
+  .mobile-casino-empty {
+    grid-column:1 / -1;
+    min-height:150px;
+    padding:24px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    background:#151b19;
+    text-align:center;
+  }
+
+  .mobile-casino-empty b {
+    color:#fff;
+    font-size:15px;
+  }
+
+  .mobile-casino-empty span {
+    color:#909a95;
+    font-size:11px;
+  }
+}
+
+@media (max-width:340px) {
+  .section-title {
+    font-size:17px;
+  }
+
+  .section-see-all {
+    font-size:12px;
+  }
+
+  .mobile-live-match {
+    padding:9px 8px;
+  }
+
+  .mobile-live-market {
+    grid-template-columns:repeat(3,minmax(0,1fr)) 38px;
+    gap:4px;
+  }
+
+  .mobile-live-odd {
+    padding:0 3px;
+  }
+
+  .mobile-live-odd strong {
+    font-size:9px;
+  }
+}
+
 @media (max-width:760px) {
   .mobile-coupon-page {
     width:min(100%,620px);min-height:calc(100dvh - 86px - env(safe-area-inset-top));margin:0 auto;
