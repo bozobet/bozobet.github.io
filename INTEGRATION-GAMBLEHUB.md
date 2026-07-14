@@ -8,14 +8,16 @@ Doğrulanan provider uçları: form-urlencoded `POST /auth/login`, Bearer tokenl
 
 Vercel projesinde **Settings → Environment Variables** bölümüne aşağıdaki değerleri ekleyin. Secret değerleri GitHub'a, `config.js` içine veya herhangi bir frontend dosyasına yazmayın.
 
-- `GAMBLEHUB_API_LOGIN`
-- `GAMBLEHUB_API_PASSWORD`
-- `GAMBLEHUB_USER_ID`
-- `GAMBLEHUB_SECRET_API_KEY`
-- `GAMBLEHUB_CURRENCY` — varsayılan `USD`
-- `GAMBLEHUB_STAGE_OFFICE_URL` — varsayılan `https://office-api-dev.gamble-hub.net`
-- `GAMBLEHUB_STAGE_CLIENT_URL` — varsayılan `https://client-api-dev.gamble-hub.net`
-- `GAMBLEHUB_ALLOW_REAL_MODE` — Stage kabulü tamamlanana kadar `false`
+- `GH_LOGIN`
+- `GH_PASSWORD`
+- `GH_USER_ID`
+- `GH_SECRET_KEY`
+- `GH_CURRENCY` — varsayılan `TRY`
+- `GH_LANGUAGE` — varsayılan `tr`
+- `GH_STAGE_OFFICE` — varsayılan `https://office-api-dev.gamble-hub.net`
+- `GH_STAGE_CLIENT` — varsayılan `https://client-api-dev.gamble-hub.net`
+- `GH_TRANSFER` — varsayılan `https://twalletvault.api.games-hub.net`
+- `GH_CALLBACK` — wallet callback taban adresi
 
 Değişkenleri ekledikten sonra Vercel deployment'ını yeniden oluşturun ve `/api/gamblehub/status` yanıtında `configured: true` olduğunu doğrulayın.
 
@@ -31,12 +33,12 @@ Akış: GitHub Pages frontend → BozoBet Vercel API → Gamble Hub Stage API.
 
 ## Oyun açma
 
-Frontend giriş yapmış kullanıcının kullanıcı adını `/api/gamblehub/open-game` endpointine gönderir. Backend normalize edilmiş JSON gövdesini bir kez üretir ve aynı ham gövde üzerinden `GAMBLEHUB_SECRET_API_KEY` ile HMAC-SHA256 hex `X-Signature` oluşturur. Provider cevabından yalnızca oyun URL'si, session kimliği ve demo bilgisi döndürülür.
+Frontend giriş yapmış kullanıcının kullanıcı adını `/api/gamblehub/open-game` endpointine gönderir. Backend normalize edilmiş JSON gövdesini bir kez üretir ve aynı ham gövde üzerinden `GH_SECRET_KEY` ile HMAC-SHA256 hex `X-Signature` oluşturur. Provider cevabından yalnızca oyun URL'si, session kimliği ve demo bilgisi döndürülür. Stage boyunca oyun açma değerleri `currency: "TRY"`, `language: "tr"` ve `demo: "1"` olarak sabittir.
 
 `exitUrl` yalnızca BozoBet GitHub Pages, mevcut Vercel deployment'ı ve localhost originleriyle kullanılabilir. Bu kontrol açık redirect riskini engeller.
 
 ## Şimdilik devre dışı özellikler
 
-Transfer Wallet ve Seamless Wallet henüz uygulanmamıştır. `getBalance`, `writeBet`, `rollback`, `userCreate`, `userCash` ve `userInfo` endpointleri Garry'den wallet modeli, callback bilgileri, IP allowlist ve credentials geldikten sonra eklenecektir.
+`POST /api/gamblehub/getBalance`, `POST /api/gamblehub/writeBet` ve `POST /api/gamblehub/rollback` endpointleri mock bakiye ile hazırdır. `GH_SECRET_KEY` tanımlandığında callback imzası zorunlu hale gelir. Gerçek wallet bakiyesi, işlem kalıcılığı, idempotency ve mutabakat Stage sözleşmesi ile credentials geldikten sonra bağlanacaktır.
 
-Gerçek para modu varsayılan olarak kapalıdır. Frontend `demo: "0"` gönderse bile `GAMBLEHUB_ALLOW_REAL_MODE=true` olmadığı sürece backend provider'a `demo: "1"` gönderir. Wallet callbackleri, idempotency ve finansal mutabakat tamamlanmadan bu ayar açılmamalıdır.
+Gerçek para modu bu altyapıda kapalıdır; servis her zaman provider'a `demo: "1"` gönderir. Wallet idempotency ve finansal mutabakat tamamlanmadan bu değer değiştirilmemelidir.

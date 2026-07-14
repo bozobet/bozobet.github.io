@@ -1,39 +1,37 @@
 import {
   allowMethods,
   applyCors,
-  clientPost,
-  getMissingConfig,
-  handleApiError,
-  normalizeOpenGameBody,
-  parseJsonBody,
-  readProviderJson,
-  requireGambleHubConfig,
-  sendSetupRequired,
-  signRawBody,
-  UpstreamError
+  parseJsonBody
 } from "../_lib/gamblehub.js";
-
-const REQUIRED = ["GAMBLEHUB_USER_ID", "GAMBLEHUB_SECRET_API_KEY"];
+import { openGame, StageCredentialsRequiredError } from "../../services/gambleHub.js";
 
 export default async function handler(req, res) {
   if (applyCors(req, res, ["POST"])) return;
   if (!allowMethods(req, res, ["POST"])) return;
-  if (getMissingConfig(REQUIRED).length) return sendSetupRequired(res, REQUIRED);
   try {
-    const config = requireGambleHubConfig(REQUIRED);
-    const payload = normalizeOpenGameBody(parseJsonBody(req), config);
-    const rawBody = JSON.stringify(payload);
-    const signature = signRawBody(rawBody, config.secretApiKey);
-    const response = await clientPost("/games/openGame", rawBody, signature);
-    const data = await readProviderJson(response);
-    if (!response.ok || data?.status !== "success") throw new UpstreamError("open_game_provider_error", response.status);
+    const body = parseJsonBody(req);
+    const result = await openGame({
+      gameId:body.gameId,
+      playerLogin:body.playerLogin,
+      exitUrl:body.exitUrl
+    });
+    const data = result.data;
     const gameUrl = data?.content?.game?.url;
     const sessionId = data?.content?.gameRes?.sessionId;
     if (typeof gameUrl !== "string" || !gameUrl.startsWith("https://") || typeof sessionId !== "string" || !sessionId) {
-      throw new UpstreamError("invalid_provider_response", response.status);
+      const error = new Error("Invalid Gamble Hub response");
+      error.code = "invalid_provider_response";
+      throw error;
     }
-    return res.status(200).json({ ok:true, gameUrl, sessionId, demo:payload.demo === "1" });
+    return res.status(200).json({ ok:true, gameUrl, sessionId, demo:true });
   } catch (error) {
-    return handleApiError(error, res);
+    if (error instanceof StageCredentialsRequiredError) {
+      return res.status(503).json({ ok:false, error:"stage_credentials_required", message:error.message, missing:error.missing });
+    }
+    if (error?.name === "ValidationError" || error?.code === "invalid_request") {
+      return res.status(400).json({ ok:false, error:"invalid_request" });
+    }
+    console.error("Gamble Hub openGame failed", { code:error?.code || "unknown" });
+    return res.status(502).json({ ok:false, error:error?.code || "open_game_provider_error" });
   }
 }

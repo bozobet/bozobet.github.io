@@ -10586,6 +10586,7 @@ function bbHomePopularGameCardHtml(g){
 function bbReplaceHomePopularGames(){
   const app = document.getElementById("app");
   if(!app) return;
+  if(app.querySelector(".bb-mobile-home-content")) return;
 
   const headings = [...app.querySelectorAll("h1,h2,h3,b,strong,div,span")];
 
@@ -10775,6 +10776,7 @@ function bbHomePopularGameCardStaticHtml(g, index){
 function bbReplaceHomePopularGamesPublished(){
   const app = document.getElementById("app");
   if(!app) return;
+  if(app.querySelector(".bb-mobile-home-content")) return;
 
   const headings = [...app.querySelectorAll("h1,h2,h3,b,strong,div,span")];
 
@@ -10817,31 +10819,7 @@ function bbReplaceHomePopularGamesPublished(){
 }
 
 function bbForceMobileAuthButtons(){
-  const header =
-    document.querySelector("header") ||
-    document.querySelector(".topbar") ||
-    document.querySelector(".navbar") ||
-    document.querySelector(".site-header");
-
-  if(!header) return;
-
-  if(document.querySelector(".bb-mobile-auth-actions")) return;
-
-  const wrap = document.createElement("div");
-  wrap.className = "bb-mobile-auth-actions";
-
-  if(user){
-    wrap.innerHTML = `
-      <button onclick="renderProfile && renderProfile()">Hesabım</button>
-    `;
-  }else{
-    wrap.innerHTML = `
-      <button onclick="bbOpenLoginSafe(event)">Giriş Yap</button>
-      <button class="join" onclick="bbOpenRegisterSafe(event)">Üye Ol</button>
-    `;
-  }
-
-  header.appendChild(wrap);
+  document.querySelectorAll(".bb-mobile-auth-actions").forEach(node => node.remove());
 }
 
 function bbGuardGameClicksForGuests(){
@@ -10892,23 +10870,7 @@ document.addEventListener("click", () => {
 
 // CACHEFIX MOBILE HARD PATCH
 function bbHardMobileLoginBar(){
-  if(document.querySelector(".bb-hard-mobile-login-bar")) return;
-
-  const bar = document.createElement("div");
-  bar.className = "bb-hard-mobile-login-bar";
-
-  if(user){
-    bar.innerHTML = `
-      <button onclick="renderProfile && renderProfile()">Hesabım</button>
-    `;
-  }else{
-    bar.innerHTML = `
-      <button onclick="bbOpenLoginSafe ? bbOpenLoginSafe(event) : loginModal()">Giriş Yap</button>
-      <button class="join" onclick="bbOpenRegisterSafe ? bbOpenRegisterSafe(event) : registerModal()">Üye Ol</button>
-    `;
-  }
-
-  document.body.appendChild(bar);
+  document.querySelectorAll(".bb-hard-mobile-login-bar").forEach(node => node.remove());
 }
 
 function bbForceGuestGameWarning(){
@@ -11201,6 +11163,7 @@ function bbRenderPublicCasinoFinal(title){
 function bbRenderHomePopularFinal(){
   const app = document.getElementById("app");
   if(!app) return;
+  if(app.querySelector(".bb-mobile-home-content")) return;
 
   const headings = [...app.querySelectorAll("h1,h2,h3,b,strong,span,div")];
 
@@ -11235,22 +11198,6 @@ function bbRenderHomePopularFinal(){
 
 function bbHardMobileLoginBarFinal(){
   document.querySelectorAll(".bb-hard-mobile-login-bar-final").forEach(x => x.remove());
-
-  const bar = document.createElement("div");
-  bar.className = "bb-hard-mobile-login-bar-final";
-
-  if(user){
-    bar.innerHTML = `
-      <button onclick="renderProfile && renderProfile()">Hesabım</button>
-    `;
-  }else{
-    bar.innerHTML = `
-      <button onclick="loginModal && loginModal()">Giriş Yap</button>
-      <button class="join" onclick="registerModal && registerModal()">Üye Ol</button>
-    `;
-  }
-
-  document.body.appendChild(bar);
 }
 
 function bbGlobalGuestGuardFinal(){
@@ -11653,6 +11600,7 @@ document.addEventListener("click", () => {
   function fixHomePopular(){
     var app = document.getElementById("app");
     if(!app) return;
+    if(app.querySelector(".bb-mobile-home-content")) return;
 
     var found = Array.from(app.querySelectorAll("h1,h2,h3,b,strong,span,div")).find(function(el){
       var t = String(el.textContent || "").trim().toLowerCase();
@@ -11725,8 +11673,8 @@ document.addEventListener("click", () => {
   window.BB_GENERATED_MOBILE_ASSETS=bbAssets;
   function img(src,alt){return `<img src="${src}" alt="${alt||''}" loading="lazy" decoding="async">`;}
   function activeCouponCount(){try{if(!user)return 0;const all=[...JSON.parse(localStorage.getItem('bozobet_bets')||'[]'),...JSON.parse(localStorage.getItem('bozobet_coupons')||'[]')];return all.filter(b=>['active','pending','open','waiting','bekliyor'].includes(String(b.status||'').toLowerCase())&&[String(user.id||''),String(user.username||'')].includes(String(b.userId||b.username||b.user||''))).length;}catch(e){return 0;}}
-  function injectMobileHomeVisuals(){const app=document.getElementById('app');if(!app)return;if(document.querySelector('.bb-gen-mobile-visuals'))return;const first=app.firstElementChild;const html=`<section class="bb-gen-mobile-visuals"><div class="bb-gen-hero-slider">${bbAssets.banners.map((s,i)=>`<article class="bb-gen-hero-card ${i===0?'active':''}">${img(s,'BozoBet banner')}</article>`).join('')}</div><div class="bb-gen-quick-icons">${bbAssets.icons.map(([t,s])=>`<button>${img(s,t)}<span>${t}</span></button>`).join('')}</div><div class="bb-gen-section-head"><b>Promosyonlar</b><button onclick="typeof renderPromotions==='function'?renderPromotions():null">Tümünü Gör</button></div><div class="bb-gen-promo-row">${bbAssets.promos.map(([t,s])=>`<button>${img(s,t)}<span>${t}</span></button>`).join('')}</div><div class="bb-gen-section-head"><b>Canlı Casino</b><button onclick="typeof renderCasino==='function'?renderCasino():null">Oyna</button></div><div class="bb-gen-dealer-row">${bbAssets.dealers.map((s,i)=>`<button onclick="typeof renderCasino==='function'?renderCasino():null">${img(s,'Canlı casino '+(i+1))}</button>`).join('')}</div></section>`;if(first)first.insertAdjacentHTML('afterend',html);else app.insertAdjacentHTML('afterbegin',html);}
-  function renderGeneratedBottomNav(){document.querySelectorAll('.bb-gen-bottom-nav').forEach(x=>x.remove());const n=activeCouponCount();const nav=document.createElement('nav');nav.className='bb-gen-bottom-nav';nav.innerHTML=`<button onclick="renderHome&&renderHome()"><img src="${bbAssets.nav.home}" alt=""><b>Ana Sayfa</b></button><button onclick="renderSports&&renderSports()"><img src="${bbAssets.nav.sports}" alt=""><b>Spor</b></button><button onclick="renderCasino&&renderCasino()"><img src="${bbAssets.nav.casino}" alt=""><b>Casino</b></button><button class="coupon" onclick="typeof renderCoupon==='function'?renderCoupon():alert('Kuponunuz boş.')"><img src="${bbAssets.nav.coupon}" alt=""><i>${n}</i><b>Kupon</b></button><button onclick="user?(renderProfile&&renderProfile()):(loginModal&&loginModal())"><img src="${bbAssets.nav.account}" alt=""><b>Hesabım</b></button>`;document.body.appendChild(nav);}
+  function injectMobileHomeVisuals(){ /* Removed: superseded by the canonical mobile homepage. */ }
+  function renderGeneratedBottomNav(){ document.querySelectorAll('.bb-gen-bottom-nav').forEach(x=>x.remove()); }
   if(typeof renderHome==='function'){const old=renderHome;renderHome=function(){old();setTimeout(injectMobileHomeVisuals,120);setTimeout(renderGeneratedBottomNav,160);};}
   window.addEventListener('load',()=>{setTimeout(injectMobileHomeVisuals,300);setTimeout(renderGeneratedBottomNav,350);});
   document.addEventListener('click',()=>setTimeout(renderGeneratedBottomNav,200));

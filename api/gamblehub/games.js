@@ -1,28 +1,16 @@
 import {
   allowMethods,
-  applyCors,
-  getGambleHubConfig,
-  getMissingConfig,
-  handleApiError,
-  officeAuthorizedGet,
-  readProviderJson,
-  sendSetupRequired,
-  UpstreamError
+  applyCors
 } from "../_lib/gamblehub.js";
-
-const REQUIRED = ["GAMBLEHUB_API_LOGIN", "GAMBLEHUB_API_PASSWORD", "GAMBLEHUB_USER_ID"];
+import { getConfig, getGames, StageCredentialsRequiredError } from "../../services/gambleHub.js";
 
 export default async function handler(req, res) {
   if (applyCors(req, res, ["GET"])) return;
   if (!allowMethods(req, res, ["GET"])) return;
-  if (getMissingConfig(REQUIRED).length) return sendSetupRequired(res, REQUIRED);
   try {
-    const config = getGambleHubConfig();
-    const path = "/users/" + encodeURIComponent(config.userId) + "/getUserGames/" + encodeURIComponent(config.currency);
-    const response = await officeAuthorizedGet(path);
-    const data = await readProviderJson(response);
-    if (!response.ok) throw new UpstreamError(response.status === 401 ? "provider_auth_failed" : "games_provider_error", response.status);
-    const list = Array.isArray(data) ? data : [];
+    const config = getConfig();
+    const data = await getGames(config.currency);
+    const list = Array.isArray(data) ? data : (Array.isArray(data?.games) ? data.games : []);
     const games = list.filter(game => game?.isEnabled === true).map(game => ({
       id:String(game.id || ""),
       title:String(game.title || ""),
@@ -32,6 +20,10 @@ export default async function handler(req, res) {
     })).filter(game => game.id && game.title);
     return res.status(200).json({ ok:true, games });
   } catch (error) {
-    return handleApiError(error, res);
+    if (error instanceof StageCredentialsRequiredError) {
+      return res.status(503).json({ ok:false, error:"stage_credentials_required", message:error.message, missing:error.missing });
+    }
+    console.error("Gamble Hub games failed", { code:error?.code || "unknown" });
+    return res.status(502).json({ ok:false, error:error?.code || "games_provider_error" });
   }
 }

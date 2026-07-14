@@ -175,9 +175,49 @@
     return `<section class="mobile-home-trust" aria-label="BozoBet avantajları">${trustItems.map(item => `<article><img src="${esc(item.icon)}" alt="" loading="lazy"><div><b>${esc(item.title)}</b><span>${esc(item.text)}</span></div></article>`).join("")}</section>`;
   }
 
-  function homeContent() {
+  function mobileBanner() {
+    const banners = [
+      ["assets/banners/home-hero.png", "BozoBet hoş geldin kampanyası"],
+      ["assets/banners/sports-hero.png", "BozoBet spor kampanyası"],
+      ["assets/banners/roulette-hero.png", "BozoBet rulet kampanyası"],
+      ["assets/banners/slot-hero.png", "BozoBet slot kampanyası"],
+      ["assets/mobile/banners/live-casino-hero-1.png", "BozoBet canlı casino kampanyası"],
+      ["assets/mobile/banners/big-prize-banner.png", "BozoBet büyük ödül kampanyası"],
+      ["assets/mobile/banners/vip-casino-banner.png", "BozoBet VIP casino kampanyası"]
+    ];
+
     return `
-      <div class="bb-mobile-home-content">
+      <section class="mobile-hero-slider" id="mobileHeroSlider" aria-label="Kampanyalar">
+        <div class="mobile-hero-track">
+          ${banners.map(([src, alt], index) => `<img class="mobile-hero-slide${index === 0 ? " active" : ""}" src="${src}" alt="${alt}">`).join("")}
+        </div>
+        <div class="mobile-hero-dots" aria-label="Banner seçimi">
+          ${banners.map((_, index) => `<button class="${index === 0 ? "active" : ""}" type="button" aria-label="${index + 1}. banner" onclick="setMobileHeroSlide(${index})"></button>`).join("")}
+        </div>
+      </section>`;
+  }
+
+  function categoryCard(icon, title, subtitle) {
+    return `<div class="cat"><div class="cat-left"><div class="cat-icon"><img src="${icon}" alt="${title}"></div><div><b>${title}</b><span>${subtitle}</span></div></div><div class="arrow">›</div></div>`;
+  }
+
+  function mobileCategories() {
+    return `
+      <section class="category-row" aria-label="Kategoriler">
+        ${categoryCard("assets/icons/categories/football.webp", "FUTBOL", "500+ Lig")}
+        ${categoryCard("assets/icons/categories/basketball.webp", "BASKETBOL", "200+ Lig")}
+        ${categoryCard("assets/icons/categories/tennis.webp", "TENİS", "150+ Turnuva")}
+        ${categoryCard("assets/icons/categories/esport.webp", "E-SPOR", "100+ Karşılaşma")}
+        ${categoryCard("assets/icons/categories/live-bet.webp", "CANLI BAHİS", "Anında Bahis")}
+        ${categoryCard("assets/mobile/icons/slot-icon.png", "SLOT", "Slot Oyunları")}
+      </section>`;
+  }
+
+  function mobileHomeContent() {
+    return `
+      ${mobileBanner()}
+      ${mobileCategories()}
+      <div class="bb-mobile-home-content" aria-label="Mobil ana sayfa içeriği">
         ${gameSection("POPÜLER OYUNLAR", popularGames, "popular", false)}
         <section class="mobile-home-section">${sectionHeader("CANLI MAÇLAR", "sports")}<div class="mobile-live-match-list">${liveMatches.map(liveMatchCard).join("")}</div></section>
         ${promotionsSection()}
@@ -188,19 +228,15 @@
       </div>`;
   }
 
-  function injectMobileHome() {
-    if (!window.matchMedia(MOBILE_QUERY).matches) return;
+  function renderMobileHome() {
     const app = document.getElementById("app");
-    const categories = app?.querySelector(".category-row");
-    if (!app || !categories || app.querySelector(".bb-mobile-home-content")) return;
+    if (!app) return;
 
-    categories.insertAdjacentHTML("afterend", homeContent());
-    const mobileContent = categories.nextElementSibling;
-    let legacySection = mobileContent?.nextElementSibling;
-    while (legacySection) {
-      legacySection.classList.add("bb-mobile-home-legacy");
-      legacySection = legacySection.nextElementSibling;
-    }
+    // Mobile gets its own render tree. Legacy homepage sections are never
+    // created and therefore cannot survive in the DOM behind display:none.
+    app.innerHTML = window.shell(mobileHomeContent()).replace("👤 Üye Ol", "Üye Ol");
+    document.querySelectorAll(".bb-gen-mobile-visuals,.bb-hard-mobile-login-bar,.bb-hard-mobile-login-bar-final,.bb-mobile-auth-actions,.bb-gen-bottom-nav,.bb-bottom-nav-final,.bbf-nav,.bb-clean-nav").forEach(node => node.remove());
+    if (typeof window.initMobileHomeSlider === "function") requestAnimationFrame(window.initMobileHomeSlider);
     syncHomeOdds();
   }
 
@@ -387,16 +423,21 @@
   if (typeof window.renderHome === "function") {
     const originalRenderHome = window.renderHome;
     window.renderHome = function () {
-      const output = originalRenderHome.apply(this, arguments);
-      requestAnimationFrame(injectMobileHome);
-      window.setTimeout(injectMobileHome, 120);
-      return output;
+      if (!window.matchMedia(MOBILE_QUERY).matches) {
+        return originalRenderHome.apply(this, arguments);
+      }
+      renderMobileHome();
     };
   }
 
   window.bbOpenCasinoFilter = openCasinoFilter;
+  const requestedPage = location.hash.slice(1) || localStorage.getItem("bozobetMobileView") || "home";
+  if (window.matchMedia(MOBILE_QUERY).matches && requestedPage === "home") {
+    renderMobileHome();
+  }
   window.addEventListener("load", () => {
-    window.setTimeout(injectMobileHome, 120);
-    window.setTimeout(injectMobileHome, 600);
+    if (window.matchMedia(MOBILE_QUERY).matches && window.bbActiveBottomPage === "home") {
+      renderMobileHome();
+    }
   });
 })();

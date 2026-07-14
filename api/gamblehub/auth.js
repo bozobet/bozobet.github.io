@@ -1,22 +1,20 @@
 import {
   allowMethods,
-  applyCors,
-  getAccessToken,
-  getMissingConfig,
-  handleApiError,
-  sendSetupRequired
+  applyCors
 } from "../_lib/gamblehub.js";
-
-const REQUIRED = ["GAMBLEHUB_API_LOGIN", "GAMBLEHUB_API_PASSWORD"];
+import { login, StageCredentialsRequiredError } from "../../services/gambleHub.js";
 
 export default async function handler(req, res) {
   if (applyCors(req, res, ["POST"])) return;
   if (!allowMethods(req, res, ["POST"])) return;
-  if (getMissingConfig(REQUIRED).length) return sendSetupRequired(res, REQUIRED);
   try {
-    const { user } = await getAccessToken();
-    return res.status(200).json({ ok:true, authenticated:true, user });
+    const data = await login();
+    return res.status(200).json({ ok:true, authenticated:true, user:data?.user || null });
   } catch (error) {
-    return handleApiError(error, res);
+    if (error instanceof StageCredentialsRequiredError) {
+      return res.status(503).json({ ok:false, error:"stage_credentials_required", message:error.message, missing:error.missing });
+    }
+    console.error("Gamble Hub login failed", { code:error?.code || "unknown" });
+    return res.status(502).json({ ok:false, error:error?.code || "provider_auth_error" });
   }
 }

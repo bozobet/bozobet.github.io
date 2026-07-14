@@ -8537,11 +8537,6 @@ body {
   }
 }
 
-/* Mobile home content v2. Desktop remains on the existing home layout. */
-.bb-mobile-home-content {
-  display:none;
-}
-
 @media (max-width:760px) {
   html,
   body {
@@ -8556,13 +8551,6 @@ body {
   main.wrap {
     min-width:0;
     padding-bottom:calc(94px + env(safe-area-inset-bottom))!important;
-  }
-
-  .bb-mobile-home-legacy,
-  .main-grid.bb-mobile-home-legacy,
-  section.bb-mobile-home-legacy,
-  footer.bb-mobile-home-legacy {
-    display:none!important;
   }
 
   .bb-mobile-home-content {
@@ -11127,4 +11115,80 @@ body.auth-modal-open {
 @media (max-width:340px) {
   .gamblehub-games-grid { gap:7px; }
   .gamblehub-game-image { height:104px; }
+}
+
+/* Canonical mobile header: menu left, logo centered, auth actions right. */
+@media (max-width:760px) {
+  .topbar.mobile-header {
+    position:sticky!important;
+    height:calc(64px + env(safe-area-inset-top))!important;
+    min-height:calc(64px + env(safe-area-inset-top))!important;
+    padding:env(safe-area-inset-top) max(8px,env(safe-area-inset-right)) 0 max(8px,env(safe-area-inset-left))!important;
+    display:flex!important;
+    align-items:center!important;
+    overflow:visible!important;
+  }
+
+  .topbar.mobile-header .mobile-header-logo {
+    position:absolute!important;
+    top:calc(env(safe-area-inset-top) + 7px)!important;
+    left:50%!important;
+    width:110px!important;
+    min-width:110px!important;
+    max-width:110px!important;
+    height:50px!important;
+    margin:0!important;
+    transform:translateX(-50%)!important;
+  }
+
+  .topbar.mobile-header .mobile-header-logo picture,
+  .topbar.mobile-header .mobile-header-logo .clean-logo {
+    width:110px!important;
+    min-width:110px!important;
+    max-width:110px!important;
+    height:50px!important;
+    display:block!important;
+    object-fit:contain!important;
+    object-position:center!important;
+  }
+
+  .topbar.mobile-header .mobile-header-actions {
+    position:relative!important;
+    width:auto!important;
+    margin-left:auto!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:4px!important;
+    z-index:3!important;
+  }
+
+  .topbar.mobile-header .mobile-header-actions .btn,
+  .topbar.mobile-header .mobile-header-actions button[onclick*="loginModal"],
+  .topbar.mobile-header .mobile-header-actions button[onclick*="registerModal"] {
+    flex:0 0 44px!important;
+    width:44px!important;
+    min-width:44px!important;
+    max-width:44px!important;
+    height:38px!important;
+    min-height:38px!important;
+    padding:0 3px!important;
+    font-size:10px!important;
+    line-height:1.05!important;
+    white-space:normal!important;
+  }
+
+  .topbar.mobile-header .mobile-header-actions .btn.primary,
+  .topbar.mobile-header .mobile-header-actions button[onclick*="registerModal"] {
+    flex-basis:52px!important;
+    width:52px!important;
+    min-width:52px!important;
+    max-width:52px!important;
+  }
+
+  .mobile-menu-button {
+    top:calc(env(safe-area-inset-top) + 11px)!important;
+    left:max(10px,env(safe-area-inset-left))!important;
+    width:42px!important;
+    height:42px!important;
+  }
 }

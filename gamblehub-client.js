@@ -4,12 +4,12 @@
   const API_BASE = String(window.BOZOBET_API_BASE || "").replace(/\/+$/, "");
   const previousRenderCasino = window.renderCasino;
   const fallbackGames = [
-    { title:"Sweet Bonanza", provider:"Pragmatic Play", imageUrl:"assets/mobile/promos/welcome-bonus.png" },
-    { title:"Gates of Olympus", provider:"Pragmatic Play", imageUrl:"assets/mobile/banners/big-prize-banner.png" },
-    { title:"Aviator", provider:"Spribe", imageUrl:"assets/mobile/banners/live-casino-hero-2.png" },
-    { title:"Crazy Time", provider:"Evolution", imageUrl:"assets/mobile/dealers/dealer-live-casino-1.png" },
-    { title:"Lightning Roulette", provider:"Evolution", imageUrl:"assets/mobile/dealers/dealer-live-casino-2.png" },
-    { title:"Blackjack", provider:"Evolution", imageUrl:"assets/mobile/dealers/dealer-cards.png" }
+    { id:"stage-sweet-bonanza", title:"Sweet Bonanza", provider:"Pragmatic Play", imageUrl:"assets/mobile/promos/welcome-bonus.png" },
+    { id:"stage-gates-of-olympus", title:"Gates of Olympus", provider:"Pragmatic Play", imageUrl:"assets/mobile/banners/big-prize-banner.png" },
+    { id:"stage-aviator", title:"Aviator", provider:"Spribe", imageUrl:"assets/mobile/banners/live-casino-hero-2.png" },
+    { id:"stage-crazy-time", title:"Crazy Time", provider:"Evolution", imageUrl:"assets/mobile/dealers/dealer-live-casino-1.png" },
+    { id:"stage-lightning-roulette", title:"Lightning Roulette", provider:"Evolution", imageUrl:"assets/mobile/dealers/dealer-live-casino-2.png" },
+    { id:"stage-blackjack", title:"Blackjack", provider:"Evolution", imageUrl:"assets/mobile/dealers/dealer-cards.png" }
   ];
 
   function esc(value) {
@@ -65,9 +65,7 @@
     return '<article class="gamblehub-game-card">' +
       '<div class="gamblehub-game-image"><img src="' + esc(image) + '" alt="' + esc(game.title) + '" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'assets/mobile/icons/casino-icon.png\'"><span>' + esc(game.provider) + '</span></div>' +
       '<div class="gamblehub-game-info"><b>' + esc(game.title) + '</b><small>' + (isFallback ? 'Demo katalog' : 'Gamble Hub Stage') + '</small>' +
-      (isFallback
-        ? '<button type="button" disabled>Hazırlanıyor</button>'
-        : '<button type="button" data-gamblehub-game-id="' + esc(game.id) + '" onclick="playGambleHubGame(this.dataset.gamblehubGameId)">Oyna</button>') +
+      '<button type="button" data-gamblehub-game-id="' + esc(game.id) + '" onclick="window.openGame(this.dataset.gamblehubGameId)">Oyna</button>' +
       '</div></article>';
   }
 
@@ -93,7 +91,7 @@
   }
 
   function friendlyOpenError(error) {
-    if (error?.message === "setup_required") return "Casino Stage bağlantısı henüz yapılandırılmadı.";
+    if (error?.message === "setup_required" || error?.message === "stage_credentials_required") return "Stage credentials required";
     if (error?.message === "invalid_request") return "Oyun bilgileri geçersiz. Lütfen tekrar deneyin.";
     return "Oyun şu anda açılamıyor. Lütfen daha sonra tekrar deneyin.";
   }
@@ -123,15 +121,16 @@
         body:JSON.stringify({
           gameId:String(gameId),
           playerLogin:login,
-          currency:String(options?.currency || "USD"),
-          language:String(options?.language || "tr"),
-          demo:String(options?.demo ?? "1"),
+          currency:"TRY",
+          language:"tr",
+          demo:"1",
           exitUrl:String(options?.exitUrl || window.location.href)
         })
       });
       const data = await safeJson(response);
       if (!response.ok || !data?.ok || typeof data.gameUrl !== "string") {
-        throw new Error(data?.error === "setup_required" ? "setup_required" : "open_game_failed");
+        const setupRequired = data?.error === "setup_required" || data?.error === "stage_credentials_required";
+        throw new Error(setupRequired ? "stage_credentials_required" : "open_game_failed");
       }
       if (popup && !popup.closed) popup.location.replace(data.gameUrl);
       else window.location.assign(data.gameUrl);
@@ -163,12 +162,21 @@
   window.loadGambleHubGames = loadGambleHubGames;
   window.openGambleHubGame = openGambleHubGame;
   window.renderGambleHubGames = renderGambleHubGames;
-  window.playGambleHubGame = async function (gameId) {
+  window.openGame = async function (gameId) {
     try {
-      await openGambleHubGame(gameId, { demo:"1" });
+      const status = await getStatus();
+      if (!status.configured) {
+        alert("Stage credentials required");
+        return null;
+      }
+      return await openGambleHubGame(gameId, { currency:"TRY", language:"tr", demo:"1" });
     } catch (error) {
       if (error?.message !== "login_required") alert(friendlyOpenError(error));
+      return null;
     }
+  };
+  window.playGambleHubGame = async function (gameId) {
+    return window.openGame(gameId);
   };
   window.renderCasino = renderCasinoWithGambleHub;
 })();
