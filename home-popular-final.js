@@ -191,6 +191,12 @@
         <div class="mobile-hero-track">
           ${banners.map(([src, alt], index) => `<img class="mobile-hero-slide${index === 0 ? " active" : ""}" src="${src}" alt="${alt}">`).join("")}
         </div>
+        <button class="hero-arrow hero-prev" type="button" aria-label="Önceki banner" onclick="setMobileHeroSlide(window.bozobetMobileHeroIndex - 1)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button class="hero-arrow hero-next" type="button" aria-label="Sonraki banner" onclick="setMobileHeroSlide(window.bozobetMobileHeroIndex + 1)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
         <div class="mobile-hero-dots" aria-label="Banner seçimi">
           ${banners.map((_, index) => `<button class="${index === 0 ? "active" : ""}" type="button" aria-label="${index + 1}. banner" onclick="setMobileHeroSlide(${index})"></button>`).join("")}
         </div>

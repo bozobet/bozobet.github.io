@@ -809,6 +809,12 @@ function renderHome(){
       <img class="hero-slide-img " src="assets/banners/sports-hero.png" alt="GalaxyBet Banner 2">
       <img class="hero-slide-img " src="assets/banners/roulette-hero.png" alt="GalaxyBet Banner 3">
       <img class="hero-slide-img " src="assets/banners/slot-hero.png" alt="GalaxyBet Banner 4">
+      <button class="hero-arrow hero-prev" type="button" aria-label="Önceki banner" onclick="heroPrev()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <button class="hero-arrow hero-next" type="button" aria-label="Sonraki banner" onclick="heroNext()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
       <div class="hero-dots">
         <span class="active" onclick="setHeroSlide(0)"></span>
         <span class="" onclick="setHeroSlide(1)"></span>
@@ -827,6 +833,12 @@ function renderHome(){
         <img class="mobile-hero-slide" src="assets/mobile/banners/big-prize-banner.png" alt="GalaxyBet büyük ödül kampanyası">
         <img class="mobile-hero-slide" src="assets/mobile/banners/vip-casino-banner.png" alt="GalaxyBet VIP casino kampanyası">
       </div>
+      <button class="hero-arrow hero-prev" type="button" aria-label="Önceki banner" onclick="setMobileHeroSlide(window.bozobetMobileHeroIndex - 1)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <button class="hero-arrow hero-next" type="button" aria-label="Sonraki banner" onclick="setMobileHeroSlide(window.bozobetMobileHeroIndex + 1)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
       <div class="mobile-hero-dots" aria-label="Banner seçimi">
         ${Array.from({length:7},(_,i)=>`<button class="${i === 0 ? "active" : ""}" type="button" aria-label="${i + 1}. banner" onclick="setMobileHeroSlide(${i})"></button>`).join("")}
       </div>
@@ -1307,6 +1319,8 @@ function updateHeroSlider(){
 
   const imgs = hero.querySelectorAll(".hero-slide-img");
   const dots = hero.querySelectorAll(".hero-dots span");
+  if(!imgs.length) return;
+  window.bozobetHeroIndex = ((window.bozobetHeroIndex % imgs.length) + imgs.length) % imgs.length;
 
   imgs.forEach((img, i) => img.classList.toggle("active", i === window.bozobetHeroIndex));
   dots.forEach((dot, i) => dot.classList.toggle("active", i === window.bozobetHeroIndex));
@@ -1319,13 +1333,13 @@ function setHeroSlide(i){
 }
 
 function heroNext(){
-  window.bozobetHeroIndex = (window.bozobetHeroIndex + 3) % 4;
+  window.bozobetHeroIndex += 1;
   updateHeroSlider();
   restartHeroTimer();
 }
 
 function heroPrev(){
-  window.bozobetHeroIndex = (window.bozobetHeroIndex + 3) % 4;
+  window.bozobetHeroIndex -= 1;
   updateHeroSlider();
   restartHeroTimer();
 }
@@ -1333,7 +1347,7 @@ function heroPrev(){
 function restartHeroTimer(){
   if(window.bozobetHeroTimer) clearInterval(window.bozobetHeroTimer);
   window.bozobetHeroTimer = setInterval(() => {
-    window.bozobetHeroIndex = (window.bozobetHeroIndex + 3) % 4;
+    window.bozobetHeroIndex += 1;
     updateHeroSlider();
   }, 4200);
 }
