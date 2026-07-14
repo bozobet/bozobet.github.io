@@ -109,7 +109,7 @@
     if (popup) {
       popup.opener = null;
       try {
-        popup.document.title = "BozoBet Casino";
+        popup.document.title = "GalaxyBet Casino";
         popup.document.body.textContent = "Oyun hazırlanıyor...";
       } catch {}
     }

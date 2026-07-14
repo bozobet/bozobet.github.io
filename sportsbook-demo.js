@@ -154,7 +154,7 @@
 
   function pageMarkup() {
     return '<section id="mobile-sports-view" class="mobile-sportsbook">' +
-      '<header class="sportsbook-head"><div><small>BOZOBET SPORTS</small><h1>Spor Bahisleri</h1></div>' +
+      '<header class="sportsbook-head"><div><small>GALAXYBET SPORTS</small><h1>Spor Bahisleri</h1></div>' +
       '<button type="button" aria-label="Maç ara" aria-expanded="' + state.searchOpen + '" onclick="toggleSportsbookSearch()">⌕</button></header>' +
       '<div class="sportsbook-search' + (state.searchOpen ? ' open' : '') + '"><input id="sportsbookSearch" type="search" value="' + esc(state.query) + '" placeholder="Takım veya lig ara" oninput="searchSportsbook(this.value)"></div>' +
       '<nav class="sportsbook-tabs" role="tablist">' + [["live","Canlı"],["upcoming","Yaklaşan"],["leagues","Ligler"]].map(tab =>

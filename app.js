@@ -775,7 +775,7 @@ function shell(content){
       <div class="brand-logo logo-img-only mobile-header-logo" onclick="renderHome()">
         <picture>
           <source media="(max-width: 760px)" srcset="assets/logo/logo-mobile.png">
-          <img src="assets/logo/logo.png" alt="BozoBet" class="clean-logo">
+          <img src="assets/logo/logo.png" alt="GalaxyBet" class="clean-logo">
         </picture>
       </div>
 
@@ -805,10 +805,10 @@ function shell(content){
 function renderHome(){
   document.getElementById("app").innerHTML = shell(`
     <section class="hero hero-slider" id="heroSlider">
-      <img class="hero-slide-img active" src="assets/banners/home-hero.png" alt="BozoBet Banner 1">
-      <img class="hero-slide-img " src="assets/banners/sports-hero.png" alt="BozoBet Banner 2">
-      <img class="hero-slide-img " src="assets/banners/roulette-hero.png" alt="BozoBet Banner 3">
-      <img class="hero-slide-img " src="assets/banners/slot-hero.png" alt="BozoBet Banner 4">
+      <img class="hero-slide-img active" src="assets/banners/home-hero.png" alt="GalaxyBet Banner 1">
+      <img class="hero-slide-img " src="assets/banners/sports-hero.png" alt="GalaxyBet Banner 2">
+      <img class="hero-slide-img " src="assets/banners/roulette-hero.png" alt="GalaxyBet Banner 3">
+      <img class="hero-slide-img " src="assets/banners/slot-hero.png" alt="GalaxyBet Banner 4">
       <div class="hero-dots">
         <span class="active" onclick="setHeroSlide(0)"></span>
         <span class="" onclick="setHeroSlide(1)"></span>
@@ -819,13 +819,13 @@ function renderHome(){
 
     <section class="mobile-hero-slider" id="mobileHeroSlider" aria-label="Kampanyalar">
       <div class="mobile-hero-track">
-        <img class="mobile-hero-slide active" src="assets/banners/home-hero.png" alt="BozoBet hoş geldin kampanyası">
-        <img class="mobile-hero-slide" src="assets/banners/sports-hero.png" alt="BozoBet spor kampanyası">
-        <img class="mobile-hero-slide" src="assets/banners/roulette-hero.png" alt="BozoBet rulet kampanyası">
-        <img class="mobile-hero-slide" src="assets/banners/slot-hero.png" alt="BozoBet slot kampanyası">
-        <img class="mobile-hero-slide" src="assets/mobile/banners/live-casino-hero-1.png" alt="BozoBet canlı casino kampanyası">
-        <img class="mobile-hero-slide" src="assets/mobile/banners/big-prize-banner.png" alt="BozoBet büyük ödül kampanyası">
-        <img class="mobile-hero-slide" src="assets/mobile/banners/vip-casino-banner.png" alt="BozoBet VIP casino kampanyası">
+        <img class="mobile-hero-slide active" src="assets/banners/home-hero.png" alt="GalaxyBet hoş geldin kampanyası">
+        <img class="mobile-hero-slide" src="assets/banners/sports-hero.png" alt="GalaxyBet spor kampanyası">
+        <img class="mobile-hero-slide" src="assets/banners/roulette-hero.png" alt="GalaxyBet rulet kampanyası">
+        <img class="mobile-hero-slide" src="assets/banners/slot-hero.png" alt="GalaxyBet slot kampanyası">
+        <img class="mobile-hero-slide" src="assets/mobile/banners/live-casino-hero-1.png" alt="GalaxyBet canlı casino kampanyası">
+        <img class="mobile-hero-slide" src="assets/mobile/banners/big-prize-banner.png" alt="GalaxyBet büyük ödül kampanyası">
+        <img class="mobile-hero-slide" src="assets/mobile/banners/vip-casino-banner.png" alt="GalaxyBet VIP casino kampanyası">
       </div>
       <div class="mobile-hero-dots" aria-label="Banner seçimi">
         ${Array.from({length:7},(_,i)=>`<button class="${i === 0 ? "active" : ""}" type="button" aria-label="${i + 1}. banner" onclick="setMobileHeroSlide(${i})"></button>`).join("")}
@@ -899,9 +899,10 @@ function renderHome(){
     <footer class="card footer">
       <div>
         <div class="brand-logo footer-brand logo-img-only">
-          <img src="assets/logo/logo.png" alt="BozoBet" class="clean-logo footer-clean-logo">
+          <img src="assets/logo/logo.png" alt="GalaxyBet" class="clean-logo footer-clean-logo">
         </div>
-        <p>BozoBet V2, spor bahisleri ve online casino deneyimi için hazırlanmış premium  arayüzüdür.</p>
+        <p>GalaxyBet, spor bahisleri ve online casino deneyimi için hazırlanmış premium arayüzdür.</p>
+        <p>© 2026 GalaxyBet</p>
       </div>
       ${foot("KURUMSAL",["Hakkımızda","Kariyer","Ortaklık","Basın","İletişim"])}
       ${foot("YARDIM",["Sıkça Sorulan Sorular","Para Yatırma","Para Çekme","Kurallar","Destek"])}
@@ -1025,7 +1026,7 @@ function loginModal(){
     <div class="auth-box login-auth-box">
       <button class="login-modal-close" type="button" aria-label="Giriş penceresini kapat" onclick="this.closest('.modal-back').remove()">×</button>
       <div class="auth-side">
-        <div class="auth-badge">BOZOBET</div>
+        <div class="auth-badge">GALAXYBET</div>
         <h2>Hesabına Giriş Yap</h2>
         <p>Bahis, casino ve promosyon dünyasına tek panelden eriş.</p>
         <div class="auth-mini">
@@ -1075,7 +1076,7 @@ function registerModal(){
     <div class="auth-box register-wide">
       <div class="auth-side register-side">
         <div class="auth-badge">YENİ ÜYELİK</div>
-        <h2>BozoBet’e Katıl</h2>
+        <h2>GalaxyBet’e Katıl</h2>
         <p>Yeni üyelik için bilgilerini doldur.  sistemde veriler sadece tarayıcıda tutulur.</p>
         <div class="auth-mini">
           <span>🎁 %100 Bonus</span>
@@ -1210,7 +1211,7 @@ function loginLegacy(){
       username:"admin",
       name:"Admin",
       surname:"Panel",
-      email:"admin@bozobet.local",
+      email:"admin@galaxybet.local",
       phone:"",
       tc:"",
       birth:"",
@@ -1454,7 +1455,7 @@ function renderCasino(){
         <div class="casino-game card">
           <div class="casino-emoji">${g[0]}</div>
           <b>${g[1]}</b>
-          <span>BozoBet Studio</span>
+          <span>GalaxyBet Studio</span>
           <button class="btn primary">Oyna</button>
         </div>
       `).join("")).join("")}
@@ -2164,7 +2165,7 @@ function login(){
       username:"admin",
       name:"Admin",
       surname:"Panel",
-      email:"admin@bozobet.local",
+      email:"admin@galaxybet.local",
       phone:"",
       tc:"",
       birth:"",
@@ -2210,7 +2211,7 @@ function renderAdminDashboardLegacy(){
   document.getElementById("app").innerHTML = shell(`
     <section class="page-hero mini admin-mini">
       <div>
-        <span>BOZOBET ADMIN</span>
+        <span>GALAXYBET ADMIN</span>
         <h1>Admin Kontrol Paneli</h1>
         <p>Üyeleri, maçları ve  site yönetimini buradan kontrol edebilirsin.</p>
       </div>
@@ -3301,7 +3302,7 @@ login = function(){
       username:"admin",
       name:"Admin",
       surname:"Panel",
-      email:"admin@bozobet.local",
+      email:"admin@galaxybet.local",
       phone:"",
       tc:"",
       birth:"",
@@ -4003,7 +4004,7 @@ function renderAdminDashboard(){
   document.getElementById("app").innerHTML = shell(`
     <section class="page-hero mini admin-mini">
       <div>
-        <span>BOZOBET ADMIN</span>
+        <span>GALAXYBET ADMIN</span>
         <h1>Admin Kontrol Paneli</h1>
         <p>Üyeler, finans talepleri, kuponlar ve son hareketler tek ekranda.</p>
       </div>
@@ -4783,7 +4784,7 @@ function maintenanceScreen(){
   document.getElementById("app").innerHTML = `
     <main class="maintenance-screen">
       <div class="maintenance-card">
-        <div class="maintenance-logo">BOZOBET</div>
+        <div class="maintenance-logo">GALAXYBET</div>
         <span>BAKIM MODU</span>
         <h1>${m.title}</h1>
         <p>${m.text}</p>
@@ -7723,7 +7724,7 @@ function createBozobetBackup(){
   const safeDate = new Date().toISOString().slice(0,19).replaceAll(":","-");
 
   a.href = url;
-  a.download = `bozobet-yedek-${safeDate}.json`;
+  a.download = `galaxybet-yedek-${safeDate}.json`;
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -7843,7 +7844,7 @@ function renderBackupAdmin(){
 
       <div class="card backup-card">
         <h3>Yedek Geri Yükle</h3>
-        <p>Daha önce indirdiğin BozoBet yedek dosyasını seçip geri yükleyebilirsin.</p>
+        <p>Daha önce indirdiğin GalaxyBet yedek dosyasını seçip geri yükleyebilirsin.</p>
 
         <input id="backupImportInput" type="file" accept="application/json" hidden onchange="restoreBozobetBackup(this.files[0])">
         <button class="btn gold full-btn" onclick="triggerBackupImport()">Yedek Dosyası Seç</button>
@@ -8156,7 +8157,7 @@ function exportAdminLogsCsv(){
   const safeDate = new Date().toISOString().slice(0,19).replaceAll(":","-");
 
   a.href = url;
-  a.download = `bozobet-sistem-loglari-${safeDate}.csv`;
+  a.download = `galaxybet-sistem-loglari-${safeDate}.csv`;
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -8862,7 +8863,7 @@ function getDepositAccountInfo(methodName){
   if(name.includes("qr")){
     return {
       title:"QR Ödeme Bilgisi",
-      value:"QR-ODEME-BOZOBET-5620",
+      value:"QR-ODEME-GALAXYBET-5620",
       desc:"Ödeme açıklamasına kullanıcı adını ekle."
     };
   }
@@ -8870,7 +8871,7 @@ function getDepositAccountInfo(methodName){
   return {
     title:"Banka IBAN Bilgisi",
     value:"TR12 0001 0002 3456 7890 1234 56",
-    desc:"Alıcı: BozoBet Finans - Açıklama: Kullanıcı adın"
+    desc:"Alıcı: GalaxyBet Finans - Açıklama: Kullanıcı adın"
   };
 }
 
@@ -9030,7 +9031,7 @@ getDepositAccountInfo = function(methodName){
     return {
       title:"USDT TRC20 Adresi",
       value:"TQ9x8mHn7Kp4sR2vB6cL1zA5yE3uD0wF12",
-      receiver:"BozoBet Cüzdan",
+      receiver:"GalaxyBet Cüzdan",
       desc:"Sadece TRC20 ağı üzerinden gönderim yapılmalıdır."
     };
   }
@@ -9038,8 +9039,8 @@ getDepositAccountInfo = function(methodName){
   if(name.includes("qr")){
     return {
       title:"QR Ödeme Bilgisi",
-      value:"QR-ODEME-BOZOBET-5620",
-      receiver:"BozoBet QR",
+      value:"QR-ODEME-GALAXYBET-5620",
+      receiver:"GalaxyBet QR",
       desc:"Ödeme açıklamasına kullanıcı adını ekle."
     };
   }
@@ -11660,12 +11661,12 @@ document.addEventListener("click", () => {
   });
 })();
 
-// BOZOBET GENERATED MOBILE VISUAL ASSETS V1
+// GALAXYBET GENERATED MOBILE VISUAL ASSETS V1
 (function(){
   const AS='/assets/mobile/';
   const bbAssets={
     banners:[AS+'banners/live-casino-hero-1.png',AS+'banners/live-casino-hero-2.png',AS+'banners/live-casino-hero-3.png',AS+'banners/vip-casino-banner.png',AS+'banners/big-prize-banner.png'],
-    promos:[['Hoş Geldin Bonusu',AS+'promos/welcome-bonus.png'],['Çevrimsiz Bonus',AS+'promos/no-wager-bonus.png'],['Kayıp Bonusu',AS+'promos/loss-bonus.png'],['Free Spin',AS+'promos/freespin.png'],['Bonus Kampanyası',AS+'promos/bonus-campaign.png'],['Cebinde BozoBet',AS+'promos/mobile-pocket.png']],
+    promos:[['Hoş Geldin Bonusu',AS+'promos/welcome-bonus.png'],['Çevrimsiz Bonus',AS+'promos/no-wager-bonus.png'],['Kayıp Bonusu',AS+'promos/loss-bonus.png'],['Free Spin',AS+'promos/freespin.png'],['Bonus Kampanyası',AS+'promos/bonus-campaign.png'],['Cebinde GalaxyBet',AS+'promos/mobile-pocket.png']],
     dealers:[AS+'dealers/dealer-live-casino-1.png',AS+'dealers/dealer-live-casino-2.png',AS+'dealers/dealer-live-casino-3.png',AS+'dealers/dealer-live-casino-4.png',AS+'dealers/dealer-live-casino-5.png',AS+'dealers/dealer-cards.png'],
     nav:{home:AS+'icons/nav-home-transparent.png',sports:AS+'icons/nav-sports-transparent.png',casino:AS+'icons/nav-casino-transparent.png',coupon:AS+'icons/nav-coupon-transparent.png',account:AS+'icons/nav-account-transparent.png'},
     icons:[['Casino',AS+'icons/casino-icon.png'],['Futbol',AS+'icons/football-icon.png'],['Basketbol',AS+'icons/basketball-icon.png'],['Cüzdan',AS+'icons/wallet-icon.png'],['Hediye',AS+'icons/gift-icon.png'],['VIP',AS+'icons/crown-icon.png'],['Slot',AS+'icons/slot-icon.png']]

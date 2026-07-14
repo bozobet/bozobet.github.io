@@ -172,18 +172,18 @@
   }
 
   function trustSection() {
-    return `<section class="mobile-home-trust" aria-label="BozoBet avantajları">${trustItems.map(item => `<article><img src="${esc(item.icon)}" alt="" loading="lazy"><div><b>${esc(item.title)}</b><span>${esc(item.text)}</span></div></article>`).join("")}</section>`;
+    return `<section class="mobile-home-trust" aria-label="GalaxyBet avantajları">${trustItems.map(item => `<article><img src="${esc(item.icon)}" alt="" loading="lazy"><div><b>${esc(item.title)}</b><span>${esc(item.text)}</span></div></article>`).join("")}</section>`;
   }
 
   function mobileBanner() {
     const banners = [
-      ["assets/banners/home-hero.png", "BozoBet hoş geldin kampanyası"],
-      ["assets/banners/sports-hero.png", "BozoBet spor kampanyası"],
-      ["assets/banners/roulette-hero.png", "BozoBet rulet kampanyası"],
-      ["assets/banners/slot-hero.png", "BozoBet slot kampanyası"],
-      ["assets/mobile/banners/live-casino-hero-1.png", "BozoBet canlı casino kampanyası"],
-      ["assets/mobile/banners/big-prize-banner.png", "BozoBet büyük ödül kampanyası"],
-      ["assets/mobile/banners/vip-casino-banner.png", "BozoBet VIP casino kampanyası"]
+      ["assets/banners/home-hero.png", "GalaxyBet hoş geldin kampanyası"],
+      ["assets/banners/sports-hero.png", "GalaxyBet spor kampanyası"],
+      ["assets/banners/roulette-hero.png", "GalaxyBet rulet kampanyası"],
+      ["assets/banners/slot-hero.png", "GalaxyBet slot kampanyası"],
+      ["assets/mobile/banners/live-casino-hero-1.png", "GalaxyBet canlı casino kampanyası"],
+      ["assets/mobile/banners/big-prize-banner.png", "GalaxyBet büyük ödül kampanyası"],
+      ["assets/mobile/banners/vip-casino-banner.png", "GalaxyBet VIP casino kampanyası"]
     ];
 
     return `
@@ -348,7 +348,7 @@
         <div class="mobile-promotion-modal">
           <button type="button" class="mobile-promotion-close" data-close-promotion aria-label="Kapat">×</button>
           <img src="${esc(promotion.image)}" alt="${esc(promotion.title)}">
-          <div><span>BOZOBET KAMPANYA</span><h2>${esc(promotion.title)}</h2><p>${esc(promotion.text)}</p><button type="button" class="btn primary full-btn" data-close-promotion>Kampanyayı İncele</button></div>
+          <div><span>GALAXYBET KAMPANYA</span><h2>${esc(promotion.title)}</h2><p>${esc(promotion.text)}</p><button type="button" class="btn primary full-btn" data-close-promotion>Kampanyayı İncele</button></div>
         </div>`);
       return;
     }

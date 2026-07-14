@@ -25,7 +25,7 @@ Değişkenleri ekledikten sonra Vercel deployment'ını yeniden oluşturun ve `/
 
 GitHub Pages statik dosyaları çalıştırır ve secret saklayamaz. `config.js`, GitHub Pages üzerinde API taban adresini `https://bozobet-v2.vercel.app` olarak ayarlar. Vercel üzerinde veya localhost'ta aynı-origin `/api` çağrıları kullanılır.
 
-Akış: GitHub Pages frontend → BozoBet Vercel API → Gamble Hub Stage API.
+Akış: GitHub Pages frontend → GalaxyBet Vercel API → Gamble Hub Stage API.
 
 ## Oyun listesi
 
@@ -35,7 +35,7 @@ Akış: GitHub Pages frontend → BozoBet Vercel API → Gamble Hub Stage API.
 
 Frontend giriş yapmış kullanıcının kullanıcı adını `/api/gamblehub/open-game` endpointine gönderir. Backend normalize edilmiş JSON gövdesini bir kez üretir ve aynı ham gövde üzerinden `GH_SECRET_KEY` ile HMAC-SHA256 hex `X-Signature` oluşturur. Provider cevabından yalnızca oyun URL'si, session kimliği ve demo bilgisi döndürülür. Stage boyunca oyun açma değerleri `currency: "TRY"`, `language: "tr"` ve `demo: "1"` olarak sabittir.
 
-`exitUrl` yalnızca BozoBet GitHub Pages, mevcut Vercel deployment'ı ve localhost originleriyle kullanılabilir. Bu kontrol açık redirect riskini engeller.
+`exitUrl` yalnızca GalaxyBet GitHub Pages, mevcut Vercel deployment'ı ve localhost originleriyle kullanılabilir. Bu kontrol açık redirect riskini engeller.
 
 ## Şimdilik devre dışı özellikler
 

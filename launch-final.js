@@ -131,5 +131,5 @@
     launch(match[1], button);
   }, true);
 
-  console.log("BozoBet launch-final aktif");
+  console.log("GalaxyBet launch-final aktif");
 })();
