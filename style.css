@@ -11478,3 +11478,39 @@ body.auth-modal-open {
   .campaign-card-footer strong { font-size:14px; }
   .campaign-cta { min-width:82px;height:36px; }
 }
+
+/* Requested premium refinements: keep the current components and adjust only their presentation. */
+@media (min-width:761px) {
+  .topbar > .brand-logo { margin-left:18px!important; }
+  .topbar .nav { gap:clamp(12px,1.45vw,24px);font-family:Inter,"Plus Jakarta Sans",Manrope,Arial,sans-serif; }
+  .topbar .nav a { font-size:13px;font-weight:700;letter-spacing:.01em; }
+
+  .hero-slider {
+    aspect-ratio:2.52 / 1!important;
+  }
+  .hero-slider .hero-slide-img { object-fit:cover!important; }
+  .hero-slider .hero-arrow { display:grid!important; }
+}
+
+.hero-slider .hero-dots,
+.mobile-hero-slider .mobile-hero-dots {
+  max-width:calc(100% - 120px);
+  gap:4px!important;
+}
+
+.campaign-card-footer > div { min-width:0;flex:1; }
+.campaign-card-footer p {
+  max-width:620px;
+  margin:4px 0 0;
+  color:#87938c;
+  font-size:11px;
+  line-height:1.45;
+}
+
+@media (max-width:760px) {
+  .topbar.mobile-header .mobile-header-logo .clean-logo { transform:scale(2)!important; }
+  .mobile-hero-dots button { width:6px!important;height:6px!important;min-width:6px!important; }
+  .mobile-hero-dots button.active { width:18px!important;min-width:18px!important; }
+  .campaign-card-footer { align-items:flex-end; }
+  .campaign-card-footer p { font-size:10px;line-height:1.4; }
+}

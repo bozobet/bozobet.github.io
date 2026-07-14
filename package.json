@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "build": "find . -type f -name '*.js' ! -name '*.bak*' ! -path './node_modules/*' -exec node --check {} \\;",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

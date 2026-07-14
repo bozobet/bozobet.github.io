@@ -206,7 +206,14 @@
   window.gbSubmitDeposit = function(){
     if(!requireUser()) return;
     const limits = typeof getPaymentLimits === "function" ? getPaymentLimits() : {minDeposit:100,maxDeposit:50000};
-    const amount = Number(document.getElementById("gbDepositAmount")?.value || 0);
+    const amountInput = document.getElementById("gbDepositAmount");
+    const rawAmount = String(amountInput?.value || "").trim();
+    const normalizedAmount = rawAmount.includes(",")
+      ? rawAmount.replace(/\./g, "").replace(",", ".")
+      : rawAmount.replace(/\s/g, "");
+    const amount = Number.isFinite(amountInput?.valueAsNumber)
+      ? amountInput.valueAsNumber
+      : Number(normalizedAmount);
     if(amount < limits.minDeposit || amount > limits.maxDeposit) return alert(`Yatırım tutarı ${money(limits.minDeposit)} ile ${money(limits.maxDeposit)} arasında olmalı.`);
     addPaymentRequest({username:user.username,userId:user.id || user.username,type:"Yatırım",direction:"plus",amount,method:state.depositMethod,note:`${state.depositMethod} yöntemiyle yatırım talebi oluşturuldu`});
     alert("Yatırım talebin güvenle oluşturuldu.");
@@ -253,6 +260,26 @@
     localStorage.setItem(`galaxybet_payout_destinations_${user.id || user.username}`, JSON.stringify(values.slice(0,6)));
   }
 
+  function configureWithdrawDestination(method){
+    const input = document.getElementById("gbWithdrawDestination");
+    if(!input) return;
+    const isBank = method === "Banka Havalesi";
+    input.inputMode = isBank || method === "Papara" ? "numeric" : "text";
+    input.maxLength = isBank ? 32 : 120;
+    if(isBank){
+      input.value = typeof formatTurkishIban === "function" ? formatTurkishIban(input.value || "TR") : "TR";
+      input.setAttribute("aria-invalid", "false");
+      input.oninput = () => {
+        input.value = typeof formatTurkishIban === "function" ? formatTurkishIban(input.value) : input.value;
+        input.setAttribute("aria-invalid", "false");
+        try{ input.setSelectionRange(input.value.length, input.value.length); }catch(_){ }
+      };
+    }else{
+      input.oninput = null;
+      if(input.value === "TR") input.value = "";
+    }
+  }
+
   window.gbSelectWithdrawMethod = function(method){
     state.withdrawMethod = method;
     document.querySelectorAll("[data-gb-withdraw]").forEach(card => card.classList.toggle("active", card.dataset.gbWithdraw === method));
@@ -262,6 +289,7 @@
     if(target) target.textContent = method;
     if(label) label.textContent = method === "Kripto" ? "Kripto cüzdan adresi" : method === "Papara" ? "Papara hesap numarası" : "IBAN / hesap bilgisi";
     if(input) input.placeholder = method === "Kripto" ? "TRC20 / ERC20 adresi" : method === "Papara" ? "Papara numarası" : "TR00 0000 0000 0000 0000 0000 00";
+    configureWithdrawDestination(method);
   };
 
   window.gbSubmitWithdrawal = function(){
@@ -271,7 +299,13 @@
     const destination = document.getElementById("gbWithdrawDestination")?.value.trim() || "";
     if(amount < limits.minWithdraw || amount > limits.maxWithdraw) return alert(`Çekim tutarı ${money(limits.minWithdraw)} ile ${money(limits.maxWithdraw)} arasında olmalı.`);
     if(amount > Number(user.balance || 0)) return alert("Kullanılabilir bakiyen bu işlem için yetersiz.");
-    if(destination.length < 8) return alert("Geçerli hesap veya cüzdan bilgisi gir.");
+    if(state.withdrawMethod === "Banka Havalesi"){
+      const cleanIban = typeof cleanTurkishIban === "function" ? cleanTurkishIban(destination) : destination.replace(/\s/g, "");
+      if(!/^TR\d{24}$/.test(cleanIban)){
+        document.getElementById("gbWithdrawDestination")?.setAttribute("aria-invalid", "true");
+        return alert("Geçersiz IBAN");
+      }
+    }else if(destination.length < 8) return alert("Geçerli hesap veya cüzdan bilgisi gir.");
     saveDestination(state.withdrawMethod, destination);
     addPaymentRequest({username:user.username,userId:user.id || user.username,type:"Çekim",direction:"minus",amount,method:state.withdrawMethod,iban:destination,note:`${state.withdrawMethod} yöntemiyle çekim talebi oluşturuldu`});
     alert("Çekim talebin güvenle oluşturuldu.");

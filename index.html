@@ -33,13 +33,14 @@
       <label for="mobileMenuToggle" aria-label="Menüyü kapat">×</label>
     </div>
     <nav>
-      <button onclick="renderHome()">Ana Sayfa <span>›</span></button>
-      <button onclick="renderSports()">Spor Bahisleri <span>›</span></button>
-      <button onclick="renderSports()">Canlı Bahis <span>›</span></button>
-      <button onclick="renderCasino()">Casino &amp; Slot <span>›</span></button>
-      <button onclick="renderPromotions()">Kampanyalar <span>›</span></button>
-      <button onclick="renderVip()">VIP <span>›</span></button>
-      <button onclick="renderSupport()">Destek <span>›</span></button>
+      <button onclick="navigateApp('home')">Ana Sayfa <span>›</span></button>
+      <button onclick="navigateApp('sports')">Spor Bahisleri <span>›</span></button>
+      <button onclick="navigateApp('live-casino')">Canlı Casino <span>›</span></button>
+      <button onclick="navigateApp('casino')">Casino <span>›</span></button>
+      <button onclick="navigateApp('slot')">Slot <span>›</span></button>
+      <button onclick="navigateApp('promotions')">Kampanyalar <span>›</span></button>
+      <button onclick="navigateApp('vip')">VIP <span>›</span></button>
+      <button onclick="navigateApp('support')">Destek <span>›</span></button>
     </nav>
   </aside>
   <div id="app"></div>
@@ -55,5 +56,18 @@
   <script src="premium-account.js?v=1"></script>
   <script src="premium-home.js?v=1"></script>
   <script src="premium-experience.js?v=2"></script>
+  <!--Start of Tawk.to Script-->
+  <script type="text/javascript">
+  var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+  (function(){
+  var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+  s1.async=true;
+  s1.src='https://embed.tawk.to/6a56ca8c940f101d53238c7a/1jthgedkg';
+  s1.charset='UTF-8';
+  s1.setAttribute('crossorigin','*');
+  s0.parentNode.insertBefore(s1,s0);
+  })();
+  </script>
+  <!--End of Tawk.to Script-->
 </body>
 </html>

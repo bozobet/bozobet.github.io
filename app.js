@@ -1,7 +1,7 @@
 const AUTH_CURRENT_USER_KEY = "bozobetCurrentUser";
 const AUTH_SESSION_KEY = "bozobetSession";
 const AUTH_REMEMBER_KEY = "bozobetRememberMe";
-const AUTH_SESSION_MAX_IDLE = 2 * 60 * 60 * 1000;
+const AUTH_SESSION_MAX_IDLE = 30 * 24 * 60 * 60 * 1000;
 const AUTH_TOUCH_THROTTLE = 30 * 1000;
 const LEGACY_AUTH_KEYS = [
   "bozobet_user",
@@ -30,6 +30,36 @@ function sanitizeSessionUser(value){
   const safeUser = {...value};
   delete safeUser.password;
   return safeUser;
+}
+
+function defaultSessionUser(session){
+  const identity = session?.username || session?.userId;
+  if(!identity) return null;
+  return {
+    id:session.userId || identity,
+    username:String(identity),
+    name:"GalaxyBet",
+    surname:"Üyesi",
+    email:"",
+    phone:"",
+    tc:"",
+    birth:"",
+    balance:0,
+    role:session?.role || (String(identity).toLocaleLowerCase("tr-TR") === "admin" ? "admin" : "user")
+  };
+}
+
+function recoverSessionUser(session){
+  const users = parseStoredJson(localStorage, "bozobet_users");
+  if(Array.isArray(users)){
+    const recovered = users.find(item =>
+      String(item?.id || "") === String(session?.userId || "") ||
+      String(item?.username || "").toLocaleLowerCase("tr-TR") === String(session?.username || "").toLocaleLowerCase("tr-TR")
+    );
+    const safeUser = sanitizeSessionUser(recovered);
+    if(safeUser) return safeUser;
+  }
+  return defaultSessionUser(session);
 }
 
 function isSessionValid(session){
@@ -65,7 +95,8 @@ function saveSession(authUser, rememberMe){
     username:safeUser.username || String(safeUser.id),
     loginTime:now,
     lastActivity:now,
-    rememberMe:persistent
+    rememberMe:persistent,
+    role:safeUser.role || "user"
   };
 
   clearAuthStorage(localStorage);
@@ -80,17 +111,30 @@ function saveSession(authUser, rememberMe){
 
 function loadSessionFrom(storage, expectedRememberMe){
   const session = parseStoredJson(storage, AUTH_SESSION_KEY);
-  const storedUser = sanitizeSessionUser(parseStoredJson(storage, AUTH_CURRENT_USER_KEY));
+  let storedUser = sanitizeSessionUser(parseStoredJson(storage, AUTH_CURRENT_USER_KEY));
   const rememberValue = storage.getItem(AUTH_REMEMBER_KEY) === "true";
 
   if(!session && !storedUser) return null;
-  if(!isSessionValid(session) || !storedUser || rememberValue !== expectedRememberMe || Boolean(session.rememberMe) !== expectedRememberMe){
+  if(!isSessionValid(session) || rememberValue !== expectedRememberMe || Boolean(session.rememberMe) !== expectedRememberMe){
     clearAuthStorage(storage);
     return null;
   }
+  if(!storedUser){
+    storedUser = recoverSessionUser(session);
+    if(!storedUser){
+      clearAuthStorage(storage);
+      return null;
+    }
+    storage.setItem(AUTH_CURRENT_USER_KEY, JSON.stringify(storedUser));
+  }
   if(String(session.userId) !== String(storedUser.id || storedUser.username)){
-    clearAuthStorage(storage);
-    return null;
+    const recoveredUser = recoverSessionUser(session);
+    if(!recoveredUser || String(session.userId) !== String(recoveredUser.id || recoveredUser.username)){
+      clearAuthStorage(storage);
+      return null;
+    }
+    storedUser = recoveredUser;
+    storage.setItem(AUTH_CURRENT_USER_KEY, JSON.stringify(storedUser));
   }
   return storedUser;
 }
@@ -772,21 +816,21 @@ function saveUser(){
 function shell(content){
   return `
     <header class="topbar mobile-header">
-      <div class="brand-logo logo-img-only mobile-header-logo" onclick="renderHome()">
+      <div class="brand-logo logo-img-only mobile-header-logo" onclick="navigateApp('home')">
         <picture>
           <img src="assets/galaxybet/logo.png?v=3" alt="GalaxyBet" class="clean-logo">
         </picture>
       </div>
 
       <nav class="nav">
-        <a href="#" onclick="renderSports()">Spor Bahisleri</a>
-        <a href="#" onclick="renderSports()">Canlı</a>
-        <a href="#" onclick="renderCasino()">Casino</a>
-        <a href="#" onclick="renderCasino()">Slot</a>
-        <a href="#" onclick="renderPromotions()">Kampanyalar</a>
-        <a href="#" onclick="renderCasino()">Sanal Oyunlar</a>
-        <a href="#" onclick="renderVip()">VIP 👑</a>
-        <a href="#" onclick="renderSupport()">Destek</a>
+        <a href="#sports" onclick="navigateApp('sports', event)">Spor Bahisleri</a>
+        <a href="#live-casino" onclick="navigateApp('live-casino', event)">Canlı Casino</a>
+        <a href="#casino" onclick="navigateApp('casino', event)">Casino</a>
+        <a href="#slot" onclick="navigateApp('slot', event)">Slot</a>
+        <a href="#promotions" onclick="navigateApp('promotions', event)">Kampanyalar</a>
+        <a href="#virtual" onclick="navigateApp('virtual', event)">Sanal Oyunlar</a>
+        <a href="#vip" onclick="navigateApp('vip', event)">VIP 👑</a>
+        <a href="#support" onclick="navigateApp('support', event)">Destek</a>
         ${user?.role === "admin" ? `<a href="#" onclick="renderAdminDashboard()">Admin</a>` : ""}
       </nav>
 
@@ -800,6 +844,47 @@ function shell(content){
     <main class="wrap">${content}</main>
   `;
 }
+
+const APP_ROUTES = new Set(["home", "sports", "live-casino", "casino", "slot", "promotions", "virtual", "vip", "support"]);
+
+function renderAppRoute(route){
+  const target = APP_ROUTES.has(route) ? route : "home";
+  document.body.dataset.appRoute = target;
+
+  if(target === "sports") renderSports();
+  else if(target === "live-casino"){
+    renderCasino("Canlı Casino");
+  }
+  else if(target === "casino") renderCasino();
+  else if(target === "slot" && typeof renderSlot === "function") renderSlot();
+  else if(target === "virtual" && typeof renderVirtualGames === "function") renderVirtualGames();
+  else if(target === "promotions") renderPromotions();
+  else if(target === "vip") renderVip();
+  else if(target === "support") renderSupport();
+  else renderHome();
+
+  window.scrollTo({top:0, behavior:"auto"});
+}
+
+function navigateApp(route, event){
+  event?.preventDefault();
+  const target = APP_ROUTES.has(route) ? route : "home";
+  const hash = `#${target}`;
+  if(location.hash !== hash) history.pushState({galaxybetRoute:target}, "", hash);
+  renderAppRoute(target);
+  const menuToggle = document.getElementById("mobileMenuToggle");
+  if(menuToggle) menuToggle.checked = false;
+}
+
+window.navigateApp = navigateApp;
+window.addEventListener("popstate", () => {
+  const route = location.hash.slice(1);
+  if(APP_ROUTES.has(route)) renderAppRoute(route);
+});
+window.addEventListener("load", () => {
+  const route = location.hash.slice(1);
+  if(APP_ROUTES.has(route) && route !== "home") setTimeout(() => renderAppRoute(route), 0);
+});
 
 function renderHome(){
   const banners = window.GALAXYBET_ASSETS?.slider || window.GALAXYBET_ASSETS?.banners || [];
@@ -1471,6 +1556,7 @@ function renderCasino(){
 
 function renderPromotions(){
   const campaigns = window.GALAXYBET_ASSETS?.campaigns || [];
+  const campaignDetails = window.GALAXYBET_ASSETS?.campaignDetails || [];
   document.getElementById("app").innerHTML = shell(`
     <section class="page-hero mini promo-mini">
       <div>
@@ -1481,16 +1567,19 @@ function renderPromotions(){
     </section>
 
     <section class="promo-page-grid" aria-label="GalaxyBet kampanyaları">
-      ${campaigns.map((img, index) => `
+      ${campaigns.map((img, index) => {
+        const campaign = campaignDetails[index] || {title:"GalaxyBet Özel Fırsatı", description:"GalaxyBet üyelerine özel seçili oyun ve yatırım avantajlarını keşfet."};
+        return `
         <article class="campaign-card">
           <div class="campaign-card-media">
-            <img src="${img}" alt="GalaxyBet Kampanya ${index + 1}" loading="${index < 2 ? "eager" : "lazy"}" decoding="async">
+            <img src="${img}" alt="${campaign.title}" loading="${index < 2 ? "eager" : "lazy"}" decoding="async">
           </div>
           <div class="campaign-card-footer">
-            <div><span>GALAXYBET ÖZEL</span><strong>Kampanya ${String(index + 1).padStart(2, "0")}</strong></div>
+            <div><span>GALAXYBET ÖZEL</span><strong>${campaign.title}</strong><p>${campaign.description}</p></div>
             <button type="button" class="campaign-cta" onclick="registerModal()">Katıl <span aria-hidden="true">→</span></button>
           </div>
-        </article>`).join("")}
+        </article>`;
+      }).join("")}
     </section>
   `);
 }
@@ -4744,21 +4833,6 @@ function saveAnnouncementFromAdmin(){
   alert("Duyuru kaydedildi.");
   renderAnnouncementAdmin();
 }
-
-// renderHome override - duyuru ekle
-const oldRenderHomeAnnouncement = renderHome;
-renderHome = function(){
-  oldRenderHomeAnnouncement();
-
-  setTimeout(() => {
-    const app = document.getElementById("app");
-    const firstSection = app?.querySelector("section");
-
-    if(app && firstSection && !document.querySelector(".site-announcement")){
-      firstSection.insertAdjacentHTML("afterend", announcementHtml());
-    }
-  }, 80);
-};
 
 // Admin ana panele duyuru yönetimi kısa yolu ekle
 const oldRenderAdminDashboardAnnouncement = renderAdminDashboard;
@@ -12069,8 +12143,8 @@ document.addEventListener("click", () => {
     }
   }
 
-  window.renderCasino = function(){
-    bbRenderRealGames("Casino Oyunları");
+  window.renderCasino = function(title = "Casino Oyunları"){
+    bbRenderRealGames(title);
   };
 
   window.renderSlot = function(){
