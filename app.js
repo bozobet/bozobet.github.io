@@ -774,8 +774,7 @@ function shell(content){
     <header class="topbar mobile-header">
       <div class="brand-logo logo-img-only mobile-header-logo" onclick="renderHome()">
         <picture>
-          <source media="(max-width: 760px)" srcset="assets/logo/logo-mobile.png">
-          <img src="assets/logo/logo.png" alt="GalaxyBet" class="clean-logo">
+          <img src="assets/galaxybet/logo.png?v=3" alt="GalaxyBet" class="clean-logo">
         </picture>
       </div>
 
@@ -784,7 +783,7 @@ function shell(content){
         <a href="#" onclick="renderSports()">Canlı</a>
         <a href="#" onclick="renderCasino()">Casino</a>
         <a href="#" onclick="renderCasino()">Slot</a>
-        <a href="#" onclick="renderPromotions()">Promosyonlar</a>
+        <a href="#" onclick="renderPromotions()">Kampanyalar</a>
         <a href="#" onclick="renderCasino()">Sanal Oyunlar</a>
         <a href="#" onclick="renderVip()">VIP 👑</a>
         <a href="#" onclick="renderSupport()">Destek</a>
@@ -803,12 +802,20 @@ function shell(content){
 }
 
 function renderHome(){
+  const banners = window.GALAXYBET_ASSETS?.slider || window.GALAXYBET_ASSETS?.banners || [];
+  const promotionImages = window.GALAXYBET_ASSETS?.promotions || [];
+  const bannerSlides = banners.map((src, index) => `
+      <img class="hero-slide-img${index === 0 ? " active" : ""}" src="${src}" alt="GalaxyBet Banner ${index + 1}">`).join("");
+  const bannerDots = banners.map((_, index) => `
+        <span class="${index === 0 ? "active" : ""}" role="button" tabindex="0" aria-label="${index + 1}. banner" onclick="setHeroSlide(${index})"></span>`).join("");
+  const mobileBannerSlides = banners.map((src, index) => `
+        <img class="mobile-hero-slide${index === 0 ? " active" : ""}" src="${src}" alt="GalaxyBet Banner ${index + 1}">`).join("");
+  const mobileBannerDots = banners.map((_, index) => `
+        <button class="${index === 0 ? "active" : ""}" type="button" aria-label="${index + 1}. banner" onclick="setMobileHeroSlide(${index})"></button>`).join("");
+
   document.getElementById("app").innerHTML = shell(`
     <section class="hero hero-slider" id="heroSlider">
-      <img class="hero-slide-img active" src="assets/banners/home-hero.png" alt="GalaxyBet Banner 1">
-      <img class="hero-slide-img " src="assets/banners/sports-hero.png" alt="GalaxyBet Banner 2">
-      <img class="hero-slide-img " src="assets/banners/roulette-hero.png" alt="GalaxyBet Banner 3">
-      <img class="hero-slide-img " src="assets/banners/slot-hero.png" alt="GalaxyBet Banner 4">
+      ${bannerSlides}
       <button class="hero-arrow hero-prev" type="button" aria-label="Önceki banner" onclick="heroPrev()">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
       </button>
@@ -816,22 +823,13 @@ function renderHome(){
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
       </button>
       <div class="hero-dots">
-        <span class="active" onclick="setHeroSlide(0)"></span>
-        <span class="" onclick="setHeroSlide(1)"></span>
-        <span class="" onclick="setHeroSlide(2)"></span>
-        <span class="" onclick="setHeroSlide(3)"></span>
+        ${bannerDots}
       </div>
     </section>
 
     <section class="mobile-hero-slider" id="mobileHeroSlider" aria-label="Kampanyalar">
       <div class="mobile-hero-track">
-        <img class="mobile-hero-slide active" src="assets/banners/home-hero.png" alt="GalaxyBet hoş geldin kampanyası">
-        <img class="mobile-hero-slide" src="assets/banners/sports-hero.png" alt="GalaxyBet spor kampanyası">
-        <img class="mobile-hero-slide" src="assets/banners/roulette-hero.png" alt="GalaxyBet rulet kampanyası">
-        <img class="mobile-hero-slide" src="assets/banners/slot-hero.png" alt="GalaxyBet slot kampanyası">
-        <img class="mobile-hero-slide" src="assets/mobile/banners/live-casino-hero-1.png" alt="GalaxyBet canlı casino kampanyası">
-        <img class="mobile-hero-slide" src="assets/mobile/banners/big-prize-banner.png" alt="GalaxyBet büyük ödül kampanyası">
-        <img class="mobile-hero-slide" src="assets/mobile/banners/vip-casino-banner.png" alt="GalaxyBet VIP casino kampanyası">
+        ${mobileBannerSlides}
       </div>
       <button class="hero-arrow hero-prev" type="button" aria-label="Önceki banner" onclick="setMobileHeroSlide(window.bozobetMobileHeroIndex - 1)">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
@@ -840,15 +838,12 @@ function renderHome(){
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
       </button>
       <div class="mobile-hero-dots" aria-label="Banner seçimi">
-        ${Array.from({length:7},(_,i)=>`<button class="${i === 0 ? "active" : ""}" type="button" aria-label="${i + 1}. banner" onclick="setMobileHeroSlide(${i})"></button>`).join("")}
+        ${mobileBannerDots}
       </div>
     </section>
 
     <section class="mobile-promo-strip" aria-label="Promosyonlar">
-      ${mobilePromo("assets/promos/welcome-bonus.webp","Hoş Geldin Bonusu")}
-      ${mobilePromo("assets/promos/freespin-250.webp","250 Freespin")}
-      ${mobilePromo("assets/promos/loss-bonus.webp","Kayıp Bonusu")}
-      ${mobilePromo("assets/promos/vip.webp","VIP Ayrıcalıkları")}
+      ${promotionImages.map((img, index) => mobilePromo(img, `GalaxyBet Promosyon ${index + 1}`)).join("")}
     </section>
 
     <section class="category-row">
@@ -890,13 +885,10 @@ function renderHome(){
     <section class="card promos">
       <div class="card-head">
         <h3>PROMOSYONLAR</h3>
-        <button class="btn">Tüm Promosyonlar</button>
+        <button class="btn" type="button" onclick="renderPromotions()">Tüm Kampanyalar</button>
       </div>
       <div class="promo-grid">
-        ${promo("assets/promos/welcome-bonus.webp","% 4","HOŞ GELDİN BONUSU","İlk yatırımına özel % 4 bonus ve 250 Freespin!")}
-        ${promo("assets/promos/freespin-250.webp","250","FREESPIN","Popüler slot oyunlarında geçerli 250 Freespin!")}
-        ${promo("assets/promos/loss-bonus.webp","% 4","KAYIP BONUSU","Kaybettiğin her gün için % 4’ye varan iade!")}
-        ${promo("assets/promos/vip.webp","VIP","AYRICALIKLARI","Özel limitler, kişisel temsilci ve daha fazlası!")}
+        ${promotionImages.map((img, index) => promo(img, `GalaxyBet Promosyon ${index + 1}`)).join("")}
       </div>
     </section>
 
@@ -911,7 +903,7 @@ function renderHome(){
     <footer class="card footer">
       <div>
         <div class="brand-logo footer-brand logo-img-only">
-          <img src="assets/logo/logo.png" alt="GalaxyBet" class="clean-logo footer-clean-logo">
+          <img src="assets/galaxybet/logo.png?v=3" alt="GalaxyBet" class="clean-logo footer-clean-logo">
         </div>
         <p>GalaxyBet, spor bahisleri ve online casino deneyimi için hazırlanmış premium arayüzdür.</p>
         <p>© 2026 GalaxyBet</p>
@@ -973,8 +965,8 @@ function matchHtmlLegacy(m){
   `;
 }
 
-function promo(img,a,b,c){
-  return `<div class="promo promo-img-card only-img" style="background-image:url('${img}')"></div>`;
+function promo(img, title = "GalaxyBet Promosyonu"){
+  return `<button type="button" class="promo promo-img-card only-img" onclick="renderPromotions()" aria-label="${title}"><img src="${img}" alt="${title}" loading="lazy" decoding="async"></button>`;
 }
 
 function mobilePromo(img, title){
@@ -1478,20 +1470,27 @@ function renderCasino(){
 }
 
 function renderPromotions(){
+  const campaigns = window.GALAXYBET_ASSETS?.campaigns || [];
   document.getElementById("app").innerHTML = shell(`
     <section class="page-hero mini promo-mini">
       <div>
-        <span>PROMOSYONLAR</span>
+        <span>KAMPANYALAR</span>
         <h1>Bonus ve Kampanyalar</h1>
         <p>Hoş geldin bonusu, freespin, kayıp bonusu ve VIP ayrıcalıkları.</p>
       </div>
     </section>
 
-    <section class="promo-page-grid">
-      ${promo("assets/promos/welcome-bonus.webp","%100","HOŞ GELDİN BONUSU","İlk yatırımına özel bonus")}
-      ${promo("assets/promos/freespin-250.webp","250","FREESPIN","Seçili slotlarda geçerli")}
-      ${promo("assets/promos/loss-bonus.webp","%20","KAYIP BONUSU","Günlük kayıp iadesi")}
-      ${promo("assets/promos/vip.webp","VIP","AYRICALIKLARI","Özel limitler ve temsilci")}
+    <section class="promo-page-grid" aria-label="GalaxyBet kampanyaları">
+      ${campaigns.map((img, index) => `
+        <article class="campaign-card">
+          <div class="campaign-card-media">
+            <img src="${img}" alt="GalaxyBet Kampanya ${index + 1}" loading="${index < 2 ? "eager" : "lazy"}" decoding="async">
+          </div>
+          <div class="campaign-card-footer">
+            <div><span>GALAXYBET ÖZEL</span><strong>Kampanya ${String(index + 1).padStart(2, "0")}</strong></div>
+            <button type="button" class="campaign-cta" onclick="registerModal()">Katıl <span aria-hidden="true">→</span></button>
+          </div>
+        </article>`).join("")}
     </section>
   `);
 }
@@ -5687,7 +5686,7 @@ function toggleNotificationPanel(e){
       `}
     </div>
 
-    <button class="notification-profile-btn" onclick="document.querySelector('.notification-dropdown')?.remove(); renderProfile();">
+    <button class="notification-profile-btn" onclick="document.querySelector('.notification-dropdown')?.remove(); typeof renderNotificationCenter === 'function' ? renderNotificationCenter() : renderProfile();">
       Tüm Bildirimleri Gör
     </button>
   `;
@@ -10711,13 +10710,13 @@ const BB_HOME_POPULAR_STATIC = [
   {
     title:"GATES OF OLYMPUS",
     emoji:"⚡",
-    image:"assets/mobile/banners/big-prize-banner.png",
+    image:"assets/galaxybet/banners/banner-01.png?v=2",
     names:["gates of olympus","olympus"]
   },
   {
     title:"BIG BASS",
     emoji:"🎣",
-    image:"assets/mobile/banners/live-casino-hero-1.png",
+    image:"assets/galaxybet/banners/banner-02.png?v=2",
     names:["big bass","bass bonanza","big bass bonanza"]
   },
   {
@@ -10729,7 +10728,7 @@ const BB_HOME_POPULAR_STATIC = [
   {
     title:"AVIATOR",
     emoji:"✈️",
-    image:"assets/mobile/banners/live-casino-hero-2.png",
+    image:"assets/galaxybet/banners/banner-03.png?v=2",
     names:["aviator"]
   }
 ];
@@ -10961,7 +10960,7 @@ const BB_PUBLIC_GAMES = [
     provider:"Pragmatic Play",
     category:"Slot",
     emoji:"⚡",
-    image:"assets/mobile/banners/big-prize-banner.png",
+    image:"assets/galaxybet/banners/banner-01.png?v=2",
     keywords:["gates","olympus"]
   },
   {
@@ -10969,7 +10968,7 @@ const BB_PUBLIC_GAMES = [
     provider:"Pragmatic Play",
     category:"Slot",
     emoji:"🎣",
-    image:"assets/mobile/banners/live-casino-hero-1.png",
+    image:"assets/galaxybet/banners/banner-02.png?v=2",
     keywords:["big","bass","bonanza"]
   },
   {
@@ -10985,7 +10984,7 @@ const BB_PUBLIC_GAMES = [
     provider:"Spribe",
     category:"Crash",
     emoji:"✈️",
-    image:"assets/mobile/banners/live-casino-hero-2.png",
+    image:"assets/galaxybet/banners/banner-03.png?v=2",
     keywords:["aviator"]
   },
   {
@@ -11025,7 +11024,7 @@ const BB_PUBLIC_GAMES = [
     provider:"Pragmatic Play",
     category:"Live Casino",
     emoji:"🎯",
-    image:"assets/mobile/banners/vip-casino-banner.png",
+    image:"assets/galaxybet/banners/banner-05.png?v=2",
     keywords:["mega","wheel"]
   },
   {
@@ -11280,10 +11279,10 @@ document.addEventListener("click", () => {
 function bbCatalogFallbackGames(){
   return [
     {id:"fallback_sweet",gameId:"",title:"Sweet Bonanza",provider:"Pragmatic Play",category:"Slot",image:"assets/mobile/promos/welcome-bonus.png"},
-    {id:"fallback_gates",gameId:"",title:"Gates of Olympus",provider:"Pragmatic Play",category:"Slot",image:"assets/mobile/banners/big-prize-banner.png"},
-    {id:"fallback_bigbass",gameId:"",title:"Big Bass Bonanza",provider:"Pragmatic Play",category:"Slot",image:"assets/mobile/banners/live-casino-hero-1.png"},
+    {id:"fallback_gates",gameId:"",title:"Gates of Olympus",provider:"Pragmatic Play",category:"Slot",image:"assets/galaxybet/banners/banner-01.png?v=2"},
+    {id:"fallback_bigbass",gameId:"",title:"Big Bass Bonanza",provider:"Pragmatic Play",category:"Slot",image:"assets/galaxybet/banners/banner-02.png?v=2"},
     {id:"fallback_sugar",gameId:"",title:"Sugar Rush",provider:"Pragmatic Play",category:"Slot",image:"assets/mobile/promos/freespin.png"},
-    {id:"fallback_aviator",gameId:"",title:"Aviator",provider:"Spribe",category:"Crash",image:"assets/mobile/banners/live-casino-hero-2.png"},
+    {id:"fallback_aviator",gameId:"",title:"Aviator",provider:"Spribe",category:"Crash",image:"assets/galaxybet/banners/banner-03.png?v=2"},
     {id:"fallback_mines",gameId:"",title:"Mines",provider:"Spribe",category:"Crash",image:"assets/mobile/icons/casino-icon.png"},
     {id:"fallback_plinko",gameId:"",title:"Plinko",provider:"Spribe",category:"Arcade",image:"assets/mobile/icons/slot-icon.png"},
     {id:"fallback_crazy",gameId:"",title:"Crazy Time",provider:"Evolution",category:"Live Casino",image:"assets/mobile/dealers/dealer-live-casino-1.png"},
@@ -11679,7 +11678,13 @@ document.addEventListener("click", () => {
 (function(){
   const AS='/assets/mobile/';
   const bbAssets={
-    banners:[AS+'banners/live-casino-hero-1.png',AS+'banners/live-casino-hero-2.png',AS+'banners/live-casino-hero-3.png',AS+'banners/vip-casino-banner.png',AS+'banners/big-prize-banner.png'],
+    banners:[
+      'assets/galaxybet/banners/banner-02.png?v=2',
+      'assets/galaxybet/banners/banner-03.png?v=2',
+      'assets/galaxybet/banners/banner-04.png?v=2',
+      'assets/galaxybet/banners/banner-05.png?v=2',
+      'assets/galaxybet/banners/banner-01.png?v=2'
+    ],
     promos:[['Hoş Geldin Bonusu',AS+'promos/welcome-bonus.png'],['Çevrimsiz Bonus',AS+'promos/no-wager-bonus.png'],['Kayıp Bonusu',AS+'promos/loss-bonus.png'],['Free Spin',AS+'promos/freespin.png'],['Bonus Kampanyası',AS+'promos/bonus-campaign.png'],['Cebinde GalaxyBet',AS+'promos/mobile-pocket.png']],
     dealers:[AS+'dealers/dealer-live-casino-1.png',AS+'dealers/dealer-live-casino-2.png',AS+'dealers/dealer-live-casino-3.png',AS+'dealers/dealer-live-casino-4.png',AS+'dealers/dealer-live-casino-5.png',AS+'dealers/dealer-cards.png'],
     nav:{home:AS+'icons/nav-home-transparent.png',sports:AS+'icons/nav-sports-transparent.png',casino:AS+'icons/nav-casino-transparent.png',coupon:AS+'icons/nav-coupon-transparent.png',account:AS+'icons/nav-account-transparent.png'},
@@ -11754,8 +11759,8 @@ document.addEventListener("click", () => {
     slot:"assets/mobile/icons/slot-icon.png",
     casino:"assets/mobile/icons/casino-icon.png",
     sport:"assets/mobile/icons/football-icon.png",
-    live1:"assets/mobile/banners/live-casino-hero-1.png",
-    live2:"assets/mobile/banners/live-casino-hero-2.png",
+    live1:"assets/galaxybet/banners/banner-02.png?v=2",
+    live2:"assets/galaxybet/banners/banner-03.png?v=2",
     dealer:"assets/mobile/dealers/dealer-live-casino-1.png",
     promo:"assets/mobile/promos/welcome-bonus.png"
   };

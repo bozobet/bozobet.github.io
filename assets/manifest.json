@@ -1,50 +1,5 @@
 [
   {
-    "file": "logo/bozobet-logo-source.png",
-    "webp": "logo/bozobet-logo-source.webp",
-    "source": "a_set_of_logos_for_bozobet_an_online_betting_and.png",
-    "size": [
-      1536,
-      1024
-    ]
-  },
-  {
-    "file": "banners/home-hero.png",
-    "webp": "banners/home-hero.webp",
-    "source": "a_wide_cinematic_promotional_banner_in_a_dark_gre.png",
-    "size": [
-      1823,
-      863
-    ]
-  },
-  {
-    "file": "banners/sports-hero.png",
-    "webp": "banners/sports-hero.webp",
-    "source": "a_dark_cinematic_sportsbook_advertisement_banner.png",
-    "size": [
-      1774,
-      887
-    ]
-  },
-  {
-    "file": "banners/roulette-hero.png",
-    "webp": "banners/roulette-hero.webp",
-    "source": "a_wide_cinematic_casino_advertisement_banner_imag.png",
-    "size": [
-      1799,
-      874
-    ]
-  },
-  {
-    "file": "banners/slot-hero.png",
-    "webp": "banners/slot-hero.webp",
-    "source": "a_wide_neon_lit_casino_gaming_promotional_banner.png",
-    "size": [
-      1774,
-      887
-    ]
-  },
-  {
     "file": "icons/categories/football.png",
     "webp": "icons/categories/football.webp",
     "source": "a_digital_illustration_in_a_photorealistic_and_gra.png",

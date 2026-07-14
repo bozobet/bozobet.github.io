@@ -3,24 +3,24 @@
 
   const MOBILE_QUERY = "(max-width: 760px)";
   const BET_SLIP_KEY = "bozobetBetSlip";
-  const FALLBACK_IMAGE = "assets/mobile/banners/big-prize-banner.png";
+  const FALLBACK_IMAGE = "assets/galaxybet/banners/banner-01.png?v=2";
   const TEAM_LOGO_BASE = "assets/futbol takım logoları/";
 
   const popularGames = [
     { title:"Sweet Bonanza", provider:"Pragmatic Play", category:"Slot", badge:"Popüler", image:"assets/mobile/promos/welcome-bonus.png", aliases:["sweet bonanza"] },
-    { title:"Gates of Olympus", provider:"Pragmatic Play", category:"Slot", badge:"Popüler", image:"assets/mobile/banners/big-prize-banner.png", aliases:["gates of olympus", "olympus"] },
-    { title:"Big Bass Bonanza", provider:"Pragmatic Play", category:"Slot", badge:"Slot", image:"assets/mobile/banners/live-casino-hero-1.png", aliases:["big bass bonanza", "big bass"] },
+    { title:"Gates of Olympus", provider:"Pragmatic Play", category:"Slot", badge:"Popüler", image:"assets/galaxybet/banners/banner-01.png?v=2", aliases:["gates of olympus", "olympus"] },
+    { title:"Big Bass Bonanza", provider:"Pragmatic Play", category:"Slot", badge:"Slot", image:"assets/galaxybet/banners/banner-02.png?v=2", aliases:["big bass bonanza", "big bass"] },
     { title:"Sugar Rush", provider:"Pragmatic Play", category:"Slot", badge:"Popüler", image:"assets/mobile/promos/freespin.png", aliases:["sugar rush"] },
-    { title:"Aviator", provider:"Spribe", category:"Crash", badge:"Popüler", image:"assets/mobile/banners/live-casino-hero-2.png", aliases:["aviator"] },
+    { title:"Aviator", provider:"Spribe", category:"Crash", badge:"Popüler", image:"assets/galaxybet/banners/banner-03.png?v=2", aliases:["aviator"] },
     { title:"Crazy Time", provider:"Evolution", category:"Game Show", badge:"Canlı", image:"assets/mobile/dealers/dealer-live-casino-1.png", aliases:["crazy time"] }
   ];
 
   const newGames = [
     { title:"Mines", provider:"Spribe", category:"Crash", badge:"Yeni", image:"assets/mobile/promos/bonus-campaign.png", aliases:["mines"] },
     { title:"Plinko", provider:"Spribe", category:"Arcade", badge:"Yeni", image:"assets/mobile/promos/mobile-pocket.png", aliases:["plinko"] },
-    { title:"Starlight Princess", provider:"Pragmatic Play", category:"Slot", badge:"Yeni", image:"assets/mobile/banners/vip-casino-banner.png", aliases:["starlight princess"] },
+    { title:"Starlight Princess", provider:"Pragmatic Play", category:"Slot", badge:"Yeni", image:"assets/galaxybet/banners/banner-05.png?v=2", aliases:["starlight princess"] },
     { title:"Fruit Party", provider:"Pragmatic Play", category:"Slot", badge:"Yeni", image:"assets/mobile/promos/no-wager-bonus.png", aliases:["fruit party"] },
-    { title:"Wanted Dead or a Wild", provider:"Hacksaw", category:"Slot", badge:"Yeni", image:"assets/mobile/banners/live-casino-hero-3.png", aliases:["wanted dead or a wild", "wanted dead"] },
+    { title:"Wanted Dead or a Wild", provider:"Hacksaw", category:"Slot", badge:"Yeni", image:"assets/galaxybet/banners/banner-04.png?v=2", aliases:["wanted dead or a wild", "wanted dead"] },
     { title:"Reactoonz", provider:"Play'n GO", category:"Slot", badge:"Yeni", image:"assets/mobile/icons/slot-icon.png", aliases:["reactoonz"] }
   ];
 
@@ -48,12 +48,12 @@
   ];
 
   const promotions = [
-    { title:"Hoş Geldin Bonusu", text:"İlk yatırımına özel hoş geldin avantajlarını keşfet.", image:"assets/promos/welcome-bonus.webp" },
-    { title:"250 FreeSpin", text:"Seçili slotlarda geçerli FreeSpin fırsatı.", image:"assets/promos/freespin-250.webp" },
-    { title:"Kayıp Bonusu", text:"Günlük casino kayıplarına özel iade kampanyası.", image:"assets/promos/loss-bonus.webp" },
-    { title:"Kripto Bonusu", text:"Kripto yatırımlarına özel hızlı bonus fırsatı.", image:"assets/mobile/promos/mobile-pocket.png" },
-    { title:"Arkadaşını Getir", text:"Davet ettiğin arkadaşlarınla birlikte kazan.", image:"assets/mobile/promos/bonus-campaign.png" },
-    { title:"VIP Ayrıcalıkları", text:"Özel limitler, teklifler ve kişisel destek.", image:"assets/promos/vip.webp" }
+    { title:"GalaxyBet Promosyon 1", image:"assets/galaxybet/banners/banner-07.png?v=3" },
+    { title:"GalaxyBet Promosyon 2", image:"assets/galaxybet/banners/banner-08.png?v=3" },
+    { title:"GalaxyBet Promosyon 3", image:"assets/galaxybet/banners/banner-09.png?v=3" },
+    { title:"GalaxyBet Promosyon 4", image:"assets/galaxybet/banners/banner-10.png?v=3" },
+    { title:"GalaxyBet Promosyon 5", image:"assets/galaxybet/banners/banner-11.png?v=3" },
+    { title:"GalaxyBet Promosyon 6", image:"assets/galaxybet/banners/banner-12.png?v=3" }
   ];
 
   const providers = ["Pragmatic Play", "Evolution", "PG Soft", "EGT", "NetEnt", "Play'n GO", "Hacksaw", "Relax Gaming"];
@@ -176,20 +176,12 @@
   }
 
   function mobileBanner() {
-    const banners = [
-      ["assets/banners/home-hero.png", "GalaxyBet hoş geldin kampanyası"],
-      ["assets/banners/sports-hero.png", "GalaxyBet spor kampanyası"],
-      ["assets/banners/roulette-hero.png", "GalaxyBet rulet kampanyası"],
-      ["assets/banners/slot-hero.png", "GalaxyBet slot kampanyası"],
-      ["assets/mobile/banners/live-casino-hero-1.png", "GalaxyBet canlı casino kampanyası"],
-      ["assets/mobile/banners/big-prize-banner.png", "GalaxyBet büyük ödül kampanyası"],
-      ["assets/mobile/banners/vip-casino-banner.png", "GalaxyBet VIP casino kampanyası"]
-    ];
+    const banners = window.GALAXYBET_ASSETS?.slider || window.GALAXYBET_ASSETS?.banners || [];
 
     return `
       <section class="mobile-hero-slider" id="mobileHeroSlider" aria-label="Kampanyalar">
         <div class="mobile-hero-track">
-          ${banners.map(([src, alt], index) => `<img class="mobile-hero-slide${index === 0 ? " active" : ""}" src="${src}" alt="${alt}">`).join("")}
+          ${banners.map((src, index) => `<img class="mobile-hero-slide${index === 0 ? " active" : ""}" src="${src}" alt="GalaxyBet Banner ${index + 1}">`).join("")}
         </div>
         <button class="hero-arrow hero-prev" type="button" aria-label="Önceki banner" onclick="setMobileHeroSlide(window.bozobetMobileHeroIndex - 1)">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>

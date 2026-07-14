@@ -6,16 +6,16 @@
 
   const CATALOG = [
     {title:"Sweet Bonanza", provider:"Pragmatic Play", category:"Slot", image:AS+"promos/welcome-bonus.png", keys:["sweet","bonanza"]},
-    {title:"Gates of Olympus", provider:"Pragmatic Play", category:"Slot", image:AS+"banners/big-prize-banner.png", keys:["gates","olympus"]},
-    {title:"Big Bass Bonanza", provider:"Pragmatic Play", category:"Slot", image:AS+"banners/live-casino-hero-1.png", keys:["big","bass"]},
+    {title:"Gates of Olympus", provider:"Pragmatic Play", category:"Slot", image:"assets/galaxybet/banners/banner-01.png?v=2", keys:["gates","olympus"]},
+    {title:"Big Bass Bonanza", provider:"Pragmatic Play", category:"Slot", image:"assets/galaxybet/banners/banner-02.png?v=2", keys:["big","bass"]},
     {title:"Sugar Rush", provider:"Pragmatic Play", category:"Slot", image:AS+"promos/freespin.png", keys:["sugar","rush"]},
-    {title:"Aviator", provider:"Spribe", category:"Crash", image:AS+"banners/live-casino-hero-2.png", keys:["aviator"]},
+    {title:"Aviator", provider:"Spribe", category:"Crash", image:"assets/galaxybet/banners/banner-03.png?v=2", keys:["aviator"]},
     {title:"Mines", provider:"Spribe", category:"Crash", image:AS+"icons/casino-icon.png", keys:["mines"]},
     {title:"Plinko", provider:"Spribe", category:"Arcade", image:AS+"icons/slot-icon.png", keys:["plinko"]},
     {title:"Crazy Time", provider:"Evolution", category:"Live Casino", image:AS+"dealers/dealer-live-casino-1.png", keys:["crazy","time"]},
     {title:"Lightning Roulette", provider:"Evolution", category:"Live Casino", image:AS+"dealers/dealer-live-casino-2.png", keys:["lightning","roulette"]},
     {title:"Blackjack", provider:"Evolution", category:"Live Casino", image:AS+"dealers/dealer-cards.png", keys:["blackjack"]},
-    {title:"Mega Wheel", provider:"Pragmatic Play", category:"Live Casino", image:AS+"banners/vip-casino-banner.png", keys:["mega","wheel"]},
+    {title:"Mega Wheel", provider:"Pragmatic Play", category:"Live Casino", image:"assets/galaxybet/banners/banner-05.png?v=2", keys:["mega","wheel"]},
     {title:"The Dog House", provider:"Pragmatic Play", category:"Slot", image:AS+"promos/bonus-campaign.png", keys:["dog","house"]}
   ];
 

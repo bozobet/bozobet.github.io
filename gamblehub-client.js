@@ -5,8 +5,8 @@
   const previousRenderCasino = window.renderCasino;
   const fallbackGames = [
     { id:"stage-sweet-bonanza", title:"Sweet Bonanza", provider:"Pragmatic Play", imageUrl:"assets/mobile/promos/welcome-bonus.png" },
-    { id:"stage-gates-of-olympus", title:"Gates of Olympus", provider:"Pragmatic Play", imageUrl:"assets/mobile/banners/big-prize-banner.png" },
-    { id:"stage-aviator", title:"Aviator", provider:"Spribe", imageUrl:"assets/mobile/banners/live-casino-hero-2.png" },
+    { id:"stage-gates-of-olympus", title:"Gates of Olympus", provider:"Pragmatic Play", imageUrl:"assets/galaxybet/banners/banner-01.png?v=2" },
+    { id:"stage-aviator", title:"Aviator", provider:"Spribe", imageUrl:"assets/galaxybet/banners/banner-03.png?v=2" },
     { id:"stage-crazy-time", title:"Crazy Time", provider:"Evolution", imageUrl:"assets/mobile/dealers/dealer-live-casino-1.png" },
     { id:"stage-lightning-roulette", title:"Lightning Roulette", provider:"Evolution", imageUrl:"assets/mobile/dealers/dealer-live-casino-2.png" },
     { id:"stage-blackjack", title:"Blackjack", provider:"Evolution", imageUrl:"assets/mobile/dealers/dealer-cards.png" }

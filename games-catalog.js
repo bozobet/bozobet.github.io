@@ -15,7 +15,7 @@ window.BOZOBET_GAME_CATALOG = [
     "title": "Gates of Olympus",
     "provider": "Pragmatic Play",
     "category": "Slot",
-    "image": "assets/mobile/banners/big-prize-banner.png",
+    "image": "assets/galaxybet/banners/banner-01.png?v=2",
     "emoji": "⚡",
     "bg": "linear-gradient(135deg,#6d5dfc,#f5c451)"
   },
@@ -25,7 +25,7 @@ window.BOZOBET_GAME_CATALOG = [
     "title": "Big Bass Bonanza",
     "provider": "Pragmatic Play",
     "category": "Slot",
-    "image": "assets/mobile/banners/live-casino-hero-1.png",
+    "image": "assets/galaxybet/banners/banner-02.png?v=2",
     "emoji": "🎣",
     "bg": "linear-gradient(135deg,#0ea5e9,#22c55e)"
   },
@@ -45,7 +45,7 @@ window.BOZOBET_GAME_CATALOG = [
     "title": "Aviator",
     "provider": "Spribe",
     "category": "Crash",
-    "image": "assets/mobile/banners/live-casino-hero-2.png",
+    "image": "assets/galaxybet/banners/banner-03.png?v=2",
     "emoji": "✈️",
     "bg": "linear-gradient(135deg,#ef4444,#111827)"
   },
@@ -105,7 +105,7 @@ window.BOZOBET_GAME_CATALOG = [
     "title": "Mega Wheel",
     "provider": "Pragmatic Play",
     "category": "Live Casino",
-    "image": "assets/mobile/banners/vip-casino-banner.png",
+    "image": "assets/galaxybet/banners/banner-05.png?v=2",
     "emoji": "🎯",
     "bg": "linear-gradient(135deg,#00c2ff,#f5c451)"
   },
