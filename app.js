@@ -813,31 +813,73 @@ function saveUser(){
   persistSessionUser();
 }
 
+function premiumCrownIcon(){
+  return `<svg class="premium-crown-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7.5 7.8 11 12 4l4.2 7L21 7.5l-1.6 10H4.6L3 7.5Z"/><path d="M5 20h14"/></svg>`;
+}
+
+function headerAccountHtml(){
+  if(!user) return "";
+  const username = esc(user.username || "Oyuncu");
+  const initial = esc((user.username || "O").slice(0, 1).toUpperCase());
+  return `
+    <div class="header-account">
+      <button class="header-account-trigger" type="button" onclick="toggleHeaderAccountMenu(event)" aria-haspopup="menu" aria-expanded="false">
+        <span class="header-avatar">${initial}<i></i></span>
+        <span class="header-account-copy"><small>${premiumCrownIcon()} VIP OYUNCU</small><strong>${username}</strong></span>
+        <span class="header-wallet"><small>BAKİYE</small><strong>${money(user.balance)}</strong></span>
+        <svg class="header-account-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg>
+      </button>
+      <div class="header-account-menu" role="menu">
+        <div class="header-account-menu-head"><span class="header-avatar">${initial}<i></i></span><div><small>SEVİYE 1</small><strong>${username}</strong></div></div>
+        <button type="button" role="menuitem" onclick="renderProfile()"><span>Hesabım</span><b>›</b></button>
+        <button type="button" role="menuitem" onclick="renderDepositSitePage()"><span>Para Yatır</span><b>+</b></button>
+        <button type="button" role="menuitem" onclick="renderVip()"><span>${premiumCrownIcon()} VIP Kulübü</span><b>›</b></button>
+        <button class="header-account-logout" type="button" role="menuitem" onclick="logout()"><span>Güvenli Çıkış</span><b>↗</b></button>
+      </div>
+    </div>`;
+}
+
+function toggleHeaderAccountMenu(event){
+  event?.stopPropagation();
+  const account = event?.currentTarget?.closest(".header-account");
+  if(!account) return;
+  const isOpen = account.classList.toggle("open");
+  event.currentTarget.setAttribute("aria-expanded", String(isOpen));
+}
+
+document.addEventListener("click", (event) => {
+  if(event.target.closest(".header-account")) return;
+  document.querySelectorAll(".header-account.open").forEach(account => {
+    account.classList.remove("open");
+    account.querySelector(".header-account-trigger")?.setAttribute("aria-expanded", "false");
+  });
+});
+
 function shell(content){
   return `
     <header class="topbar mobile-header">
-      <div class="brand-logo logo-img-only mobile-header-logo" onclick="navigateApp('home')">
-        <picture>
-          <img src="assets/galaxybet/logo.png?v=3" alt="GalaxyBet" class="clean-logo">
-        </picture>
-      </div>
+      <div class="topbar-inner">
+        <div class="brand-logo logo-img-only mobile-header-logo" onclick="navigateApp('home')">
+          <picture>
+            <img src="assets/galaxybet/logo.png?v=3" alt="GalaxyBet" class="clean-logo">
+          </picture>
+        </div>
 
-      <nav class="nav">
-        <a href="#sports" onclick="navigateApp('sports', event)">Spor Bahisleri</a>
-        <a href="#live-casino" onclick="navigateApp('live-casino', event)">Canlı Casino</a>
-        <a href="#casino" onclick="navigateApp('casino', event)">Casino</a>
-        <a href="#slot" onclick="navigateApp('slot', event)">Slot</a>
-        <a href="#promotions" onclick="navigateApp('promotions', event)">Kampanyalar</a>
-        <a href="#virtual" onclick="navigateApp('virtual', event)">Sanal Oyunlar</a>
-        <a href="#vip" onclick="navigateApp('vip', event)">VIP 👑</a>
-        <a href="#support" onclick="navigateApp('support', event)">Destek</a>
-        ${user?.role === "admin" ? `<a href="#" onclick="renderAdminDashboard()">Admin</a>` : ""}
-      </nav>
+        <nav class="nav">
+          <a href="#sports" onclick="navigateApp('sports', event)">Spor Bahisleri</a>
+          <a href="#live-casino" onclick="navigateApp('live-casino', event)">Canlı Casino</a>
+          <a href="#casino" onclick="navigateApp('casino', event)">Casino</a>
+          <a href="#slot" onclick="navigateApp('slot', event)">Slot</a>
+          <a href="#promotions" onclick="navigateApp('promotions', event)">Kampanyalar</a>
+          <a href="#virtual" onclick="navigateApp('virtual', event)">Sanal Oyunlar</a>
+          <a class="nav-vip" href="#vip" onclick="navigateApp('vip', event)">${premiumCrownIcon()} VIP</a>
+          <a href="#support" onclick="navigateApp('support', event)">Destek</a>
+          ${user?.role === "admin" ? `<a href="#" onclick="renderAdminDashboard()">Admin</a>` : ""}
+        </nav>
 
-      <div class="actions mobile-header-actions">
-        ${user ? `<div class="balance" onclick="renderProfile()"><strong>${user.username}</strong> · ${money(user.balance)} <span>⌄</span></div><button class="btn icon" onclick="renderDepositSitePage()">+</button>` : ""}
-        ${user ? `<button class="btn" type="button" onclick="logout()">Çıkış</button>` : `<button id="headerLoginButton" class="btn" type="button" data-auth-trigger="login" onclick="loginModal()">Giriş Yap</button>`}
-        ${user ? "" : `<button id="headerRegisterButton" class="btn primary" type="button" data-auth-trigger="register" onclick="registerModal()">👤 Üye Ol</button>`}
+        <div class="actions mobile-header-actions">
+          ${user ? `${notificationBellHtml()}${headerAccountHtml()}` : `<button id="headerLoginButton" class="btn" type="button" data-auth-trigger="login" onclick="loginModal()">Giriş Yap</button><button id="headerRegisterButton" class="btn primary" type="button" data-auth-trigger="register" onclick="registerModal()">Üye Ol</button>`}
+        </div>
       </div>
     </header>
 
@@ -1233,58 +1275,6 @@ function registerModal(){
   `);
 }
 
-function depositModalLegacy(){
-  modal(`
-    <div class="pay-modal">
-      <div class="pay-head">
-        <div>
-          <h2>Para Yatır</h2>
-          <p> V2 yatırım paneli. Agentix bağlantısı sonraki adımda temiz kurulacak.</p>
-        </div>
-        <div class="pay-balance">
-          <span>Bakiye</span>
-          <b>${money(user?.balance || 0)}</b>
-        </div>
-      </div>
-
-      <div class="pay-methods">
-        <button class="pay-method active">🏦 Havale</button>
-        <button class="pay-method">💳 Kart</button>
-        <button class="pay-method">₿ Kripto</button>
-        <button class="pay-method">▣ QR</button>
-      </div>
-
-      <div class="pay-grid">
-        <label class="field">
-          <span>Yöntem</span>
-          <input value="Agentix Havale" readonly>
-        </label>
-
-        <label class="field">
-          <span>Tutar</span>
-          <input id="depAmount" type="number" value="1000">
-        </label>
-      </div>
-
-      <div class="quick-amounts">
-        <button onclick="document.getElementById('depAmount').value=500">₺500</button>
-        <button onclick="document.getElementById('depAmount').value=1000">₺1.000</button>
-        <button onclick="document.getElementById('depAmount').value=2500">₺2.500</button>
-        <button onclick="document.getElementById('depAmount').value=5000">₺5.000</button>
-      </div>
-
-      <button class="btn primary full-btn" onclick="fakeDeposit()">Talep Oluştur</button>
-
-      <div class="payment-preview">
-        <b>Ödeme Bilgisi</b>
-        <span>Talep oluşturulduktan sonra IBAN ve alıcı bilgisi burada gösterilecek.</span>
-      </div>
-
-      <div class="msg" id="depMsg"></div>
-    </div>
-  `);
-}
-
 function loginLegacy(){
   const name = document.getElementById("loginUser").value.trim();
   const pass = document.getElementById("loginPass").value || "";
@@ -1374,11 +1364,6 @@ function registerLegacy(){
 function logout(){
   clearSession();
   applyGuestUI(true);
-}
-
-function fakeDeposit(){
-  const amount = Number(document.getElementById("depAmount").value || 0);
-  document.getElementById("depMsg").textContent = `${money(amount)} yatırım talebi  olarak oluşturuldu.`;
 }
 
 renderHome();
@@ -1645,7 +1630,7 @@ function renderVip(){
     <section class="vip-grid">
       ${["Bronze","Silver","Gold","Diamond"].map((x,i)=>`
         <div class="vip-card card">
-          <div class="vip-crown">👑</div>
+          <div class="vip-crown">${premiumCrownIcon()}</div>
           <h3>${x}</h3>
           <p>${["Başlangıç seviyesi","Daha yüksek bonuslar","Özel kampanyalar","En yüksek limitler"][i]}</p>
           <button class="btn ${i>1?"gold":"primary"}">Detaylar</button>
@@ -2761,34 +2746,6 @@ function addPaymentRequest(item){
   setPaymentRequests(items);
 }
 
-function submitDepositRequest(){
-  if(!user){
-    loginModal();
-    return;
-  }
-
-  const amount = parseFlexibleAmount(document.getElementById("depositAmount")?.value);
-
-  if(!amount || amount <= 0){
-    alert("Geçerli yatırım tutarı gir.");
-    return;
-  }
-
-  addPaymentRequest({
-    username:user.username,
-    userId:user.id || user.username,
-    type:"Yatırım",
-    direction:"plus",
-    amount,
-    method:"Havale / EFT",
-    note:"Kullanıcı yatırım talebi oluşturdu"
-  });
-
-  document.querySelector(".modal-back")?.remove();
-  alert("Yatırım talebin oluşturuldu. Admin onayından sonra bakiyene eklenecek.");
-  renderProfile();
-}
-
 function submitWithdrawRequest(){
   if(!user){
     loginModal();
@@ -2829,45 +2786,10 @@ function submitWithdrawRequest(){
   renderProfile();
 }
 
-// deposit modal override
+// Canonical deposit entry point.
 function depositModal(){
-  if(!user){
-    loginModal();
-    return;
-  }
-
-  modal(`
-    <div class="auth-box payment-box">
-      <div class="auth-side">
-        <div class="auth-badge">YATIRIM TALEBİ</div>
-        <h2>Para Yatır</h2>
-        <p> sistemde yatırım talebi oluşturulur. Admin onayladığında bakiyeye yansır.</p>
-      </div>
-
-      <div class="auth-form">
-        <h2>Yatırım Talebi</h2>
-
-        <label class="field">
-          <span>Yatırım Tutarı</span>
-          <input id="depositAmount" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn: 1000">
-        </label>
-
-        <label class="field">
-          <span>Yöntem</span>
-          <input value="Havale / EFT" disabled>
-        </label>
-
-        <div class="payment-info">
-          <b>Not</b>
-          <span>Bu sadece  taleptir. Gerçek ödeme veya banka işlemi yapılmaz.</span>
-        </div>
-
-        <button class="btn primary full-btn" onclick="submitDepositRequest()">Talep Oluştur</button>
-      </div>
-    </div>
-  `);
+  renderDepositSitePage();
 }
-
 // withdraw modal override
 function withdrawModal(){
   if(!user){
@@ -5829,601 +5751,6 @@ document.addEventListener("click", (e) => {
   }
 });
 
-// shell override - header içine bildirim zili enjekte
-const oldShellNotificationBell = shell;
-shell = function(content){
-  let html = oldShellNotificationBell(content);
-
-  if(user && user.role !== "admin" && !html.includes("notification-bell")){
-    html = html.replace(
-      `<button class="btn ghost" onclick="withdrawModal()">Para Çek</button>`,
-      `<button class="btn ghost" onclick="withdrawModal()">Para Çek</button>
-       ${notificationBellHtml()}`
-    );
-
-    html = html.replace(
-      `<button class="btn primary" onclick="renderDepositSitePage()">Para Yatır</button>`,
-      `<button class="btn primary" onclick="renderDepositSitePage()">Para Yatır</button>
-       ${notificationBellHtml()}`
-    );
-  }
-
-  return html;
-};
-
-// DEPOSIT PAGE WITH METHOD CARDS
-var selectedDepositMethod = "Havale / EFT";
-
-function setDepositMethod(method){
-  selectedDepositMethod = method;
-
-  document.querySelectorAll(".deposit-method-card").forEach(card => {
-    card.classList.toggle("active", card.dataset.method === method);
-  });
-
-  const selectedText = document.getElementById("selectedDepositMethodText");
-  if(selectedText){
-    selectedText.textContent = method;
-  }
-}
-
-function renderDepositPage(){
-  if(!user){
-    loginModal();
-    return;
-  }
-
-  const l = getPaymentLimits();
-
-  document.getElementById("app").innerHTML = shell(`
-    <section class="page-hero mini">
-      <div>
-        <span>FİNANS İŞLEMLERİ</span>
-        <h1>Para Yatır</h1>
-        <p>Yatırım yöntemini seç, tutarı gir ve  yatırım talebini oluştur.</p>
-      </div>
-    </section>
-
-    <section class="deposit-page-grid">
-      <div class="card deposit-methods-card">
-        <div class="card-head">
-          <h3>Yatırım Yöntemi Seç</h3>
-          <span>Ödeme yöntemleri</span>
-        </div>
-
-        <div class="deposit-method-grid">
-          <button class="deposit-method-card active" data-method="Havale / EFT" onclick="setDepositMethod('Havale / EFT')">
-            <div class="method-icon">🏦</div>
-            <b>Havale / EFT</b>
-            <span>Minimum ${money(l.minDeposit)}</span>
-          </button>
-
-          <button class="deposit-method-card" data-method="Papara" onclick="setDepositMethod('Papara')">
-            <div class="method-icon">🟣</div>
-            <b>Papara</b>
-            <span>Hızlı yatırım</span>
-          </button>
-
-          <button class="deposit-method-card" data-method="USDT TRC20" onclick="setDepositMethod('USDT TRC20')">
-            <div class="method-icon">₮</div>
-            <b>USDT TRC20</b>
-            <span>Kripto </span>
-          </button>
-
-          <button class="deposit-method-card" data-method="QR Ödeme" onclick="setDepositMethod('QR Ödeme')">
-            <div class="method-icon">▦</div>
-            <b>QR Ödeme</b>
-            <span>Kolay ödeme</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="card deposit-form-card">
-        <h3>Yatırım Talebi</h3>
-
-        <div class="deposit-selected-method">
-          <small>Seçili Yöntem</small>
-          <b id="selectedDepositMethodText">${selectedDepositMethod}</b>
-        </div>
-
-        <label class="field">
-          <span>Yatırım Tutarı</span>
-          <input id="depositPageAmount" type="text" inputmode="decimal" autocomplete="off" placeholder="${l.minDeposit} - ${l.maxDeposit}">
-        </label>
-
-        <div class="deposit-limit-box">
-          <div>
-            <small>Minimum Yatırım</small>
-            <b>${money(l.minDeposit)}</b>
-          </div>
-          <div>
-            <small>Maksimum Yatırım</small>
-            <b>${money(l.maxDeposit)}</b>
-          </div>
-        </div>
-
-        <div class="deposit--warning">
-          <b> Bilgilendirme</b>
-          <span>Bu sayfada gerçek ödeme alınmaz. Sadece admin onaylı  yatırım talebi oluşturulur.</span>
-        </div>
-
-        <button class="btn primary full-btn" onclick="submitDepositPageRequest()">Yatırım Talebi Oluştur</button>
-      </div>
-    </section>
-  `);
-}
-
-function submitDepositPageRequest(){
-  if(!user){
-    loginModal();
-    return;
-  }
-
-  const amount = parseFlexibleAmount(document.getElementById("depositPageAmount")?.value);
-  const l = getPaymentLimits();
-
-  if(!amount || amount <= 0){
-    alert("Geçerli yatırım tutarı gir.");
-    return;
-  }
-
-  if(amount < l.minDeposit || amount > l.maxDeposit){
-    alert(`Yatırım tutarı ${money(l.minDeposit)} ile ${money(l.maxDeposit)} arasında olmalı.`);
-    return;
-  }
-
-  addPaymentRequest({
-    username:user.username,
-    userId:user.id || user.username,
-    type:"Yatırım",
-    direction:"plus",
-    amount,
-    method:selectedDepositMethod,
-    note:`Kullanıcı ${selectedDepositMethod} yöntemiyle yatırım talebi oluşturdu`
-  });
-
-  alert("Yatırım talebin oluşturuldu. Admin onayından sonra bakiyene eklenecek.");
-  renderProfile();
-}
-
-// Eski para yatır modalını artık sayfaya yönlendir
-depositModal = function(){
-  renderDepositPage();
-};
-
-// FIX - FORCE ALL PARA YATIR BUTTONS TO OPEN DEPOSIT PAGE
-function bindDepositButtons(){
-  setTimeout(() => {
-    document.querySelectorAll("button, a").forEach(el => {
-      const text = (el.innerText || "").trim().toLowerCase();
-
-      if(text === "para yatır" || text.includes("para yatır")){
-        el.onclick = function(e){
-          e.preventDefault();
-          renderDepositPage();
-          return false;
-        };
-      }
-    });
-  }, 80);
-}
-
-document.addEventListener("DOMContentLoaded", bindDepositButtons);
-window.addEventListener("load", bindDepositButtons);
-
-const oldShellDepositBind = shell;
-shell = function(content){
-  const html = oldShellDepositBind(content);
-  setTimeout(bindDepositButtons, 100);
-  return html;
-};
-
-// Eski modal fonksiyonunu da kesin olarak yeni sayfaya yönlendir
-depositModal = function(){
-  renderDepositPage();
-};
-
-// Ana renderlardan sonra butonları tekrar bağla
-[
-  "renderHome",
-  "renderProfile",
-  "renderSports",
-  "renderCasino",
-  "renderPromotions",
-  "renderVip",
-  "renderSupport"
-].forEach(fnName => {
-  const oldFn = window[fnName];
-
-  if(typeof oldFn === "function"){
-    window[fnName] = function(...args){
-      const result = oldFn.apply(this, args);
-      bindDepositButtons();
-      return result;
-    };
-  }
-});
-
-
-// FINAL FORCE DEPOSIT OPEN
-depositModal = function(){
-  renderDepositPage();
-};
-
-document.addEventListener("click", function(e){
-  const el = e.target.closest("button,a");
-  if(!el) return;
-
-  const text = (el.innerText || "").trim().toLowerCase();
-
-  if(text.includes("para yatır")){
-    e.preventDefault();
-    e.stopPropagation();
-    renderDepositPage();
-    return false;
-  }
-}, true);
-
-
-// ABSOLUTE DEPOSIT LINK FIX
-function goDepositPage(){
-  renderDepositSitePage();
-}
-
-depositModal = renderDepositSitePage;
-renderDepositPage = renderDepositSitePage;
-
-document.addEventListener("click", function(e){
-  const el = e.target.closest("button,a");
-  if(!el) return;
-
-  const text = (el.innerText || "").trim().toLowerCase();
-
-  if(text.includes("para yatır")){
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    renderDepositSitePage();
-    return false;
-  }
-}, true);
-
-
-// INTEGRATED DEPOSIT PAGE - FINAL
-var siteDepositMethod = "Havale / EFT";
-
-function setSiteDepositMethod(method){
-  siteDepositMethod = method;
-
-  document.querySelectorAll(".deposit-method-card").forEach(card => {
-    card.classList.toggle("active", card.dataset.method === method);
-  });
-
-  const text = document.getElementById("selectedDepositMethodText");
-  if(text) text.textContent = method;
-}
-
-function renderDepositSitePageLegacy(){
-  if(!user){
-    loginModal();
-    return;
-  }
-
-  const l = typeof getPaymentLimits === "function" ? getPaymentLimits() : {
-    minDeposit:100,
-    maxDeposit:50000,
-    minWithdraw:100,
-    maxWithdraw:25000
-  };
-
-  document.getElementById("app").innerHTML = shell(`
-    <section class="page-hero mini">
-      <div>
-        <span>FİNANS İŞLEMLERİ</span>
-        <h1>Para Yatır</h1>
-        <p>Yatırım yöntemini seç, tutarı gir ve admin onaylı yatırım talebini oluştur.</p>
-      </div>
-    </section>
-
-    <section class="deposit-page-grid">
-      <div class="card deposit-methods-card">
-        <div class="card-head">
-          <h3>Yatırım Yöntemi Seç</h3>
-          <span>Limit dışı talepler oluşturulamaz</span>
-        </div>
-
-        <div class="deposit-method-grid">
-          <button class="deposit-method-card active" data-method="Havale / EFT" onclick="setSiteDepositMethod('Havale / EFT')">
-            <div class="method-icon">🏦</div>
-            <b>Havale / EFT</b>
-            <span>Banka transferi</span>
-          </button>
-
-          <button class="deposit-method-card" data-method="Papara" onclick="setSiteDepositMethod('Papara')">
-            <div class="method-icon">🟣</div>
-            <b>Papara</b>
-            <span>Hızlı yatırım</span>
-          </button>
-
-          <button class="deposit-method-card" data-method="USDT TRC20" onclick="setSiteDepositMethod('USDT TRC20')">
-            <div class="method-icon">₮</div>
-            <b>USDT TRC20</b>
-            <span>Kripto </span>
-          </button>
-
-          <button class="deposit-method-card" data-method="QR Ödeme" onclick="setSiteDepositMethod('QR Ödeme')">
-            <div class="method-icon">▦</div>
-            <b>QR Ödeme</b>
-            <span>Kolay ödeme</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="card deposit-form-card">
-        <h3>Yatırım Talebi</h3>
-
-        <div class="deposit-selected-method">
-          <small>Seçili Yöntem</small>
-          <b id="selectedDepositMethodText">${siteDepositMethod}</b>
-        </div>
-
-        <label class="field">
-          <span>Yatırım Tutarı</span>
-          <input id="siteDepositAmount" type="text" inputmode="decimal" autocomplete="off" placeholder="${l.minDeposit} - ${l.maxDeposit}">
-        </label>
-
-        <div class="deposit-limit-box">
-          <div>
-            <small>Minimum Yatırım</small>
-            <b>${money(l.minDeposit)}</b>
-          </div>
-
-          <div>
-            <small>Maksimum Yatırım</small>
-            <b>${money(l.maxDeposit)}</b>
-          </div>
-        </div>
-
-        <div class="deposit--warning">
-          <b>Limit dışı talep oluşturulamaz</b>
-          <span>Yatırım tutarı ${money(l.minDeposit)} ile ${money(l.maxDeposit)} arasında olmalı.</span>
-        </div>
-
-        <button class="btn primary full-btn" onclick="submitSiteDepositRequest()">Yatırım Talebi Oluştur</button>
-      </div>
-    </section>
-  `);
-}
-
-function submitSiteDepositRequest(){
-  if(!user){
-    loginModal();
-    return;
-  }
-
-  const amount = parseFlexibleAmount(document.getElementById("siteDepositAmount")?.value);
-  const l = typeof getPaymentLimits === "function" ? getPaymentLimits() : {
-    minDeposit:100,
-    maxDeposit:50000
-  };
-
-  if(!amount || amount <= 0){
-    alert("Geçerli yatırım tutarı gir.");
-    return;
-  }
-
-  if(amount < l.minDeposit || amount > l.maxDeposit){
-    alert(`Yatırım tutarı ${money(l.minDeposit)} ile ${money(l.maxDeposit)} arasında olmalı.`);
-    return;
-  }
-
-  addPaymentRequest({
-    username:user.username,
-    userId:user.id || user.username,
-    type:"Yatırım",
-    direction:"plus",
-    amount,
-    method:siteDepositMethod,
-    note:`Kullanıcı ${siteDepositMethod} yöntemiyle yatırım talebi oluşturdu`
-  });
-
-  alert("Yatırım talebin oluşturuldu. Admin onayından sonra bakiyene eklenecek.");
-  renderProfile();
-}
-
-// Her eski para yatır çağrısı artık site içi sayfaya gitsin
-depositModal = renderDepositSitePage;
-renderDepositPage = renderDepositSitePage;
-
-// Son katman: Para Yatır yazan butonları site içi sayfaya bağla
-function forceDepositButtonsToSitePage(){
-  document.querySelectorAll("button, a").forEach(el => {
-    const text = (el.innerText || "").trim().toLowerCase();
-    if(text.includes("para yatır")){
-      el.onclick = function(e){
-        if(e){
-          e.preventDefault();
-          e.stopPropagation();
-        }
-        renderDepositSitePage();
-        return false;
-      };
-    }
-  });
-}
-
-setInterval(forceDepositButtonsToSitePage, 500);
-window.addEventListener("load", forceDepositButtonsToSitePage);
-document.addEventListener("DOMContentLoaded", forceDepositButtonsToSitePage);
-
-
-// DEPOSIT PAGE REPAIR FINAL
-function renderDepositSitePage(){
-  if(!user){
-    loginModal();
-    return;
-  }
-
-  var l = typeof getPaymentLimits === "function" ? getPaymentLimits() : {
-    minDeposit:100,
-    maxDeposit:50000,
-    minWithdraw:100,
-    maxWithdraw:25000
-  };
-
-  if(typeof siteDepositMethod === "undefined"){
-    window.siteDepositMethod = "Havale / EFT";
-  }
-
-  document.getElementById("app").innerHTML = shell(`
-    <section class="page-hero mini">
-      <div>
-        <span>FİNANS İŞLEMLERİ</span>
-        <h1>Para Yatır</h1>
-        <p>Yatırım yöntemini seç, tutarı gir ve yatırım talebini oluştur.</p>
-      </div>
-    </section>
-
-    <section class="deposit-page-grid">
-      <div class="card deposit-methods-card">
-        <div class="card-head">
-          <h3>Yatırım Yöntemi Seç</h3>
-          <span>Limit dışı talepler oluşturulamaz</span>
-        </div>
-
-        <div class="deposit-method-grid">
-          <button class="deposit-method-card active" data-method="Havale / EFT" onclick="setSiteDepositMethodFixed('Havale / EFT')">
-            <div class="method-icon">🏦</div>
-            <b>Havale / EFT</b>
-            <span>Banka transferi</span>
-          </button>
-
-          <button class="deposit-method-card" data-method="Papara" onclick="setSiteDepositMethodFixed('Papara')">
-            <div class="method-icon">🟣</div>
-            <b>Papara</b>
-            <span>Hızlı yatırım</span>
-          </button>
-
-          <button class="deposit-method-card" data-method="USDT TRC20" onclick="setSiteDepositMethodFixed('USDT TRC20')">
-            <div class="method-icon">₮</div>
-            <b>USDT TRC20</b>
-            <span>Kripto </span>
-          </button>
-
-          <button class="deposit-method-card" data-method="QR Ödeme" onclick="setSiteDepositMethodFixed('QR Ödeme')">
-            <div class="method-icon">▦</div>
-            <b>QR Ödeme</b>
-            <span>Kolay ödeme</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="card deposit-form-card">
-        <h3>Yatırım Talebi</h3>
-
-        <div class="deposit-selected-method">
-          <small>Seçili Yöntem</small>
-          <b id="selectedDepositMethodText">Havale / EFT</b>
-        </div>
-
-        <label class="field">
-          <span>Yatırım Tutarı</span>
-          <input id="siteDepositAmount" type="text" inputmode="decimal" autocomplete="off" placeholder="${l.minDeposit} - ${l.maxDeposit}">
-        </label>
-
-        <div class="deposit-limit-box">
-          <div>
-            <small>Minimum Yatırım</small>
-            <b>${money(l.minDeposit)}</b>
-          </div>
-
-          <div>
-            <small>Maksimum Yatırım</small>
-            <b>${money(l.maxDeposit)}</b>
-          </div>
-        </div>
-
-        <div class="deposit--warning">
-          <b>Limit dışı talep oluşturulamaz</b>
-          <span>Yatırım tutarı ${money(l.minDeposit)} ile ${money(l.maxDeposit)} arasında olmalı.</span>
-        </div>
-
-        <button class="btn primary full-btn" onclick="submitSiteDepositRequestFixed()">Yatırım Talebi Oluştur</button>
-      </div>
-    </section>
-  `);
-}
-
-function setSiteDepositMethodFixed(method){
-  window.siteDepositMethod = method;
-
-  document.querySelectorAll(".deposit-method-card").forEach(card => {
-    card.classList.toggle("active", card.dataset.method === method);
-  });
-
-  const selected = document.getElementById("selectedDepositMethodText");
-  if(selected) selected.textContent = method;
-}
-
-function submitSiteDepositRequestFixed(){
-  if(!user){
-    loginModal();
-    return;
-  }
-
-  const amount = parseFlexibleAmount(document.getElementById("siteDepositAmount")?.value);
-  const l = typeof getPaymentLimits === "function" ? getPaymentLimits() : {
-    minDeposit:100,
-    maxDeposit:50000
-  };
-
-  if(!amount || amount <= 0){
-    alert("Geçerli yatırım tutarı gir.");
-    return;
-  }
-
-  if(amount < l.minDeposit || amount > l.maxDeposit){
-    alert(`Yatırım tutarı ${money(l.minDeposit)} ile ${money(l.maxDeposit)} arasında olmalı.`);
-    return;
-  }
-
-  addPaymentRequest({
-    username:user.username,
-    userId:user.id || user.username,
-    type:"Yatırım",
-    direction:"plus",
-    amount,
-    method:window.siteDepositMethod || "Havale / EFT",
-    note:`Kullanıcı ${window.siteDepositMethod || "Havale / EFT"} yöntemiyle yatırım talebi oluşturdu`
-  });
-
-  alert("Yatırım talebin oluşturuldu. Admin onayından sonra bakiyene eklenecek.");
-  renderProfile();
-}
-
-depositModal = renderDepositSitePage;
-renderDepositPage = renderDepositSitePage;
-
-function forceDepositButtonFix(){
-  document.querySelectorAll("button, a").forEach(el => {
-    const text = (el.innerText || "").trim().toLowerCase();
-
-    if(text.includes("para yatır")){
-      el.onclick = function(e){
-        if(e){
-          e.preventDefault();
-          e.stopPropagation();
-        }
-        renderDepositSitePage();
-        return false;
-      };
-    }
-  });
-}
-
-window.addEventListener("load", forceDepositButtonFix);
-document.addEventListener("DOMContentLoaded", forceDepositButtonFix);
-setInterval(forceDepositButtonFix, 700);
-
 // INTEGRATED WITHDRAW PAGE
 var siteWithdrawMethod = "Banka Havalesi";
 
@@ -6968,9 +6295,25 @@ renderAdminDashboard = function(){
   }, 80);
 };
 
-// Para yatır sayfasını aktif yöntemlere göre yeniden çiz
-const oldRenderDepositSitePageMethods = renderDepositSitePage;
-renderDepositSitePage = function(){
+var siteDepositMethod = "Havale / EFT";
+
+function setSiteDepositMethod(method){
+  siteDepositMethod = method;
+  window.siteDepositMethod = method;
+  document.querySelectorAll(".deposit-method-card").forEach(card => {
+    card.classList.toggle("active", card.dataset.method === method);
+  });
+  const selected = document.getElementById("selectedDepositMethodText");
+  if(selected) selected.textContent = method;
+}
+
+// Canonical deposit renderer; premium module yüklüyse premium ekranı kullanır.
+function renderDepositSitePage(){
+  if(typeof window.renderPremiumDepositSitePage === "function"){
+    window.renderPremiumDepositSitePage();
+    return;
+  }
+
   if(!user){
     loginModal();
     return;
@@ -7010,7 +6353,7 @@ renderDepositSitePage = function(){
 
         <div class="deposit-method-grid">
           ${methods.map((m,i)=>`
-            <button class="deposit-method-card ${i === 0 ? "active" : ""}" data-method="${m.name}" onclick="setSiteDepositMethodFixed('${m.name}')">
+            <button class="deposit-method-card ${m.name === window.siteDepositMethod ? "active" : ""}" data-method="${m.name}" onclick="setSiteDepositMethod('${m.name}')">
               <div class="method-icon">${m.icon}</div>
               <b>${m.name}</b>
               <span>${m.desc}</span>
@@ -7024,7 +6367,7 @@ renderDepositSitePage = function(){
 
         <div class="deposit-selected-method">
           <small>Seçili Yöntem</small>
-          <b id="selectedDepositMethodText">${methods[0].name}</b>
+          <b id="selectedDepositMethodText">${window.siteDepositMethod}</b>
         </div>
 
         <label class="field">
@@ -7049,13 +6392,12 @@ renderDepositSitePage = function(){
           <span>Yatırım tutarı ${money(l.minDeposit)} ile ${money(l.maxDeposit)} arasında olmalı.</span>
         </div>
 
-        <button class="btn primary full-btn" onclick="submitSiteDepositRequestFixed()">Yatırım Talebi Oluştur</button>
+        <button class="btn primary full-btn" onclick="submitDepositShowAccountStep()">Yatırım Talebi Oluştur</button>
       </div>
     </section>
   `);
 
-  window.siteDepositMethod = methods[0].name;
-};
+}
 
 // WITHDRAW METHOD ADMIN SETTINGS
 function getWithdrawMethods(){
@@ -8972,7 +8314,7 @@ document.addEventListener("click", () => {
 var pendingDepositRequestData = null;
 
 function getSelectedDepositMethodName(){
-  return window.siteDepositMethod || siteDepositMethod || "Havale / EFT";
+  return window.siteDepositMethod || "Havale / EFT";
 }
 
 function getDepositAccountInfo(methodName){
@@ -8982,6 +8324,7 @@ function getDepositAccountInfo(methodName){
     return {
       title:"Papara Hesap Bilgisi",
       value:"1234567890",
+      receiver:"Bozo Finans",
       desc:"Açıklama kısmına kullanıcı adını yazman yeterli."
     };
   }
@@ -8990,6 +8333,7 @@ function getDepositAccountInfo(methodName){
     return {
       title:"USDT TRC20 Adresi",
       value:"TQ9x8mHn7Kp4sR2vB6cL1zA5yE3uD0wF12",
+      receiver:"GalaxyBet Cüzdan",
       desc:"Sadece TRC20 ağı üzerinden gönderim yapılmalıdır."
     };
   }
@@ -8998,6 +8342,7 @@ function getDepositAccountInfo(methodName){
     return {
       title:"QR Ödeme Bilgisi",
       value:"QR-ODEME-GALAXYBET-5620",
+      receiver:"GalaxyBet QR",
       desc:"Ödeme açıklamasına kullanıcı adını ekle."
     };
   }
@@ -9005,7 +8350,8 @@ function getDepositAccountInfo(methodName){
   return {
     title:"Banka IBAN Bilgisi",
     value:"TR12 0001 0002 3456 7890 1234 56",
-    desc:"Alıcı: GalaxyBet Finans - Açıklama: Kullanıcı adın"
+    receiver:"BOZO FİNANS",
+    desc:"Açıklama kısmına kullanıcı adını yaz."
   };
 }
 
@@ -9031,6 +8377,12 @@ function renderDepositPaymentStep(amount, method){
       <div class="deposit-pay-row">
         <small>Yatırım Tutarı</small>
         <b>${money(amount)}</b>
+      </div>
+
+      <div class="deposit-account-box">
+        <small>Alıcı İsmi</small>
+        <b id="depositReceiverName">${info.receiver}</b>
+        <button onclick="copyText('${info.receiver}')">Alıcıyı Kopyala</button>
       </div>
 
       <div class="deposit-account-box">
@@ -9064,7 +8416,7 @@ function submitDepositShowAccountStep(){
     maxDeposit:50000
   };
 
-  if(!amount || amount <= 0){
+  if(!Number.isFinite(amount) || amount <= 0){
     alert("Geçerli yatırım tutarı gir.");
     return;
   }
@@ -9118,149 +8470,8 @@ function confirmDepositPaid(){
   renderProfile();
 }
 
-// Eski yatırım oluştur butonlarını yeni ödeme bilgisi adımına bağla
-submitSiteDepositRequest = submitDepositShowAccountStep;
-submitSiteDepositRequestFixed = submitDepositShowAccountStep;
-
-function parseFlexibleAmount(value){
-  if(typeof value === "number") return Number.isFinite(value) ? value : NaN;
-  const raw = String(value ?? "").trim().replace(/\s+/g, "").replace(/[₺TL]/gi, "");
-  if(!raw || !/^\d+(?:[.,]\d+)*$/.test(raw)) return NaN;
-
-  const dots = (raw.match(/\./g) || []).length;
-  const commas = (raw.match(/,/g) || []).length;
-  if(dots && commas){
-    const decimalMark = raw.lastIndexOf(".") > raw.lastIndexOf(",") ? "." : ",";
-    const groupingMark = decimalMark === "." ? /,/g : /\./g;
-    return Number(raw.replace(groupingMark, "").replace(decimalMark, "."));
-  }
-
-  const mark = dots ? "." : commas ? "," : "";
-  if(!mark) return Number(raw);
-  const parts = raw.split(mark);
-  if(parts.length > 2){
-    const grouped = parts.slice(1).every(part => part.length === 3);
-    return grouped ? Number(parts.join("")) : Number(`${parts.slice(0, -1).join("")}.${parts.at(-1)}`);
-  }
-  const [whole, fraction] = parts;
-  return fraction.length === 3 && whole.length <= 3 ? Number(whole + fraction) : Number(`${whole}.${fraction}`);
-}
-
-window.parseFlexibleAmount = parseFlexibleAmount;
 window.openTawkSupport = function(){
   if(window.Tawk_API && typeof window.Tawk_API.maximize === "function") window.Tawk_API.maximize();
-};
-
-function bbFixDepositButtons(){
-  document.querySelectorAll("button").forEach(btn => {
-    const text = (btn.innerText || "").trim().toLowerCase();
-
-    if(text.includes("yatırım talebi oluştur")){
-      btn.onclick = function(e){
-        if(e){
-          e.preventDefault();
-          e.stopPropagation();
-        }
-
-        submitDepositShowAccountStep();
-        return false;
-      };
-    }
-  });
-}
-
-document.addEventListener("click", () => {
-  setTimeout(bbFixDepositButtons, 100);
-});
-
-window.addEventListener("load", () => {
-  setTimeout(bbFixDepositButtons, 400);
-});
-
-// DEPOSIT RECEIVER NAME ADDON
-getDepositAccountInfo = function(methodName){
-  const name = String(methodName || "").toLowerCase();
-
-  if(name.includes("papara")){
-    return {
-      title:"Papara Hesap Bilgisi",
-      value:"1234567890",
-      receiver:"Bozo Finans",
-      desc:"Açıklama kısmına kullanıcı adını yazman yeterli."
-    };
-  }
-
-  if(name.includes("usdt") || name.includes("trc")){
-    return {
-      title:"USDT TRC20 Adresi",
-      value:"TQ9x8mHn7Kp4sR2vB6cL1zA5yE3uD0wF12",
-      receiver:"GalaxyBet Cüzdan",
-      desc:"Sadece TRC20 ağı üzerinden gönderim yapılmalıdır."
-    };
-  }
-
-  if(name.includes("qr")){
-    return {
-      title:"QR Ödeme Bilgisi",
-      value:"QR-ODEME-GALAXYBET-5620",
-      receiver:"GalaxyBet QR",
-      desc:"Ödeme açıklamasına kullanıcı adını ekle."
-    };
-  }
-
-  return {
-    title:"Banka IBAN Bilgisi",
-    value:"TR12 0001 0002 3456 7890 1234 56",
-    receiver:"BOZO FİNANS",
-    desc:"Açıklama kısmına kullanıcı adını yaz."
-  };
-};
-
-renderDepositPaymentStep = function(amount, method){
-  const info = getDepositAccountInfo(method);
-
-  const target = document.querySelector(".deposit-form-card") || document.querySelector(".deposit-page-grid");
-
-  if(!target){
-    alert("Yatırım ekranı bulunamadı.");
-    return;
-  }
-
-  target.innerHTML = `
-    <h3>Yatırım Bilgileri</h3>
-
-    <div class="deposit-pay-step">
-      <div class="deposit-pay-row">
-        <small>Seçili Yöntem</small>
-        <b>${method}</b>
-      </div>
-
-      <div class="deposit-pay-row">
-        <small>Yatırım Tutarı</small>
-        <b>${money(amount)}</b>
-      </div>
-
-      <div class="deposit-account-box">
-        <small>Alıcı İsmi</small>
-        <b id="depositReceiverName">${info.receiver}</b>
-        <button onclick="copyText('${info.receiver}')">Alıcıyı Kopyala</button>
-      </div>
-
-      <div class="deposit-account-box">
-        <small>${info.title}</small>
-        <b id="depositAccountValue">${info.value}</b>
-        <button onclick="copyText('${info.value}')">IBAN / Hesap Kopyala</button>
-      </div>
-
-      <div class="deposit-pay-note">
-        <b>Ödeme Açıklaması</b>
-        <span>${info.desc}</span>
-      </div>
-
-      <button class="btn primary full-btn" onclick="confirmDepositPaid()">Yatırım Yaptım</button>
-      <button class="btn ghost full-btn" onclick="renderDepositSitePage()">Yöntemi / Tutarı Değiştir</button>
-    </div>
-  `;
 };
 
 // BETNEX GAME IMPORT PANEL

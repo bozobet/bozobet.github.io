@@ -206,8 +206,7 @@
   window.gbSubmitDeposit = function(){
     if(!requireUser()) return;
     const limits = typeof getPaymentLimits === "function" ? getPaymentLimits() : {minDeposit:100,maxDeposit:50000};
-    const amountInput = document.getElementById("gbDepositAmount");
-    const amount = window.parseFlexibleAmount?.(amountInput?.value);
+    const amount = parseFlexibleAmount(document.getElementById("gbDepositAmount")?.value);
     if(!Number.isFinite(amount) || amount <= 0) return alert("Geçerli yatırım tutarı gir.");
     if(amount < limits.minDeposit || amount > limits.maxDeposit) return alert(`Yatırım tutarı ${money(limits.minDeposit)} ile ${money(limits.maxDeposit)} arasında olmalı.`);
     addPaymentRequest({username:user.username,userId:user.id || user.username,type:"Yatırım",direction:"plus",amount,method:state.depositMethod,note:`${state.depositMethod} yöntemiyle yatırım talebi oluşturuldu`});
@@ -215,7 +214,7 @@
     renderDepositSitePage();
   };
 
-  window.renderDepositSitePage = function(){
+  window.renderPremiumDepositSitePage = function(){
     if(!requireUser()) return;
     const limits = typeof getPaymentLimits === "function" ? getPaymentLimits() : {minDeposit:100,maxDeposit:50000};
     const deposits = userRequests().filter(item => item.type === "Yatırım");
@@ -453,8 +452,6 @@
     `);
   };
 
-  window.renderDepositPage = window.renderDepositSitePage;
-  window.depositModal = window.renderDepositSitePage;
   window.withdrawModal = window.renderWithdrawSitePage;
 
 })();

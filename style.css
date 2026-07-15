@@ -11670,3 +11670,195 @@ body.auth-modal-open {
   .campaign-facts > div { min-height:0;padding:17px 19px;border-right:0; }
   .campaign-join-card,.campaign-rules { padding:22px 19px;border-radius:18px; }
 }
+
+/* Canonical premium header */
+.topbar {
+  padding:0 !important;
+  border-bottom-color:rgba(255,255,255,.075) !important;
+  background:linear-gradient(180deg,rgba(9,15,12,.97),rgba(5,10,8,.94)) !important;
+  box-shadow:0 12px 34px rgba(0,0,0,.22) !important;
+}
+
+.topbar-inner {
+  width:min(1440px,calc(100% - 48px));
+  height:100%;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  gap:clamp(20px,2.2vw,38px);
+}
+
+.topbar-inner > .brand-logo {
+  flex:0 0 205px !important;
+  width:205px !important;
+  min-width:205px !important;
+  height:76px !important;
+  margin:0 !important;
+  padding:0 !important;
+  justify-content:center !important;
+  overflow:hidden !important;
+  transform:none !important;
+}
+
+.topbar-inner > .brand-logo picture {
+  width:205px;
+  height:76px;
+  display:block;
+}
+
+.topbar-inner > .brand-logo .clean-logo {
+  width:205px !important;
+  min-width:205px !important;
+  max-width:205px !important;
+  height:76px !important;
+  object-fit:contain !important;
+  object-position:center !important;
+  transform:scale(2.48) !important;
+  transform-origin:center !important;
+  filter:drop-shadow(0 7px 16px rgba(101,255,53,.22)) !important;
+}
+
+.topbar-inner .nav {
+  flex:1 1 auto;
+  min-width:0;
+  justify-content:center;
+  gap:clamp(11px,1.15vw,20px) !important;
+  font-family:Inter,"Segoe UI Variable","Segoe UI",Arial,sans-serif !important;
+}
+
+.topbar-inner .nav a {
+  padding:30px 0 28px !important;
+  color:#bdc8c1 !important;
+  font-size:12px !important;
+  font-weight:780 !important;
+  letter-spacing:.025em !important;
+  white-space:nowrap;
+  transition:color .2s ease,transform .2s ease,text-shadow .2s ease !important;
+}
+
+.topbar-inner .nav a:hover,
+.topbar-inner .nav a:focus-visible { color:#fff !important; }
+
+.premium-crown-icon {
+  width:16px;
+  height:16px;
+  fill:rgba(245,196,81,.14);
+  stroke:#f5c451;
+  stroke-width:1.7;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.nav-vip { display:inline-flex;align-items:center;gap:5px;color:#f5d57b !important; }
+.nav-vip .premium-crown-icon { width:15px;height:15px;transition:transform .2s ease; }
+.nav-vip:hover .premium-crown-icon { transform:translateY(-2px) rotate(-5deg); }
+
+.topbar-inner .actions { flex:0 0 auto;gap:8px; }
+.header-account { position:relative; }
+
+.header-account-trigger {
+  height:56px;
+  min-width:252px;
+  padding:6px 10px 6px 7px;
+  display:grid;
+  grid-template-columns:42px minmax(74px,1fr) auto 16px;
+  gap:9px;
+  align-items:center;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:16px;
+  background:linear-gradient(145deg,rgba(21,32,27,.96),rgba(10,17,13,.98));
+  color:#edf3ef;
+  box-shadow:inset 0 1px rgba(255,255,255,.035),0 10px 24px rgba(0,0,0,.2);
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+
+.header-account-trigger:hover,
+.header-account.open .header-account-trigger {
+  transform:translateY(-1px);
+  border-color:rgba(101,255,53,.28);
+  box-shadow:inset 0 1px rgba(255,255,255,.05),0 14px 30px rgba(0,0,0,.28),0 0 22px rgba(101,255,53,.055);
+}
+
+.header-avatar {
+  width:42px;
+  height:42px;
+  position:relative;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(101,255,53,.27);
+  border-radius:13px;
+  background:linear-gradient(145deg,#193123,#0b1710);
+  color:#8aff62;
+  font-size:15px;
+  font-weight:950;
+  box-shadow:inset 0 0 18px rgba(101,255,53,.07);
+}
+
+.header-avatar i { position:absolute;right:-2px;bottom:-2px;width:9px;height:9px;border:2px solid #0c1410;border-radius:50%;background:#65ff35;box-shadow:0 0 8px rgba(101,255,53,.7); }
+.header-account-copy,.header-wallet { min-width:0;text-align:left; }
+.header-account-copy small,.header-account-copy strong,.header-wallet small,.header-wallet strong { display:flex;align-items:center; }
+.header-account-copy small { gap:4px;color:#bda65f;font-size:7px;font-weight:900;letter-spacing:.09em; }
+.header-account-copy small .premium-crown-icon { width:11px;height:11px; }
+.header-account-copy strong { max-width:92px;margin-top:4px;overflow:hidden;color:#f2f6f3;font-size:11px;text-overflow:ellipsis;white-space:nowrap; }
+.header-wallet { padding-left:10px;border-left:1px solid rgba(255,255,255,.07); }
+.header-wallet small { color:#67756d;font-size:7px;font-weight:900;letter-spacing:.12em; }
+.header-wallet strong { margin-top:4px;color:#8cff66;font-size:11px;white-space:nowrap; }
+.header-account-chevron { width:16px;height:16px;fill:none;stroke:#728078;stroke-width:1.8;transition:transform .2s ease; }
+.header-account.open .header-account-chevron { transform:rotate(180deg); }
+
+.header-account-menu {
+  width:252px;
+  padding:8px;
+  position:absolute;
+  top:calc(100% + 10px);
+  right:0;
+  z-index:500;
+  visibility:hidden;
+  opacity:0;
+  transform:translateY(-7px) scale(.98);
+  border:1px solid rgba(101,255,53,.14);
+  border-radius:17px;
+  background:linear-gradient(165deg,#121d18,#080e0b 72%);
+  box-shadow:0 24px 60px rgba(0,0,0,.48),inset 0 1px rgba(255,255,255,.035);
+  transition:opacity .18s ease,transform .18s ease,visibility .18s;
+}
+
+.header-account.open .header-account-menu { visibility:visible;opacity:1;transform:none; }
+.header-account-menu-head { margin-bottom:6px;padding:8px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.065); }
+.header-account-menu-head .header-avatar { width:38px;height:38px;border-radius:12px; }
+.header-account-menu-head small,.header-account-menu-head strong { display:block; }
+.header-account-menu-head small { color:#65ff35;font-size:7px;font-weight:900;letter-spacing:.12em; }
+.header-account-menu-head strong { margin-top:4px;color:#edf3ef;font-size:11px; }
+.header-account-menu > button { width:100%;height:39px;padding:0 10px;display:flex;align-items:center;justify-content:space-between;border:0;border-radius:10px;background:transparent;color:#a9b5ae;font-size:10px;font-weight:800;transition:background .18s ease,color .18s ease,transform .18s ease; }
+.header-account-menu > button:hover { padding-left:13px;background:rgba(101,255,53,.075);color:#eaffE4; }
+.header-account-menu > button span { display:flex;align-items:center;gap:7px; }
+.header-account-menu > button .premium-crown-icon { width:13px;height:13px; }
+.header-account-menu > button b { color:#627068;font-size:14px; }
+.header-account-menu > .header-account-logout { margin-top:5px;border-top:1px solid rgba(255,255,255,.055);border-radius:0 0 10px 10px;color:#d88b8b; }
+
+.vip-crown { display:grid;place-items:center; }
+.vip-crown .premium-crown-icon { width:58px;height:58px;filter:drop-shadow(0 8px 18px rgba(245,196,81,.3)); }
+
+@media (max-width:1180px) and (min-width:761px) {
+  .topbar-inner { width:calc(100% - 28px);gap:16px; }
+  .topbar-inner > .brand-logo,.topbar-inner > .brand-logo picture,.topbar-inner > .brand-logo .clean-logo { width:170px !important;min-width:170px !important;max-width:170px !important; }
+  .topbar-inner .nav { gap:11px !important; }
+  .topbar-inner .nav a { font-size:10px !important; }
+  .header-account-trigger { min-width:190px;grid-template-columns:38px minmax(60px,1fr) auto 14px;gap:7px; }
+  .header-avatar { width:38px;height:38px; }
+  .header-wallet { display:none; }
+}
+
+@media (max-width:760px) {
+  .topbar.mobile-header { height:calc(68px + env(safe-area-inset-top)) !important;min-height:calc(68px + env(safe-area-inset-top)) !important; }
+  .topbar.mobile-header .topbar-inner { width:100%;height:100%;padding:env(safe-area-inset-top) max(9px,env(safe-area-inset-right)) 0 max(9px,env(safe-area-inset-left));position:relative; }
+  .topbar.mobile-header .topbar-inner > .mobile-header-logo { width:136px !important;min-width:136px !important;max-width:136px !important;height:58px !important;top:calc(env(safe-area-inset-top) + 5px) !important;left:50% !important;position:absolute !important;transform:translateX(-50%) !important; }
+  .topbar.mobile-header .mobile-header-logo picture,.topbar.mobile-header .mobile-header-logo .clean-logo { width:136px !important;min-width:136px !important;max-width:136px !important;height:58px !important; }
+  .topbar.mobile-header .mobile-header-logo .clean-logo { transform:scale(2.48) !important;transform-origin:center !important; }
+  .topbar.mobile-header .mobile-header-actions { position:absolute !important;top:calc(env(safe-area-inset-top) + 15px) !important;right:max(8px,env(safe-area-inset-right)) !important;margin:0 !important;transform:none !important; }
+  .topbar.mobile-header .header-account-trigger { width:42px;min-width:42px;height:42px;padding:0;display:grid;grid-template-columns:1fr;border-radius:13px; }
+  .topbar.mobile-header .header-account-trigger .header-avatar { width:40px;height:40px; }
+  .topbar.mobile-header .header-account-copy,.topbar.mobile-header .header-wallet,.topbar.mobile-header .header-account-chevron { display:none; }
+  .topbar.mobile-header .header-account-menu { width:min(252px,calc(100vw - 20px));right:0; }
+  .topbar.mobile-header .notification-bell { width:38px;height:38px; }
+}

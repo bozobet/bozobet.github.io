@@ -88,6 +88,7 @@
     </section>
   </main>
 
+<script src="amount-utils.js?v=1"></script>
 <script>
 let selectedMethod = "Havale / EFT";
 
@@ -96,23 +97,7 @@ function money(n){
     style:"currency",
     currency:"TRY",
     maximumFractionDigits:0
-  }).format(Number(n || 0));
-}
-
-function parseFlexibleAmount(value){
-  const raw = String(value ?? "").trim().replace(/\s+/g, "").replace(/[₺TL]/gi, "");
-  if(!raw || !/^\d+(?:[.,]\d+)*$/.test(raw)) return NaN;
-  const dots = (raw.match(/\./g) || []).length;
-  const commas = (raw.match(/,/g) || []).length;
-  if(dots && commas){
-    const decimalMark = raw.lastIndexOf(".") > raw.lastIndexOf(",") ? "." : ",";
-    return Number(raw.replace(decimalMark === "." ? /,/g : /\./g, "").replace(decimalMark, "."));
-  }
-  const mark = dots ? "." : commas ? "," : "";
-  if(!mark) return Number(raw);
-  const parts = raw.split(mark);
-  if(parts.length > 2) return parts.slice(1).every(part => part.length === 3) ? Number(parts.join("")) : Number(`${parts.slice(0,-1).join("")}.${parts.at(-1)}`);
-  return parts[1].length === 3 && parts[0].length <= 3 ? Number(parts.join("")) : Number(`${parts[0]}.${parts[1]}`);
+  }).format(parseFlexibleAmount(n));
 }
 
 function getUser(){
@@ -189,7 +174,7 @@ function init(){
     const amount = parseFlexibleAmount(document.getElementById("depositAmountStandalone").value);
     const l = getPaymentLimits();
 
-    if(!amount || amount <= 0){
+    if(!Number.isFinite(amount) || amount <= 0){
       notify("Geçerli yatırım tutarı gir.", true);
       return;
     }
