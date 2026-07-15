@@ -176,7 +176,7 @@
   }
 
   function mobileBanner() {
-    const banners = window.GALAXYBET_ASSETS?.slider || window.GALAXYBET_ASSETS?.banners || [];
+    const banners = window.GALAXYBET_ASSETS?.mobileSlider || window.GALAXYBET_ASSETS?.slider || window.GALAXYBET_ASSETS?.banners || [];
 
     return `
       <section class="mobile-hero-slider" id="mobileHeroSlider" aria-label="Kampanyalar">
@@ -189,9 +189,6 @@
         <button class="hero-arrow hero-next" type="button" aria-label="Sonraki banner" onclick="setMobileHeroSlide(window.bozobetMobileHeroIndex + 1)">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
         </button>
-        <div class="mobile-hero-dots" aria-label="Banner seçimi">
-          ${banners.map((_, index) => `<button class="${index === 0 ? "active" : ""}" type="button" aria-label="${index + 1}. banner" onclick="setMobileHeroSlide(${index})"></button>`).join("")}
-        </div>
       </section>`;
   }
 

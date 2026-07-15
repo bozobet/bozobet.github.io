@@ -207,13 +207,8 @@
     if(!requireUser()) return;
     const limits = typeof getPaymentLimits === "function" ? getPaymentLimits() : {minDeposit:100,maxDeposit:50000};
     const amountInput = document.getElementById("gbDepositAmount");
-    const rawAmount = String(amountInput?.value || "").trim();
-    const normalizedAmount = rawAmount.includes(",")
-      ? rawAmount.replace(/\./g, "").replace(",", ".")
-      : rawAmount.replace(/\s/g, "");
-    const amount = Number.isFinite(amountInput?.valueAsNumber)
-      ? amountInput.valueAsNumber
-      : Number(normalizedAmount);
+    const amount = window.parseFlexibleAmount?.(amountInput?.value);
+    if(!Number.isFinite(amount) || amount <= 0) return alert("Geçerli yatırım tutarı gir.");
     if(amount < limits.minDeposit || amount > limits.maxDeposit) return alert(`Yatırım tutarı ${money(limits.minDeposit)} ile ${money(limits.maxDeposit)} arasında olmalı.`);
     addPaymentRequest({username:user.username,userId:user.id || user.username,type:"Yatırım",direction:"plus",amount,method:state.depositMethod,note:`${state.depositMethod} yöntemiyle yatırım talebi oluşturuldu`});
     alert("Yatırım talebin güvenle oluşturuldu.");
@@ -235,7 +230,7 @@
         </div>
         <aside class="gb-payment-form">
           <div class="gb-form-head"><i>${svg("deposit")}</i><div><small>SEÇİLİ YÖNTEM</small><strong id="gbDepositSelected">${state.depositMethod}</strong></div></div>
-          <label><span>Yatırım tutarı</span><div class="gb-money-input"><b>₺</b><input id="gbDepositAmount" type="number" min="${limits.minDeposit}" max="${limits.maxDeposit}" placeholder="0,00"></div></label>
+          <label><span>Yatırım tutarı</span><div class="gb-money-input"><b>₺</b><input id="gbDepositAmount" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00"></div></label>
           <div class="gb-quick-amounts">${[500,1000,2500,5000].map(v => `<button onclick="document.getElementById('gbDepositAmount').value=${v}">₺${v.toLocaleString("tr-TR")}</button>`).join("")}</div>
           <div class="gb-limit-cards"><div><small>MİNİMUM</small><strong>${money(limits.minDeposit)}</strong></div><div><small>MAKSİMUM</small><strong>${money(limits.maxDeposit)}</strong></div></div>
           <div class="gb-secure-note">${svg("shield")}<span>Ödemen uçtan uca güvenli şekilde işlenir.</span></div>
@@ -383,12 +378,15 @@
     `);
   };
 
-  window.gbSupportChannel = function(channel){ alert(`${channel} destek kanalı yönetim panelinden yapılandırıldığında burada açılacak.`); };
+  window.gbSupportChannel = function(channel){
+    if(channel === "Canlı destek") return window.openTawkSupport?.();
+    alert(`${channel} destek kanalı yönetim panelinden yapılandırıldığında burada açılacak.`);
+  };
   window.renderSupport = function(){
     const tickets = user ? list("getSupportTickets").filter(item => item.username === user.username).sort((a,b) => Number(b.id || 0) - Number(a.id || 0)) : [];
     accountPage("support", "7/24 YARDIM", "Destek merkezi", "İhtiyacın olan yardıma en hızlı kanaldan ulaş.", `
       <section class="gb-support-feature">
-        <div><i>${svg("support")}</i><span>7/24 CANLI DESTEK</span><h2>Gerçek bir destek uzmanıyla görüş</h2><p>Hesap ve finans işlemlerinde öncelikli destek ekibimiz yanında.</p><button class="gb-primary-btn" onclick="gbSupportChannel('Canlı destek')">Görüşmeyi Başlat ${svg("arrow")}</button></div>
+        <div><i>${svg("support")}</i><span>7/24 CANLI DESTEK</span><h2>Gerçek bir destek uzmanıyla görüş</h2><p>Hesap ve finans işlemlerinde öncelikli destek ekibimiz yanında.</p><button class="gb-primary-btn" onclick="openTawkSupport()">Görüşmeyi Başlat ${svg("arrow")}</button></div>
         <strong>ORTALAMA YANIT<em>&lt; 2 dk</em></strong>
       </section>
       <section class="gb-contact-grid">

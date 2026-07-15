@@ -11514,3 +11514,159 @@ body.auth-modal-open {
   .campaign-card-footer { align-items:flex-end; }
   .campaign-card-footer p { font-size:10px;line-height:1.4; }
 }
+
+/* GalaxyBet final responsive polish. */
+.hero-slider > .hero-dots,
+.mobile-hero-slider > .mobile-hero-dots {
+  display:none!important;
+}
+
+@media (min-width:761px) {
+  .topbar {
+    padding-left:24px!important;
+  }
+
+  .topbar > .brand-logo {
+    margin-left:0!important;
+    transform:none!important;
+  }
+
+  .topbar > .brand-logo .clean-logo {
+    transform:scale(1.86)!important;
+  }
+
+  .topbar .nav {
+    font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI Variable","Segoe UI",sans-serif!important;
+  }
+
+  .topbar .nav a {
+    position:relative;
+    padding:27px 0 25px;
+    color:#eef5f0;
+    font-size:13px;
+    font-weight:800!important;
+    letter-spacing:.018em!important;
+    opacity:.96;
+    transition:color .22s ease,transform .22s ease,text-shadow .22s ease;
+  }
+
+  .topbar .nav a::after {
+    content:"";
+    position:absolute;
+    right:50%;
+    bottom:17px;
+    left:50%;
+    height:2px;
+    border-radius:999px;
+    background:linear-gradient(90deg,#b5ff72,#49ef42);
+    box-shadow:0 0 12px rgba(101,255,53,.58);
+    transition:right .24s ease,left .24s ease;
+  }
+
+  .topbar .nav a:hover,
+  .topbar .nav a:focus-visible {
+    color:#fff;
+    transform:translateY(-1px);
+    text-shadow:0 0 16px rgba(101,255,53,.3);
+  }
+
+  .topbar .nav a:hover::after,
+  .topbar .nav a:focus-visible::after {
+    right:0;
+    left:0;
+  }
+
+  .hero-slider {
+    aspect-ratio:192 / 65!important;
+    max-height:650px!important;
+  }
+}
+
+@media (max-width:760px) {
+  .topbar.mobile-header .mobile-header-logo,
+  .topbar.mobile-header .mobile-header-logo picture,
+  .topbar.mobile-header .mobile-header-logo .clean-logo {
+    width:110px!important;
+    min-width:110px!important;
+    max-width:110px!important;
+  }
+
+  .topbar.mobile-header .mobile-header-logo .clean-logo {
+    transform:scale(3)!important;
+    transform-origin:center!important;
+  }
+}
+
+.campaign-detail-page {
+  width:min(1220px,100%);
+  margin:24px auto 70px;
+}
+
+.campaign-back {
+  margin:0 0 16px;
+  padding:9px 0;
+  border:0;
+  background:transparent;
+  color:#9da9a2;
+  font-weight:800;
+  transition:color .2s ease,transform .2s ease;
+}
+
+.campaign-back:hover { color:#65ff35;transform:translateX(-3px); }
+
+.campaign-detail-hero {
+  position:relative;
+  overflow:hidden;
+  min-height:360px;
+  display:grid;
+  align-items:end;
+  border:1px solid rgba(101,255,53,.2);
+  border-radius:26px;
+  background:#030604;
+  box-shadow:0 28px 70px rgba(0,0,0,.4);
+}
+
+.campaign-detail-hero::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,rgba(2,5,3,.98) 0%,rgba(2,5,3,.78) 37%,rgba(2,5,3,.06) 72%);
+}
+
+.campaign-detail-hero img { position:absolute;inset:0;width:100%;height:100%;object-fit:cover; }
+.campaign-detail-hero > div { position:relative;z-index:1;width:min(560px,60%);padding:44px; }
+.campaign-detail-hero span,
+.campaign-join-card > span,
+.campaign-rules > span { color:#65ff35;font-size:11px;font-weight:900;letter-spacing:1.8px; }
+.campaign-detail-hero h1 { margin:8px 0 12px;color:#fff;font-size:clamp(30px,4vw,54px);line-height:1.04; }
+.campaign-detail-hero p { margin:0;color:#bec8c2;font-size:15px;line-height:1.7; }
+
+.campaign-detail-grid { margin-top:22px;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(310px,.75fr);gap:22px; }
+.campaign-facts,
+.campaign-join-card,
+.campaign-rules { border:1px solid rgba(255,255,255,.09);border-radius:22px;background:linear-gradient(155deg,rgba(18,27,23,.97),rgba(7,12,10,.98));box-shadow:0 18px 46px rgba(0,0,0,.26); }
+.campaign-facts { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:hidden; }
+.campaign-facts > div { min-height:102px;padding:21px 24px;display:flex;flex-direction:column;gap:8px;border-right:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07); }
+.campaign-facts span { color:#7f8d85;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase; }
+.campaign-facts strong { color:#f6faf7;font-size:15px;line-height:1.45; }
+.campaign-join-card { padding:28px; }
+.campaign-join-card h2,.campaign-rules h2 { margin:8px 0 18px;color:#fff;font-size:23px; }
+.campaign-join-card ol { margin:0 0 24px;padding-left:21px;color:#b5c0b9;line-height:1.65; }
+.campaign-join-card li + li { margin-top:10px; }
+.campaign-join-card .campaign-cta { width:100%; }
+.campaign-rules { margin-top:22px;padding:30px; }
+.campaign-rules ul { margin:0;padding-left:20px;display:grid;gap:11px;color:#aeb9b2;font-size:14px;line-height:1.55; }
+.campaign-rules li::marker { color:#65ff35; }
+
+@media (max-width:760px) {
+  .campaign-detail-page { margin:14px auto 110px; }
+  .campaign-detail-hero { min-height:390px;border-radius:19px;align-items:end; }
+  .campaign-detail-hero::after { background:linear-gradient(0deg,rgba(2,5,3,.98) 0%,rgba(2,5,3,.76) 54%,rgba(2,5,3,.12) 100%); }
+  .campaign-detail-hero img { object-position:center; }
+  .campaign-detail-hero > div { width:100%;padding:24px 20px; }
+  .campaign-detail-hero h1 { font-size:30px; }
+  .campaign-detail-grid { grid-template-columns:1fr;gap:15px; }
+  .campaign-facts { grid-template-columns:1fr; }
+  .campaign-facts > div { min-height:0;padding:17px 19px;border-right:0; }
+  .campaign-join-card,.campaign-rules { padding:22px 19px;border-radius:18px; }
+}

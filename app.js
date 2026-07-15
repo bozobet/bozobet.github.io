@@ -847,8 +847,15 @@ function shell(content){
 
 const APP_ROUTES = new Set(["home", "sports", "live-casino", "casino", "slot", "promotions", "virtual", "vip", "support"]);
 
+function isValidAppRoute(route){
+  if(APP_ROUTES.has(route)) return true;
+  const match = /^kampanya-(\d+)$/.exec(route || "");
+  const campaignCount = window.GALAXYBET_ASSETS?.campaigns?.length || 0;
+  return Boolean(match && Number(match[1]) >= 1 && Number(match[1]) <= campaignCount);
+}
+
 function renderAppRoute(route){
-  const target = APP_ROUTES.has(route) ? route : "home";
+  const target = isValidAppRoute(route) ? route : "home";
   document.body.dataset.appRoute = target;
 
   if(target === "sports") renderSports();
@@ -859,6 +866,7 @@ function renderAppRoute(route){
   else if(target === "slot" && typeof renderSlot === "function") renderSlot();
   else if(target === "virtual" && typeof renderVirtualGames === "function") renderVirtualGames();
   else if(target === "promotions") renderPromotions();
+  else if(target.startsWith("kampanya-")) renderCampaignDetail(Number(target.slice(9)) - 1);
   else if(target === "vip") renderVip();
   else if(target === "support") renderSupport();
   else renderHome();
@@ -868,7 +876,7 @@ function renderAppRoute(route){
 
 function navigateApp(route, event){
   event?.preventDefault();
-  const target = APP_ROUTES.has(route) ? route : "home";
+  const target = isValidAppRoute(route) ? route : "home";
   const hash = `#${target}`;
   if(location.hash !== hash) history.pushState({galaxybetRoute:target}, "", hash);
   renderAppRoute(target);
@@ -879,24 +887,21 @@ function navigateApp(route, event){
 window.navigateApp = navigateApp;
 window.addEventListener("popstate", () => {
   const route = location.hash.slice(1);
-  if(APP_ROUTES.has(route)) renderAppRoute(route);
+  if(isValidAppRoute(route)) renderAppRoute(route);
 });
 window.addEventListener("load", () => {
   const route = location.hash.slice(1);
-  if(APP_ROUTES.has(route) && route !== "home") setTimeout(() => renderAppRoute(route), 0);
+  if(isValidAppRoute(route) && route !== "home") setTimeout(() => renderAppRoute(route), 0);
 });
 
 function renderHome(){
-  const banners = window.GALAXYBET_ASSETS?.slider || window.GALAXYBET_ASSETS?.banners || [];
+  const banners = window.GALAXYBET_ASSETS?.desktopSlider || window.GALAXYBET_ASSETS?.slider || window.GALAXYBET_ASSETS?.banners || [];
+  const mobileBanners = window.GALAXYBET_ASSETS?.mobileSlider || window.GALAXYBET_ASSETS?.slider || window.GALAXYBET_ASSETS?.banners || [];
   const promotionImages = window.GALAXYBET_ASSETS?.promotions || [];
   const bannerSlides = banners.map((src, index) => `
       <img class="hero-slide-img${index === 0 ? " active" : ""}" src="${src}" alt="GalaxyBet Banner ${index + 1}">`).join("");
-  const bannerDots = banners.map((_, index) => `
-        <span class="${index === 0 ? "active" : ""}" role="button" tabindex="0" aria-label="${index + 1}. banner" onclick="setHeroSlide(${index})"></span>`).join("");
-  const mobileBannerSlides = banners.map((src, index) => `
+  const mobileBannerSlides = mobileBanners.map((src, index) => `
         <img class="mobile-hero-slide${index === 0 ? " active" : ""}" src="${src}" alt="GalaxyBet Banner ${index + 1}">`).join("");
-  const mobileBannerDots = banners.map((_, index) => `
-        <button class="${index === 0 ? "active" : ""}" type="button" aria-label="${index + 1}. banner" onclick="setMobileHeroSlide(${index})"></button>`).join("");
 
   document.getElementById("app").innerHTML = shell(`
     <section class="hero hero-slider" id="heroSlider">
@@ -907,9 +912,6 @@ function renderHome(){
       <button class="hero-arrow hero-next" type="button" aria-label="Sonraki banner" onclick="heroNext()">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
       </button>
-      <div class="hero-dots">
-        ${bannerDots}
-      </div>
     </section>
 
     <section class="mobile-hero-slider" id="mobileHeroSlider" aria-label="Kampanyalar">
@@ -922,9 +924,6 @@ function renderHome(){
       <button class="hero-arrow hero-next" type="button" aria-label="Sonraki banner" onclick="setMobileHeroSlide(window.bozobetMobileHeroIndex + 1)">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
       </button>
-      <div class="mobile-hero-dots" aria-label="Banner seçimi">
-        ${mobileBannerDots}
-      </div>
     </section>
 
     <section class="mobile-promo-strip" aria-label="Promosyonlar">
@@ -1576,11 +1575,59 @@ function renderPromotions(){
           </div>
           <div class="campaign-card-footer">
             <div><span>GALAXYBET ÖZEL</span><strong>${campaign.title}</strong><p>${campaign.description}</p></div>
-            <button type="button" class="campaign-cta" onclick="registerModal()">Katıl <span aria-hidden="true">→</span></button>
+            <button type="button" class="campaign-cta" onclick="navigateApp('kampanya-${index + 1}')">Detaylar <span aria-hidden="true">→</span></button>
           </div>
         </article>`;
       }).join("")}
     </section>
+  `);
+}
+
+function campaignTerms(campaign, index){
+  const percent = campaign.title.match(/%(\d+)/)?.[1];
+  const isFreeSpin = /free spin/i.test(campaign.title);
+  const isLoss = /kayıp/i.test(campaign.title);
+  const isReferral = /arkadaş/i.test(campaign.title);
+  return {
+    rate:percent ? `%${percent}` : isFreeSpin ? "250 Free Spin" : "Özel paket",
+    validity:"31 Aralık 2026, 23:59'a kadar",
+    minimum:isReferral ? "Davet edilen üye için ₺500" : index > 11 ? "₺500" : "₺250",
+    maximum:isFreeSpin ? "250 Free Spin + ₺5.000" : isLoss ? "₺10.000" : "₺15.000",
+    wagering:/çevrimsiz/i.test(campaign.title) ? "Ana para 1x; bonus için ek çevrim yoktur." : isLoss ? "Bonus tutarı 8x çevrime tabidir." : "Bonus tutarı 15x çevrime tabidir.",
+    games:/spor/i.test(campaign.title) ? "Spor bahisleri ve canlı bahisler" : isFreeSpin ? "Kampanya sayfasında belirtilen seçili slot oyunları" : "Seçili slot, casino ve canlı casino oyunları"
+  };
+}
+
+function renderCampaignDetail(index){
+  const campaigns = window.GALAXYBET_ASSETS?.campaigns || [];
+  const details = window.GALAXYBET_ASSETS?.campaignDetails || [];
+  const campaign = details[index];
+  const image = campaigns[index];
+  if(!campaign || !image){ navigateApp("promotions");return; }
+  const terms = campaignTerms(campaign, index);
+  const rows = [
+    ["Bonus adı", campaign.title],
+    ["Bonus oranı", terms.rate],
+    ["Geçerlilik tarihi", terms.validity],
+    ["Minimum yatırım", terms.minimum],
+    ["Maksimum bonus", terms.maximum],
+    ["Çevrim şartı", terms.wagering],
+    ["Geçerli oyunlar", terms.games]
+  ];
+
+  document.getElementById("app").innerHTML = shell(`
+    <article class="campaign-detail-page">
+      <button class="campaign-back" type="button" onclick="navigateApp('promotions')">← Tüm kampanyalar</button>
+      <section class="campaign-detail-hero">
+        <img src="${image}" alt="${campaign.title}" decoding="async">
+        <div><span>GALAXYBET KAMPANYA ${index + 1}</span><h1>${campaign.title}</h1><p>${campaign.description}</p></div>
+      </section>
+      <section class="campaign-detail-grid">
+        <div class="campaign-facts">${rows.map(([label,value]) => `<div><span>${label}</span><strong>${value}</strong></div>`).join("")}</div>
+        <aside class="campaign-join-card"><span>NASIL KATILIR?</span><h2>Avantajını üç adımda kullan</h2><ol><li>GalaxyBet hesabına giriş yap veya ücretsiz üye ol.</li><li>Kampanya limitlerine uygun yatırımını tamamla.</li><li>Canlı destek üzerinden kampanya adını belirterek bonusunu talep et.</li></ol><button class="campaign-cta" type="button" onclick="${user ? "openTawkSupport()" : "registerModal()"}">${user ? "Canlı Destek" : "Üye Ol"} <span>→</span></button></aside>
+      </section>
+      <section class="campaign-rules"><span>KURALLAR</span><h2>Kampanya koşulları</h2><ul><li>Kampanya yalnızca bir gerçek kişi ve bir hesap için kullanılabilir.</li><li>Bonus talebi yatırım tamamlandıktan sonra, oyun başlamadan önce iletilmelidir.</li><li>Çevrim süresince bonus bakiyesi farklı bir kampanyayla birleştirilemez.</li><li>Minimum oran, katkı yüzdeleri ve oyun kısıtları kampanya türüne göre uygulanır.</li><li>Kötüye kullanım, çoklu hesap veya eşleşen ödeme bilgileri bonusun iptaline neden olur.</li></ul></section>
+    </article>
   `);
 }
 
@@ -2720,7 +2767,7 @@ function submitDepositRequest(){
     return;
   }
 
-  const amount = Number(document.getElementById("depositAmount")?.value || 0);
+  const amount = parseFlexibleAmount(document.getElementById("depositAmount")?.value);
 
   if(!amount || amount <= 0){
     alert("Geçerli yatırım tutarı gir.");
@@ -2802,7 +2849,7 @@ function depositModal(){
 
         <label class="field">
           <span>Yatırım Tutarı</span>
-          <input id="depositAmount" type="number" placeholder="Örn: 1000">
+          <input id="depositAmount" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn: 1000">
         </label>
 
         <label class="field">
@@ -5881,7 +5928,7 @@ function renderDepositPage(){
 
         <label class="field">
           <span>Yatırım Tutarı</span>
-          <input id="depositPageAmount" type="number" placeholder="${l.minDeposit} - ${l.maxDeposit}">
+          <input id="depositPageAmount" type="text" inputmode="decimal" autocomplete="off" placeholder="${l.minDeposit} - ${l.maxDeposit}">
         </label>
 
         <div class="deposit-limit-box">
@@ -5912,7 +5959,7 @@ function submitDepositPageRequest(){
     return;
   }
 
-  const amount = Number(document.getElementById("depositPageAmount")?.value || 0);
+  const amount = parseFlexibleAmount(document.getElementById("depositPageAmount")?.value);
   const l = getPaymentLimits();
 
   if(!amount || amount <= 0){
@@ -6121,7 +6168,7 @@ function renderDepositSitePageLegacy(){
 
         <label class="field">
           <span>Yatırım Tutarı</span>
-          <input id="siteDepositAmount" type="number" placeholder="${l.minDeposit} - ${l.maxDeposit}">
+          <input id="siteDepositAmount" type="text" inputmode="decimal" autocomplete="off" placeholder="${l.minDeposit} - ${l.maxDeposit}">
         </label>
 
         <div class="deposit-limit-box">
@@ -6153,7 +6200,7 @@ function submitSiteDepositRequest(){
     return;
   }
 
-  const amount = Number(document.getElementById("siteDepositAmount")?.value || 0);
+  const amount = parseFlexibleAmount(document.getElementById("siteDepositAmount")?.value);
   const l = typeof getPaymentLimits === "function" ? getPaymentLimits() : {
     minDeposit:100,
     maxDeposit:50000
@@ -6280,7 +6327,7 @@ function renderDepositSitePage(){
 
         <label class="field">
           <span>Yatırım Tutarı</span>
-          <input id="siteDepositAmount" type="number" placeholder="${l.minDeposit} - ${l.maxDeposit}">
+          <input id="siteDepositAmount" type="text" inputmode="decimal" autocomplete="off" placeholder="${l.minDeposit} - ${l.maxDeposit}">
         </label>
 
         <div class="deposit-limit-box">
@@ -6323,7 +6370,7 @@ function submitSiteDepositRequestFixed(){
     return;
   }
 
-  const amount = Number(document.getElementById("siteDepositAmount")?.value || 0);
+  const amount = parseFlexibleAmount(document.getElementById("siteDepositAmount")?.value);
   const l = typeof getPaymentLimits === "function" ? getPaymentLimits() : {
     minDeposit:100,
     maxDeposit:50000
@@ -6982,7 +7029,7 @@ renderDepositSitePage = function(){
 
         <label class="field">
           <span>Yatırım Tutarı</span>
-          <input id="siteDepositAmount" type="number" placeholder="${l.minDeposit} - ${l.maxDeposit}">
+          <input id="siteDepositAmount" type="text" inputmode="decimal" autocomplete="off" placeholder="${l.minDeposit} - ${l.maxDeposit}">
         </label>
 
         <div class="deposit-limit-box">
@@ -9009,7 +9056,7 @@ function submitDepositShowAccountStep(){
     return;
   }
 
-  const amount = Number(document.getElementById("siteDepositAmount")?.value || 0);
+  const amount = parseFlexibleAmount(document.getElementById("siteDepositAmount")?.value);
   const method = getSelectedDepositMethodName();
 
   const l = typeof getPaymentLimits === "function" ? getPaymentLimits() : {
@@ -9074,6 +9121,35 @@ function confirmDepositPaid(){
 // Eski yatırım oluştur butonlarını yeni ödeme bilgisi adımına bağla
 submitSiteDepositRequest = submitDepositShowAccountStep;
 submitSiteDepositRequestFixed = submitDepositShowAccountStep;
+
+function parseFlexibleAmount(value){
+  if(typeof value === "number") return Number.isFinite(value) ? value : NaN;
+  const raw = String(value ?? "").trim().replace(/\s+/g, "").replace(/[₺TL]/gi, "");
+  if(!raw || !/^\d+(?:[.,]\d+)*$/.test(raw)) return NaN;
+
+  const dots = (raw.match(/\./g) || []).length;
+  const commas = (raw.match(/,/g) || []).length;
+  if(dots && commas){
+    const decimalMark = raw.lastIndexOf(".") > raw.lastIndexOf(",") ? "." : ",";
+    const groupingMark = decimalMark === "." ? /,/g : /\./g;
+    return Number(raw.replace(groupingMark, "").replace(decimalMark, "."));
+  }
+
+  const mark = dots ? "." : commas ? "," : "";
+  if(!mark) return Number(raw);
+  const parts = raw.split(mark);
+  if(parts.length > 2){
+    const grouped = parts.slice(1).every(part => part.length === 3);
+    return grouped ? Number(parts.join("")) : Number(`${parts.slice(0, -1).join("")}.${parts.at(-1)}`);
+  }
+  const [whole, fraction] = parts;
+  return fraction.length === 3 && whole.length <= 3 ? Number(whole + fraction) : Number(`${whole}.${fraction}`);
+}
+
+window.parseFlexibleAmount = parseFlexibleAmount;
+window.openTawkSupport = function(){
+  if(window.Tawk_API && typeof window.Tawk_API.maximize === "function") window.Tawk_API.maximize();
+};
 
 function bbFixDepositButtons(){
   document.querySelectorAll("button").forEach(btn => {

@@ -59,6 +59,8 @@
     // Keep `banners` as a compatibility alias for the six homepage slides.
     banners: Object.freeze(sliderFiles.map(assetUrl)),
     slider: Object.freeze(sliderFiles.map(assetUrl)),
+    desktopSlider: Object.freeze(sliderFiles.map(assetUrl)),
+    mobileSlider: Object.freeze(sliderFiles.map(assetUrl)),
     promotions: Object.freeze(promotionFiles.map(assetUrl)),
     campaigns: Object.freeze(campaignFiles.map(assetUrl)),
     campaignDetails: Object.freeze(campaignDetails.map(item => Object.freeze(item)))
