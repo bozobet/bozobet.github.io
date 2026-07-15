@@ -819,10 +819,19 @@ function premiumCrownIcon(){
   return `<svg class="premium-crown-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7.5 7.8 11 12 4l4.2 7L21 7.5l-1.6 10H4.6L3 7.5Z"/><path d="M5 20h14"/></svg>`;
 }
 
+function escapeAccountText(value){
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 function headerAccountHtml(){
   if(!user) return "";
-  const username = esc(user.username || "Oyuncu");
-  const initial = esc((user.username || "O").slice(0, 1).toUpperCase());
+  const username = escapeAccountText(user.username || "Oyuncu");
+  const initial = escapeAccountText((user.username || "O").slice(0, 1).toUpperCase());
   return `
     <div class="header-account">
       <button class="header-account-trigger" type="button" onclick="toggleHeaderAccountMenu(event)" aria-haspopup="menu" aria-expanded="false">
