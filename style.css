@@ -11862,3 +11862,117 @@ body.auth-modal-open {
   .topbar.mobile-header .header-account-menu { width:min(252px,calc(100vw - 20px));right:0; }
   .topbar.mobile-header .notification-bell { width:38px;height:38px; }
 }
+
+/* Desktop-only header and natural-ratio banner layout. Mobile slider rules stay untouched. */
+@media (min-width:761px) {
+  .topbar-inner {
+    width:min(1440px,calc(100% - 32px));
+    min-width:0;
+    box-sizing:border-box;
+  }
+
+  .topbar-inner .actions {
+    min-width:0;
+    margin:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:nowrap;
+  }
+
+  .topbar-inner .actions > .btn {
+    min-width:0;
+    max-width:100%;
+    white-space:nowrap;
+  }
+
+  .hero-slider {
+    width:100% !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    aspect-ratio:2172 / 724 !important;
+    overflow:hidden;
+  }
+
+  .hero-slider .hero-slide-img {
+    width:100% !important;
+    height:auto !important;
+    min-height:0 !important;
+    position:absolute;
+    inset:0 auto auto 0 !important;
+    transform:none !important;
+    object-fit:unset !important;
+    object-position:unset !important;
+  }
+}
+
+@media (min-width:761px) and (max-width:1180px) {
+  .topbar-inner { gap:12px; }
+  .topbar-inner > .brand-logo,
+  .topbar-inner > .brand-logo picture,
+  .topbar-inner > .brand-logo .clean-logo {
+    width:clamp(138px,16vw,170px) !important;
+    min-width:clamp(138px,16vw,170px) !important;
+    max-width:clamp(138px,16vw,170px) !important;
+  }
+  .topbar-inner .nav { gap:clamp(7px,.8vw,11px) !important; }
+  .topbar-inner .nav a { font-size:clamp(9px,.9vw,10px) !important; }
+  .topbar-inner .actions .btn { padding-inline:12px !important;font-size:11px !important; }
+}
+
+@media (min-width:761px) and (max-width:960px) {
+  .topbar-inner { justify-content:space-between; }
+  .topbar-inner .nav { display:none !important; }
+  .topbar-inner .actions { margin-left:auto; }
+}
+
+/* Dynamic deposit account and IBAN administration. */
+.dynamic-deposit-head { display:flex;align-items:center;gap:14px;margin-bottom:18px; }
+.dynamic-deposit-head small { display:block;color:#718078;font-size:9px;font-weight:900;letter-spacing:.13em; }
+.dynamic-deposit-head h3 { margin:5px 0 0;color:#f4f8f5; }
+.deposit-bank-logo { width:38px;height:38px;display:grid;place-items:center;flex:0 0 auto;border:1px solid rgba(255,255,255,.16);border-radius:11px;background:#26342d;color:#fff;font-size:11px;font-weight:1000;letter-spacing:-.03em;box-shadow:inset 0 1px rgba(255,255,255,.12),0 7px 18px rgba(0,0,0,.2); }
+.deposit-bank-logo.large { width:52px;height:52px;border-radius:15px;font-size:14px; }
+.bank-tone-0 { background:linear-gradient(145deg,#d71920,#7d080d); }
+.bank-tone-1 { background:linear-gradient(145deg,#169b62,#075b3a); }
+.bank-tone-2 { background:linear-gradient(145deg,#dc1d2e,#8a0c17); }
+.bank-tone-3 { background:linear-gradient(145deg,#1f5fae,#113566); }
+.bank-tone-4 { background:linear-gradient(145deg,#0054a6,#07325f); }
+.bank-tone-5 { background:linear-gradient(145deg,#7a2b91,#431451); }
+.bank-tone-6 { background:linear-gradient(145deg,#00a7b5,#075d65); }
+.bank-tone-7 { background:linear-gradient(145deg,#ef6c25,#873811); }
+.dynamic-iban-box b { overflow-wrap:anywhere;letter-spacing:.03em; }
+
+.iban-admin-layout { display:grid;grid-template-columns:minmax(280px,360px) minmax(0,1fr);gap:18px;align-items:start; }
+.iban-admin-form-card,.iban-admin-table-card { min-width:0;padding:20px; }
+.iban-admin-form-card { position:sticky;top:96px; }
+.iban-admin-form-card .field { margin-top:14px; }
+.iban-admin-form-card .field select { width:100%;height:46px;padding:0 13px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:#0c1511;color:#edf4ef; }
+.iban-admin-form-card .field small { margin-top:7px;display:block;color:#718078;font-size:10px; }
+.deposit-bank-preview { min-height:64px;margin:14px 0 4px;padding:11px;display:flex;align-items:center;gap:11px;border:1px solid rgba(101,255,53,.12);border-radius:14px;background:rgba(101,255,53,.035);color:#eef4f0; }
+.iban-amount-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px; }
+.iban-admin-table-wrap { width:100%;overflow:auto;overscroll-behavior-inline:contain; }
+.iban-admin-table { width:100%;min-width:1120px;border-collapse:collapse;color:#aebbb3;font-size:11px; }
+.iban-admin-table th { padding:12px 10px;border-bottom:1px solid rgba(255,255,255,.09);color:#6f7e75;font-size:9px;letter-spacing:.08em;text-align:left;text-transform:uppercase;white-space:nowrap; }
+.iban-admin-table td { padding:13px 10px;border-bottom:1px solid rgba(255,255,255,.055);vertical-align:middle; }
+.iban-admin-table tbody tr:hover { background:rgba(255,255,255,.018); }
+.iban-admin-table code { color:#dbe6df;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;white-space:nowrap; }
+.iban-bank-cell { display:flex;align-items:center;gap:9px;color:#eef4f0;white-space:nowrap; }
+.iban-bank-cell .deposit-bank-logo { width:32px;height:32px;border-radius:9px;font-size:9px; }
+.iban-status { min-width:58px;height:29px;border:1px solid transparent;border-radius:999px;font-size:9px;font-weight:900;cursor:pointer; }
+.iban-status.active { border-color:rgba(101,255,53,.25);background:rgba(101,255,53,.1);color:#80ff59; }
+.iban-status.passive { border-color:rgba(255,116,116,.2);background:rgba(255,116,116,.08);color:#e99595; }
+.iban-row-actions { display:flex;gap:5px; }
+.iban-row-actions button { height:29px;padding:0 9px;border:1px solid rgba(255,255,255,.1);border-radius:8px;background:#15201b;color:#c7d1cb;font-size:9px;font-weight:800;cursor:pointer; }
+.iban-row-actions button.danger { color:#e99595; }
+
+@media (max-width:1050px) {
+  .iban-admin-layout { grid-template-columns:1fr; }
+  .iban-admin-form-card { position:static; }
+}
+
+@media (max-width:600px) {
+  .iban-admin-form-card,.iban-admin-table-card { padding:15px; }
+  .iban-amount-grid { grid-template-columns:1fr;gap:0; }
+  .dynamic-deposit-head { margin-top:4px; }
+}

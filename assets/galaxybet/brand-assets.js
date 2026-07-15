@@ -1,5 +1,5 @@
 (function exposeGalaxyBetAssets() {
-  const version = "3";
+  const version = "4";
   const bannerFiles = [
     "banner-01.png",
     "banner-02.png",
@@ -25,6 +25,19 @@
     "banner-22.png"
   ];
   const assetUrl = file => `assets/galaxybet/banners/${file}?v=${version}`;
+  const desktopBannerFiles = [
+    "image.png",
+    "image2.png",
+    "image3.png",
+    "image4.png",
+    "image5.png",
+    "image6.png",
+    "image7.png",
+    "image8.png",
+    "image9.png",
+    "image10.png"
+  ];
+  const desktopAssetUrl = file => `assets/galaxybet/desktop-banners/${file}?v=${version}`;
   const sliderFiles = bannerFiles;
   const promotionFiles = bannerFiles.slice(6, 12);
   const campaignFiles = bannerFiles;
@@ -59,7 +72,7 @@
     // Keep `banners` as a compatibility alias for the six homepage slides.
     banners: Object.freeze(sliderFiles.map(assetUrl)),
     slider: Object.freeze(sliderFiles.map(assetUrl)),
-    desktopSlider: Object.freeze(sliderFiles.map(assetUrl)),
+    desktopSlider: Object.freeze(desktopBannerFiles.map(desktopAssetUrl)),
     mobileSlider: Object.freeze(sliderFiles.map(assetUrl)),
     promotions: Object.freeze(promotionFiles.map(assetUrl)),
     campaigns: Object.freeze(campaignFiles.map(assetUrl)),

@@ -209,9 +209,8 @@
     const amount = parseFlexibleAmount(document.getElementById("gbDepositAmount")?.value);
     if(!Number.isFinite(amount) || amount <= 0) return alert("Geçerli yatırım tutarı gir.");
     if(amount < limits.minDeposit || amount > limits.maxDeposit) return alert(`Yatırım tutarı ${money(limits.minDeposit)} ile ${money(limits.maxDeposit)} arasında olmalı.`);
-    addPaymentRequest({username:user.username,userId:user.id || user.username,type:"Yatırım",direction:"plus",amount,method:state.depositMethod,note:`${state.depositMethod} yöntemiyle yatırım talebi oluşturuldu`});
-    alert("Yatırım talebin güvenle oluşturuldu.");
-    renderDepositSitePage();
+    if(typeof window.beginDynamicDepositRequest !== "function") return alert("Yatırım hesabı servisine ulaşılamadı. Lütfen canlı destek ile görüşünüz.");
+    window.beginDynamicDepositRequest(amount, state.depositMethod, ".gb-payment-form");
   };
 
   window.renderPremiumDepositSitePage = function(){

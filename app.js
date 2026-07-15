@@ -8490,6 +8490,308 @@ window.openTawkSupport = function(){
   if(window.Tawk_API && typeof window.Tawk_API.maximize === "function") window.Tawk_API.maximize();
 };
 
+// DYNAMIC DEPOSIT IBAN MANAGEMENT
+const DEPOSIT_IBAN_STORAGE_KEY = "galaxybet_deposit_ibans";
+const DEPOSIT_IBAN_ROUND_ROBIN_KEY = "galaxybet_deposit_iban_round_robin";
+const DEPOSIT_BANKS = [
+  "Akbank", "Garanti BBVA", "Ziraat Bankası", "İş Bankası", "Yapı Kredi",
+  "Enpara", "QNB", "DenizBank", "TEB", "Kuveyt Türk", "VakıfBank",
+  "Halkbank", "Papara", "PayFix", "FastPay", "Kripto"
+];
+
+function depositSafeText(value){
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function getDepositIbans(){
+  try{
+    const items = JSON.parse(localStorage.getItem(DEPOSIT_IBAN_STORAGE_KEY) || "[]");
+    return Array.isArray(items) ? items : [];
+  }catch(_){
+    return [];
+  }
+}
+
+function setDepositIbans(items){
+  localStorage.setItem(DEPOSIT_IBAN_STORAGE_KEY, JSON.stringify(items));
+}
+
+function isValidTurkishIban(value){
+  const iban = String(value || "").toUpperCase().replace(/\s+/g, "");
+  if(!/^TR\d{24}$/.test(iban)) return false;
+  const rearranged = `${iban.slice(4)}${iban.slice(0, 4)}`;
+  const numeric = rearranged.replace(/[A-Z]/g, letter => String(letter.charCodeAt(0) - 55));
+  let remainder = 0;
+  for(const digit of numeric) remainder = (remainder * 10 + Number(digit)) % 97;
+  return remainder === 1;
+}
+
+function depositBankLogoHtml(bank, className = ""){
+  const label = String(bank || "Banka");
+  const initials = label.replace(/[^A-Za-zÇĞİÖŞÜçğıöşü0-9 ]/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toLocaleUpperCase("tr-TR") || "B";
+  const key = DEPOSIT_BANKS.indexOf(label);
+  return `<span class="deposit-bank-logo bank-tone-${key < 0 ? 0 : key % 8} ${className}" aria-hidden="true">${depositSafeText(initials)}</span>`;
+}
+
+function selectDepositIbanForAmount(amount){
+  const eligible = getDepositIbans()
+    .filter(item => item.active !== false && Number(amount) >= Number(item.minAmount) && Number(amount) <= Number(item.maxAmount))
+    .sort((a, b) => String(a.id).localeCompare(String(b.id)));
+  if(!eligible.length) return null;
+
+  const signature = eligible.map(item => item.id).join("|");
+  let cursors = {};
+  try{ cursors = JSON.parse(localStorage.getItem(DEPOSIT_IBAN_ROUND_ROBIN_KEY) || "{}"); }catch(_){ }
+  const cursor = Number(cursors[signature] || 0);
+  const selected = eligible[cursor % eligible.length];
+  cursors[signature] = (cursor + 1) % eligible.length;
+  localStorage.setItem(DEPOSIT_IBAN_ROUND_ROBIN_KEY, JSON.stringify(cursors));
+  return selected;
+}
+
+function recordDepositIbanUsage(id){
+  const items = getDepositIbans();
+  const account = items.find(item => String(item.id) === String(id));
+  if(!account) return;
+  account.usageCount = Number(account.usageCount || 0) + 1;
+  account.lastUsed = new Date().toISOString();
+  setDepositIbans(items);
+}
+
+function renderDynamicDepositPaymentStep(amount, method, account, targetSelector){
+  const target = document.querySelector(targetSelector || ".deposit-form-card") || document.querySelector(".deposit-page-grid");
+  if(!target){
+    alert("Yatırım ekranı bulunamadı.");
+    return;
+  }
+
+  target.innerHTML = `
+    <div class="dynamic-deposit-head">
+      ${depositBankLogoHtml(account.bank, "large")}
+      <div><small>ATANAN YATIRIM HESABI</small><h3>${depositSafeText(account.bank)}</h3></div>
+    </div>
+    <div class="deposit-pay-step dynamic-deposit-step">
+      <div class="deposit-pay-row"><small>Seçili Yöntem</small><b>${depositSafeText(method)}</b></div>
+      <div class="deposit-pay-row"><small>Yatırım Tutarı</small><b>${money(amount)}</b></div>
+      <div class="deposit-account-box"><small>Hesap Sahibi</small><b id="depositReceiverName">${depositSafeText(account.holder)}</b></div>
+      <div class="deposit-account-box dynamic-iban-box">
+        <small>IBAN</small>
+        <b id="depositAccountValue">${depositSafeText(formatTurkishIban(account.iban))}</b>
+        <button type="button" onclick="copyText('${depositSafeText(account.iban)}')">IBAN'ı Kopyala</button>
+      </div>
+      <div class="deposit-pay-note"><b>Önemli</b><span>Transferi yalnızca yukarıdaki hesaba gönder. Hesap bilgileri bu talebe özel atanmıştır.</span></div>
+      <button class="btn primary full-btn gb-primary-btn" onclick="confirmDepositPaid()">Yatırım Yaptım</button>
+      <button class="btn ghost full-btn" onclick="renderDepositSitePage()">Yöntemi / Tutarı Değiştir</button>
+    </div>`;
+}
+
+function beginDynamicDepositRequest(amount, method, targetSelector){
+  const account = selectDepositIbanForAmount(amount);
+  if(!account){
+    alert("Bu tutar için uygun yatırım hesabı bulunamadı. Lütfen canlı destek ile görüşünüz.");
+    return false;
+  }
+
+  pendingDepositRequestData = {
+    username:user.username,
+    userId:user.id || user.username,
+    type:"Yatırım",
+    direction:"plus",
+    amount,
+    method,
+    status:"Bekliyor",
+    bank:account.bank,
+    accountHolder:account.holder,
+    iban:formatTurkishIban(account.iban),
+    ibanAccountId:account.id,
+    note:`${method} yöntemiyle ${account.bank} hesabına yatırım bildirimi oluşturuldu`
+  };
+  renderDynamicDepositPaymentStep(amount, method, account, targetSelector);
+  return true;
+}
+
+submitDepositShowAccountStep = function(){
+  if(!user){ loginModal();return; }
+  const amount = parseFlexibleAmount(document.getElementById("siteDepositAmount")?.value);
+  const method = getSelectedDepositMethodName();
+  const limits = typeof getPaymentLimits === "function" ? getPaymentLimits() : {minDeposit:100,maxDeposit:50000};
+  if(!Number.isFinite(amount) || amount <= 0){ alert("Geçerli yatırım tutarı gir.");return; }
+  if(amount < limits.minDeposit || amount > limits.maxDeposit){
+    alert(`Yatırım tutarı ${money(limits.minDeposit)} ile ${money(limits.maxDeposit)} arasında olmalı.`);
+    return;
+  }
+  beginDynamicDepositRequest(amount, method, ".deposit-form-card");
+};
+
+confirmDepositPaid = function(){
+  if(!user){ loginModal();return; }
+  if(!pendingDepositRequestData){
+    alert("Yatırım bilgisi bulunamadı. Lütfen yeniden talep oluştur.");
+    renderDepositSitePage();
+    return;
+  }
+  recordDepositIbanUsage(pendingDepositRequestData.ibanAccountId);
+  addPaymentRequest(pendingDepositRequestData);
+  addTransaction({
+    username:user.username,
+    userId:user.id || user.username,
+    type:"Yatırım Talebi",
+    direction:"plus",
+    amount:pendingDepositRequestData.amount,
+    status:"Bekliyor",
+    note:`${pendingDepositRequestData.bank} hesabına yatırım bildirimi gönderildi`
+  });
+  pendingDepositRequestData = null;
+  alert("Yatırım bildirimin alındı. Admin onayından sonra bakiyene eklenecek.");
+  renderProfile();
+};
+
+var editingDepositIbanId = null;
+
+function resetDepositIbanForm(){
+  editingDepositIbanId = null;
+  renderDepositIbanAdmin();
+}
+
+function editDepositIban(id){
+  editingDepositIbanId = id;
+  renderDepositIbanAdmin();
+}
+
+function toggleDepositIban(id){
+  if(user?.role !== "admin") return alert("Bu işlem sadece admin için.");
+  const items = getDepositIbans();
+  const account = items.find(item => String(item.id) === String(id));
+  if(!account) return alert("IBAN kaydı bulunamadı.");
+  account.active = account.active === false;
+  setDepositIbans(items);
+  if(typeof addAdminLog === "function") addAdminLog("IBAN Durumu Güncellendi", `${account.bank} · ${account.active ? "Aktif" : "Pasif"}`);
+  renderDepositIbanAdmin();
+}
+
+function deleteDepositIban(id){
+  if(user?.role !== "admin") return alert("Bu işlem sadece admin için.");
+  const items = getDepositIbans();
+  const account = items.find(item => String(item.id) === String(id));
+  if(!account || !confirm(`${account.bank} IBAN kaydı silinsin mi?`)) return;
+  setDepositIbans(items.filter(item => String(item.id) !== String(id)));
+  if(typeof addAdminLog === "function") addAdminLog("IBAN Silindi", `${account.bank} · ${account.holder}`);
+  if(String(editingDepositIbanId) === String(id)) editingDepositIbanId = null;
+  renderDepositIbanAdmin();
+}
+
+function saveDepositIban(){
+  if(user?.role !== "admin") return alert("Bu işlem sadece admin için.");
+  const bank = document.getElementById("depositIbanBank")?.value || "";
+  const holder = document.getElementById("depositIbanHolder")?.value.trim() || "";
+  const input = document.getElementById("depositIbanValue");
+  const iban = cleanTurkishIban(input?.value || "");
+  const minAmount = parseFlexibleAmount(document.getElementById("depositIbanMin")?.value);
+  const maxAmount = parseFlexibleAmount(document.getElementById("depositIbanMax")?.value);
+  const active = document.getElementById("depositIbanStatus")?.value === "active";
+
+  if(!DEPOSIT_BANKS.includes(bank)) return alert("Lütfen geçerli bir banka seç.");
+  if(holder.length < 3) return alert("Hesap sahibinin adını ve soyadını gir.");
+  if(!isValidTurkishIban(iban)){
+    input?.setAttribute("aria-invalid", "true");
+    return alert("Geçersiz IBAN. TR ile başlayan 26 karakterli ve doğrulama kodu geçerli bir IBAN gir.");
+  }
+  if(!Number.isFinite(minAmount) || minAmount < 0 || !Number.isFinite(maxAmount) || maxAmount < minAmount){
+    return alert("Minimum ve maksimum tutar aralığını doğru gir.");
+  }
+
+  const items = getDepositIbans();
+  const duplicate = items.find(item => cleanTurkishIban(item.iban) === iban && String(item.id) !== String(editingDepositIbanId));
+  if(duplicate) return alert("Bu IBAN zaten kayıtlı.");
+  const existing = items.find(item => String(item.id) === String(editingDepositIbanId));
+  if(existing){
+    Object.assign(existing, {bank,holder,iban,minAmount,maxAmount,active,updatedAt:new Date().toISOString()});
+  }else{
+    items.unshift({id:`iban_${Date.now()}_${Math.random().toString(16).slice(2, 8)}`,bank,holder,iban,minAmount,maxAmount,active,usageCount:0,lastUsed:null,createdAt:new Date().toISOString()});
+  }
+  setDepositIbans(items);
+  if(typeof addAdminLog === "function") addAdminLog(existing ? "IBAN Güncellendi" : "IBAN Eklendi", `${bank} · ${holder}`);
+  editingDepositIbanId = null;
+  renderDepositIbanAdmin();
+}
+
+function bindDepositIbanAdminForm(){
+  const input = document.getElementById("depositIbanValue");
+  if(!input) return;
+  if(!input.value) input.value = "TR";
+  input.addEventListener("input", () => {
+    input.value = formatTurkishIban(input.value);
+    input.setAttribute("aria-invalid", "false");
+    try{ input.setSelectionRange(input.value.length, input.value.length); }catch(_){ }
+  });
+  document.getElementById("depositIbanBank")?.addEventListener("change", event => {
+    const preview = document.getElementById("depositBankPreview");
+    if(preview) preview.innerHTML = `${depositBankLogoHtml(event.target.value)}<b>${depositSafeText(event.target.value)}</b>`;
+  });
+}
+
+function renderDepositIbanAdmin(){
+  if(user?.role !== "admin"){
+    alert("Bu alana sadece admin hesabı erişebilir.");
+    loginModal();
+    return;
+  }
+  const items = getDepositIbans();
+  const editing = items.find(item => String(item.id) === String(editingDepositIbanId));
+  const selectedBank = editing?.bank || DEPOSIT_BANKS[0];
+  document.getElementById("app").innerHTML = shell(`
+    <section class="page-hero mini admin-mini">
+      <div><span>FİNANS AYARLARI</span><h1>IBAN Yönetimi</h1><p>Tutar aralıklarına göre otomatik atanacak yatırım hesaplarını yönet.</p></div>
+      <button class="btn gold" onclick="renderAdminDashboard()">Admin Panele Dön</button>
+    </section>
+    <section class="iban-admin-layout">
+      <div class="card iban-admin-form-card">
+        <div class="card-head"><h3>${editing ? "IBAN Düzenle" : "Yeni IBAN Ekle"}</h3>${editing ? `<button class="btn" onclick="resetDepositIbanForm()">Vazgeç</button>` : ""}</div>
+        <div class="deposit-bank-preview" id="depositBankPreview">${depositBankLogoHtml(selectedBank)}<b>${depositSafeText(selectedBank)}</b></div>
+        <label class="field"><span>Banka</span><select id="depositIbanBank">${DEPOSIT_BANKS.map(bank => `<option value="${depositSafeText(bank)}" ${bank === selectedBank ? "selected" : ""}>${depositSafeText(bank)}</option>`).join("")}</select></label>
+        <label class="field"><span>Hesap Sahibi</span><input id="depositIbanHolder" value="${depositSafeText(editing?.holder || "")}" autocomplete="off" placeholder="Ad Soyad"></label>
+        <label class="field"><span>IBAN</span><input id="depositIbanValue" value="${depositSafeText(editing ? formatTurkishIban(editing.iban) : "TR")}" maxlength="32" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="TR00 0000 0000 0000 0000 0000 00"><small>26 karakter ve IBAN doğrulaması zorunludur.</small></label>
+        <div class="iban-amount-grid">
+          <label class="field"><span>Minimum Tutar</span><input id="depositIbanMin" value="${depositSafeText(editing?.minAmount ?? "")}" inputmode="decimal" placeholder="100"></label>
+          <label class="field"><span>Maksimum Tutar</span><input id="depositIbanMax" value="${depositSafeText(editing?.maxAmount ?? "")}" inputmode="decimal" placeholder="50000"></label>
+        </div>
+        <label class="field"><span>Durum</span><select id="depositIbanStatus"><option value="active" ${editing?.active !== false ? "selected" : ""}>Aktif</option><option value="passive" ${editing?.active === false ? "selected" : ""}>Pasif</option></select></label>
+        <button class="btn primary full-btn" onclick="saveDepositIban()">${editing ? "Değişiklikleri Kaydet" : "IBAN Ekle"}</button>
+      </div>
+      <div class="card iban-admin-table-card">
+        <div class="card-head"><h3>Kayıtlı Hesaplar</h3><span>${items.filter(item => item.active !== false).length} aktif · ${items.length} toplam</span></div>
+        <div class="iban-admin-table-wrap">
+          <table class="iban-admin-table">
+            <thead><tr><th>Banka</th><th>Hesap Sahibi</th><th>IBAN</th><th>Minimum</th><th>Maksimum</th><th>Durum</th><th>Kullanım</th><th>Son Kullanım</th><th>İşlem</th></tr></thead>
+            <tbody>${items.length ? items.map(item => `<tr>
+              <td><div class="iban-bank-cell">${depositBankLogoHtml(item.bank)}<b>${depositSafeText(item.bank)}</b></div></td>
+              <td>${depositSafeText(item.holder)}</td><td><code>${depositSafeText(formatTurkishIban(item.iban))}</code></td>
+              <td>${money(item.minAmount)}</td><td>${money(item.maxAmount)}</td>
+              <td><button class="iban-status ${item.active !== false ? "active" : "passive"}" onclick="toggleDepositIban('${depositSafeText(item.id)}')">${item.active !== false ? "Aktif" : "Pasif"}</button></td>
+              <td><b>${Number(item.usageCount || 0)}</b></td><td>${item.lastUsed ? new Date(item.lastUsed).toLocaleString("tr-TR") : "—"}</td>
+              <td><div class="iban-row-actions"><button onclick="editDepositIban('${depositSafeText(item.id)}')">Düzenle</button><button class="danger" onclick="deleteDepositIban('${depositSafeText(item.id)}')">Sil</button></div></td>
+            </tr>`).join("") : `<tr><td colspan="9"><div class="empty-profile-tx">Henüz IBAN eklenmedi.</div></td></tr>`}</tbody>
+          </table>
+        </div>
+      </div>
+    </section>`);
+  bindDepositIbanAdminForm();
+}
+
+const renderAdminDashboardBeforeIbanShortcut = renderAdminDashboard;
+renderAdminDashboard = function(){
+  renderAdminDashboardBeforeIbanShortcut();
+  const shortcuts = document.querySelector(".admin-shortcuts");
+  if(shortcuts && !shortcuts.querySelector(".iban-management-shortcut")){
+    shortcuts.insertAdjacentHTML("beforeend", `<button class="iban-management-shortcut" onclick="renderDepositIbanAdmin()"><b>🏦 IBAN Yönetimi</b><span>Yatırım hesaplarını, limitlerini ve dağıtımı yönet.</span></button>`);
+  }
+};
+
 // BETNEX GAME IMPORT PANEL
 function getBetnexGameSettings(){
   return JSON.parse(localStorage.getItem("bozobet_betnex_game_settings") || "null") || {
