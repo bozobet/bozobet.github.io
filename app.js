@@ -742,7 +742,7 @@ let coupon = (() => {
   });
 })();
 
-let matches = JSON.parse(localStorage.getItem("bozobet_matches") || "null") || [
+const defaultMatches = [
   {
     status:"CANLI",
     minute:"45'",
@@ -796,6 +796,8 @@ let matches = JSON.parse(localStorage.getItem("bozobet_matches") || "null") || [
     markets:"+104"
   }
 ];
+const storedMatches = parseStoredJson(localStorage, "bozobet_matches");
+let matches = Array.isArray(storedMatches) ? storedMatches : defaultMatches;
 
 const games = [
   ["🦁","GATES OF OLYMPUS"],
@@ -7976,6 +7978,11 @@ if(typeof clearData === "function"){
 
 // LOADING SCREEN GUARD
 function hideLoadingScreen(){
+  if(typeof window.removeLoadingScreen === "function"){
+    window.removeLoadingScreen("app.hideLoadingScreen");
+    return;
+  }
+
   const loader = document.querySelector(".loading-screen, #loading, .site-loader, .loader-screen");
 
   if(loader){
@@ -7983,7 +7990,7 @@ function hideLoadingScreen(){
     loader.style.pointerEvents = "none";
 
     setTimeout(() => {
-      loader.style.display = "none";
+      loader.remove();
     }, 350);
   }
 
