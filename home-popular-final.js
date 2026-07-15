@@ -120,7 +120,7 @@
   }
 
   function gameSection(title, games, action, wide) {
-    return `<section class="mobile-home-section">${sectionHeader(title, action)}<div class="mobile-horizontal-row mobile-game-row${wide ? " mobile-live-casino-row" : ""}">${games.map((game, index) => renderGameCard(game, index, wide)).join("")}</div></section>`;
+    return `<section class="mobile-home-section home-section">${sectionHeader(title, action)}<div class="mobile-horizontal-row mobile-game-row${wide ? " mobile-live-casino-row" : ""}">${games.map((game, index) => renderGameCard(game, index, wide)).join("")}</div></section>`;
   }
 
   function readSlip() {
@@ -164,11 +164,11 @@
   }
 
   function promotionsSection() {
-    return `<section class="mobile-home-section">${sectionHeader("PROMOSYONLAR", "promotions")}<div class="mobile-horizontal-row mobile-promotion-row">${promotions.map((promo, index) => `<button type="button" class="mobile-promotion-card" data-promotion-index="${index}"><img src="${esc(promo.image)}" alt="${esc(promo.title)}" loading="lazy" decoding="async"></button>`).join("")}</div></section>`;
+    return `<section class="mobile-home-section home-section">${sectionHeader("PROMOSYONLAR", "promotions")}<div class="mobile-horizontal-row mobile-promotion-row">${promotions.map((promo, index) => `<button type="button" class="mobile-promotion-card" data-promotion-index="${index}"><img src="${esc(promo.image)}" alt="${esc(promo.title)}" loading="lazy" decoding="async"></button>`).join("")}</div></section>`;
   }
 
   function providersSection() {
-    return `<section class="mobile-home-section mobile-provider-section">${sectionHeader("OYUN SAĞLAYICILARI")}<div class="mobile-horizontal-row mobile-provider-row">${providers.map(provider => `<button type="button" class="mobile-provider-card" data-provider="${esc(provider)}"><span>${esc(provider)}</span></button>`).join("")}</div></section>`;
+    return `<section class="mobile-home-section home-section mobile-provider-section">${sectionHeader("OYUN SAĞLAYICILARI")}<div class="mobile-horizontal-row mobile-provider-row">${providers.map(provider => `<button type="button" class="mobile-provider-card" data-provider="${esc(provider)}"><span>${esc(provider)}</span></button>`).join("")}</div></section>`;
   }
 
   function trustSection() {
@@ -179,7 +179,7 @@
     const banners = window.GALAXYBET_ASSETS?.mobileSlider || window.GALAXYBET_ASSETS?.slider || window.GALAXYBET_ASSETS?.banners || [];
 
     return `
-      <section class="mobile-hero-slider" id="mobileHeroSlider" aria-label="Kampanyalar">
+      <section class="mobile-hero-slider hero-banner" id="mobileHeroSlider" aria-label="Kampanyalar">
         <div class="mobile-hero-track">
           ${banners.map((src, index) => `<img class="mobile-hero-slide${index === 0 ? " active" : ""}" src="${src}" alt="GalaxyBet Banner ${index + 1}">`).join("")}
         </div>
@@ -198,7 +198,7 @@
 
   function mobileCategories() {
     return `
-      <section class="category-row" aria-label="Kategoriler">
+      <section class="category-row home-section" aria-label="Kategoriler">
         ${categoryCard("assets/icons/categories/football.webp", "FUTBOL", "500+ Lig")}
         ${categoryCard("assets/icons/categories/basketball.webp", "BASKETBOL", "200+ Lig")}
         ${categoryCard("assets/icons/categories/tennis.webp", "TENİS", "150+ Turnuva")}
@@ -214,7 +214,7 @@
       ${mobileCategories()}
       <div class="bb-mobile-home-content" aria-label="Mobil ana sayfa içeriği">
         ${gameSection("POPÜLER OYUNLAR", popularGames, "popular", false)}
-        <section class="mobile-home-section">${sectionHeader("CANLI MAÇLAR", "sports")}<div class="mobile-live-match-list">${liveMatches.map(liveMatchCard).join("")}</div></section>
+        <section class="mobile-home-section home-section">${sectionHeader("CANLI MAÇLAR", "sports")}<div class="mobile-live-match-list">${liveMatches.map(liveMatchCard).join("")}</div></section>
         ${promotionsSection()}
         ${gameSection("YENİ OYUNLAR", newGames, "new", false)}
         ${gameSection("CANLI CASINO", liveCasinoGames, "live-casino", true)}

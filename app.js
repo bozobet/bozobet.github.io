@@ -948,7 +948,7 @@ function renderHome(){
         <img class="mobile-hero-slide${index === 0 ? " active" : ""}" src="${src}" alt="GalaxyBet Banner ${index + 1}">`).join("");
 
   document.getElementById("app").innerHTML = shell(`
-    <section class="hero hero-slider" id="heroSlider">
+    <section class="hero hero-slider hero-banner" id="heroSlider">
       ${bannerSlides}
       <button class="hero-arrow hero-prev" type="button" aria-label="Önceki banner" onclick="heroPrev()">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
@@ -958,7 +958,7 @@ function renderHome(){
       </button>
     </section>
 
-    <section class="mobile-hero-slider" id="mobileHeroSlider" aria-label="Kampanyalar">
+    <section class="mobile-hero-slider hero-banner" id="mobileHeroSlider" aria-label="Kampanyalar">
       <div class="mobile-hero-track">
         ${mobileBannerSlides}
       </div>
@@ -974,7 +974,7 @@ function renderHome(){
       ${promotionImages.map((img, index) => mobilePromo(img, `GalaxyBet Promosyon ${index + 1}`)).join("")}
     </section>
 
-    <section class="category-row">
+    <section class="category-row home-section">
       ${cat("assets/icons/categories/football.webp","FUTBOL","500+ Lig")}
       ${cat("assets/icons/categories/basketball.webp","BASKETBOL","200+ Lig")}
       ${cat("assets/icons/categories/tennis.webp","TENİS","150+ Turnuva")}

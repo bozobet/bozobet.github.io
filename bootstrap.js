@@ -51,15 +51,52 @@
     return true;
   }
 
-  function renderInitialPage(){
+  function renderMetrics(){
     const app = document.getElementById("app");
-    if(!app || app.innerHTML.trim()) return;
+    return {
+      appFound:Boolean(app),
+      appHtmlLength:app?.innerHTML.length || 0,
+      heroCount:document.querySelectorAll(".hero-banner").length,
+      homeSectionCount:document.querySelectorAll(".home-section").length,
+      hasPopular:document.body?.innerHTML.includes("Bugünün En Popülerleri") || false,
+      hasJackpot:document.body?.innerHTML.includes("Jackpot") || false
+    };
+  }
+
+  function hasRenderedRoute(app, route){
+    if(!app || !app.innerHTML.trim()) return false;
+    if(route === "home"){
+      return Boolean(app.querySelector(
+        ".hero-banner, .hero-slider, .mobile-hero-slider, .home-section, .gb-home-section, .mobile-home-section"
+      ));
+    }
+    return Boolean(app.querySelector("main.wrap")?.children.length || app.querySelector("main, section, article"));
+  }
+
+  function renderInitialPage(source){
+    const app = document.getElementById("app");
+    const requestedRoute = location.hash.slice(1) || "home";
+    const route = typeof window.isValidAppRoute === "function" && !window.isValidAppRoute(requestedRoute)
+      ? "home"
+      : requestedRoute;
+
+    record("render check", `${source || document.readyState} ${JSON.stringify(renderMetrics())}`);
+    if(hasRenderedRoute(app, route)){
+      record("render skipped", `${route} already has page content`);
+      return true;
+    }
 
     if(typeof window.renderAppRoute === "function"){
-      window.renderAppRoute(location.hash.slice(1) || "home");
+      record("renderAppRoute called", route);
+      window.renderAppRoute(route);
     }else if(typeof window.renderHome === "function"){
+      record("renderHome called", "router unavailable");
       window.renderHome();
     }else{
+      if(document.readyState === "loading"){
+        record("render deferred", "application renderers are not installed yet");
+        return false;
+      }
       const captured = state.errors.at(-1)?.message || "Uygulama başlangıç dosyası tamamlanamadı.";
       app.innerHTML = `
         <main class="safe-error-screen">
@@ -69,6 +106,11 @@
         </main>
       `;
     }
+
+    const rendered = hasRenderedRoute(app, route);
+    record("render result", `${route} ${JSON.stringify(renderMetrics())}`);
+    if(!rendered) throw new Error(`Route '${route}' renderer completed without page content.`);
+    return true;
   }
 
   function initializeApp(source){
@@ -77,13 +119,16 @@
     if(state.initializePromise) return state.initializePromise;
 
     state.initializePromise = Promise.resolve()
-      .then(renderInitialPage)
+      .then(() => renderInitialPage(source))
       .catch(error => {
         state.errors.push({type:"initialize", message:String(error?.message || error)});
         console.error("[bootstrap] initializeApp failed", error);
       })
       .then(() => new Promise(resolve => requestAnimationFrame(resolve)))
-      .then(() => removeLoadingScreen(`initializeApp/${source || document.readyState}`));
+      .then(() => removeLoadingScreen(`initializeApp/${source || document.readyState}`))
+      .finally(() => {
+        state.initializePromise = null;
+      });
 
     return state.initializePromise;
   }
@@ -101,14 +146,14 @@
       line:event.lineno || 0
     });
     console.error("[bootstrap] runtime error captured", event.error || event.message);
-    initializeApp("window.error");
+    if(document.readyState !== "loading") initializeApp("window.error");
   });
 
   window.addEventListener("unhandledrejection", event => {
     const reason = event.reason;
     state.errors.push({type:"unhandledrejection", message:String(reason?.message || reason)});
     console.error("[bootstrap] unhandled rejection captured", reason);
-    initializeApp("unhandledrejection");
+    if(document.readyState !== "loading") initializeApp("unhandledrejection");
   });
 
   document.addEventListener("DOMContentLoaded", () => initializeApp("DOMContentLoaded"), {once:true});

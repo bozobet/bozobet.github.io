@@ -50,11 +50,11 @@
       ["MAJOR JACKPOT",4812940.18,"major","Premium oyun havuzunda büyüyor"],
       ["MINOR JACKPOT",684320.55,"minor","Her dakika yeni fırsatlar" ]
     ];
-    return `<section class="gb-home-section gb-jackpot-section gb-reveal"><header><div><span>CANLI ÖDÜL HAVUZU</span><h2>Jackpot dünyası</h2><p>Ödül havuzları gerçek zamanlı olarak büyümeye devam ediyor.</p></div><b><i></i> CANLI</b></header><div class="gb-jackpot-grid">${data.map(([title,value,type,text]) => `<article class="${type}"><div class="gb-jackpot-top"><span>${title}</span><i>${icons.bolt}</i></div><strong class="gb-jackpot-number" data-jackpot="${value}">₺${value.toLocaleString("tr-TR", {minimumFractionDigits:2,maximumFractionDigits:2})}</strong><p>${text}</p><div class="gb-jackpot-meter"><i></i></div></article>`).join("")}</div></section>`;
+    return `<section class="gb-home-section home-section gb-jackpot-section gb-reveal"><header><div><span>CANLI ÖDÜL HAVUZU</span><h2>Jackpot dünyası</h2><p>Ödül havuzları gerçek zamanlı olarak büyümeye devam ediyor.</p></div><b><i></i> CANLI</b></header><div class="gb-jackpot-grid">${data.map(([title,value,type,text]) => `<article class="${type}"><div class="gb-jackpot-top"><span>${title}</span><i>${icons.bolt}</i></div><strong class="gb-jackpot-number" data-jackpot="${value}">₺${value.toLocaleString("tr-TR", {minimumFractionDigits:2,maximumFractionDigits:2})}</strong><p>${text}</p><div class="gb-jackpot-meter"><i></i></div></article>`).join("")}</div></section>`;
   }
 
   function providerCards(){
-    return `<section class="gb-home-section gb-provider-section gb-reveal"><header><div><span>GLOBAL STÜDYOLAR</span><h2>Oyun sağlayıcıları</h2><p>Gambit Stage bağlantısına hazır premium sağlayıcı ağı.</p></div><small>8 SAĞLAYICI</small></header><div class="gb-provider-grid">${providers.map((name,index) => `<article><i>${String(index + 1).padStart(2,"0")}</i><div class="gb-provider-mark">${name.split(" ").map(part => `<b>${part}</b>`).join("")}</div><span>PREMIUM PROVIDER</span></article>`).join("")}</div></section>`;
+    return `<section class="gb-home-section home-section gb-provider-section gb-reveal"><header><div><span>GLOBAL STÜDYOLAR</span><h2>Oyun sağlayıcıları</h2><p>Gambit Stage bağlantısına hazır premium sağlayıcı ağı.</p></div><small>8 SAĞLAYICI</small></header><div class="gb-provider-grid">${providers.map((name,index) => `<article><i>${String(index + 1).padStart(2,"0")}</i><div class="gb-provider-mark">${name.split(" ").map(part => `<b>${part}</b>`).join("")}</div><span>PREMIUM PROVIDER</span></article>`).join("")}</div></section>`;
   }
 
   function whyGalaxy(){
@@ -64,7 +64,7 @@
       ["support","7/24 Destek","Deneyimli destek ekibi ihtiyaç duyduğun her an yanında."],
       ["gift","Yüksek Bonuslar","Sana özel kampanyalar ve premium bonus fırsatları."]
     ];
-    return `<section class="gb-home-section gb-why-section gb-reveal"><header><div><span>GALAXYBET DENEYİMİ</span><h2>Neden GalaxyBet?</h2><p>Her detayında hız, güven ve ayrıcalık.</p></div></header><div class="gb-why-grid">${benefits.map(([ico,title,text],index) => `<article><small>0${index + 1}</small><i>${icons[ico]}</i><h3>${title}</h3><p>${text}</p><span>DAHA FAZLA ${icons.arrow}</span></article>`).join("")}</div></section>`;
+    return `<section class="gb-home-section home-section gb-why-section gb-reveal"><header><div><span>GALAXYBET DENEYİMİ</span><h2>Neden GalaxyBet?</h2><p>Her detayında hız, güven ve ayrıcalık.</p></div></header><div class="gb-why-grid">${benefits.map(([ico,title,text],index) => `<article><small>0${index + 1}</small><i>${icons[ico]}</i><h3>${title}</h3><p>${text}</p><span>DAHA FAZLA ${icons.arrow}</span></article>`).join("")}</div></section>`;
   }
 
   function supportStrip(){
